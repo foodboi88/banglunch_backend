@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-import { IProduct } from "./food.types";
 import { ObjectId } from 'mongodb';
+import mongoose from "mongoose";
 
 const dataResponseProduct = {
     $project: {
@@ -22,7 +21,7 @@ const dataResponseProduct = {
 }
 
 const dataHomeProduct = {
-    
+
     $project: {
         _id: 0,
         id: "$_id",
@@ -35,73 +34,73 @@ const dataHomeProduct = {
         createdAt: 1,
         updatedAt: 1,
         images: "$productimage.filePath",
-        designTools : "$productdesigntools.id",
-        size : {
-            $size : "$productimage"
+        designTools: "$productdesigntools.id",
+        size: {
+            $size: "$productimage"
         }
     },
 }
 
 const lookUpDesignTool = () => ([
     {
-      $lookup: {
-        from: "productdesigntools",
-        let: {
-          productId: "$_id",
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  {
-                    $eq: ["$productId", "$$productId"],
-                  },
-                ],
-              },
+        $lookup: {
+            from: "productdesigntools",
+            let: {
+                productId: "$_id",
             },
-          },
-          {
-            $lookup: {
-              from: "designtools",
-              let: {
-                designToolId: "$designToolId",
-              },
-              pipeline: [
+            pipeline: [
                 {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        {
-                          $eq: ["$_id", "$$designToolId"],
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: ["$productId", "$$productId"],
+                                },
+                            ],
                         },
-                      ],
                     },
-                  },
                 },
                 {
-                  $project: {
-                    name: 1,
-                  },
+                    $lookup: {
+                        from: "designtools",
+                        let: {
+                            designToolId: "$designToolId",
+                        },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            {
+                                                $eq: ["$_id", "$$designToolId"],
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                            {
+                                $project: {
+                                    name: 1,
+                                },
+                            },
+                        ],
+                        as: "designtools",
+                    },
                 },
-              ],
-              as: "designtools",
-            },
-          },
-          {
-            $unwind: "$designtools",
-          },
-          {
-            $project: {
-              _id: 0,
-              id: "$designtools._id",
-            },
-          },
-        ],
-        as: "productdesigntools",
-      },
+                {
+                    $unwind: "$designtools",
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        id: "$designtools._id",
+                    },
+                },
+            ],
+            as: "productdesigntools",
+        },
     },
-  ])
+])
 
 
 
@@ -404,9 +403,9 @@ export const lookUpAllTypeOfArchitecture = () => ([
 export const getLatestProducts = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
+                { deletedAt: null },
             ]
         }
     },
@@ -414,9 +413,9 @@ export const getLatestProducts = (size: number, offset: number): Array<Record<st
     ...lookUpDesignTool(),
     dataHomeProduct,
     {
-        $match : {
-            size : {
-                $gt : 0
+        $match: {
+            size: {
+                $gt: 0
             }
         }
     },
@@ -453,9 +452,9 @@ export const getLatestProducts = (size: number, offset: number): Array<Record<st
 export const getMostQuantityPurchasedProducts = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
+                { deletedAt: null },
             ]
         }
     },
@@ -463,9 +462,9 @@ export const getMostQuantityPurchasedProducts = (size: number, offset: number): 
     ...lookUpDesignTool(),
     dataHomeProduct,
     {
-        $match : {
-            size : {
-                $gt : 0
+        $match: {
+            size: {
+                $gt: 0
             }
         }
     },
@@ -503,10 +502,10 @@ export const getMostQuantityPurchasedProducts = (size: number, offset: number): 
 export const getFreeProducts = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
-                { price : 0 },
+                { deletedAt: null },
+                { price: 0 },
             ]
         }
     },
@@ -514,9 +513,9 @@ export const getFreeProducts = (size: number, offset: number): Array<Record<stri
     ...lookUpDesignTool(),
     dataHomeProduct,
     {
-        $match : {
-            size : {
-                $gt : 0
+        $match: {
+            size: {
+                $gt: 0
             }
         }
     },
@@ -551,10 +550,10 @@ export const getFreeProducts = (size: number, offset: number): Array<Record<stri
 export const getProductByName = (name: string): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
-                {title: { $regex: name, $options: 'i' }},
+                { deletedAt: null },
+                { title: { $regex: name, $options: 'i' } },
             ]
         }
     },
@@ -566,12 +565,12 @@ export const getProductByName = (name: string): Array<Record<string, any>> => [
 
 
 //agrigate query for get product filter by name?, designToolId?, designStyleId?, typeOfArchitectureId? paging size offset and change _id to id
-export const getProductByFilter = (name: string, designToolId: string, designStyleId: string, typeOfArchitectureId: string, size: number, offset: number,authorId:string): Array<Record<string, any>> => [
+export const getProductByFilter = (name: string, designToolId: string, designStyleId: string, typeOfArchitectureId: string, size: number, offset: number, authorId: string): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null }
+                { deletedAt: null }
             ]
         }
     },
@@ -638,12 +637,12 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
             productDesignStyleId: '$productDesignStyle.designStyleId',
             image: '$productimage.filePath',
             userId: 1,
-            isDisable : 1,
+            isDisable: 1,
         },
     },
     {
         $sort: {
-            views : -1
+            views: -1
         }
     },
     {
@@ -707,9 +706,9 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
 export const getProductById = (id: string): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
+                { deletedAt: null },
                 { _id: mongoose.Types.ObjectId(id), }
             ]
         }
@@ -750,9 +749,9 @@ export const getProductById = (id: string): Array<Record<string, any>> => [
 export const getProductByTypeOfArchitectureId = (typeOfArchitectureId: string, size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null }
+                { deletedAt: null }
             ]
         }
     },
@@ -849,9 +848,9 @@ export const getProductByTypeOfArchitectureId = (typeOfArchitectureId: string, s
 export const getMostLikeProducts = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
+                { deletedAt: null },
             ]
         }
     },
@@ -869,17 +868,17 @@ export const getMostLikeProducts = (size: number, offset: number): Array<Record<
             createdAt: 1,
             updatedAt: 1,
             images: "$productimage.filePath",
-            isDisable : 1,
-            deletedAt : 1,
-            size : {
-                $size : "$productimage"
+            isDisable: 1,
+            deletedAt: 1,
+            size: {
+                $size: "$productimage"
             }
         },
     },
     {
-        $match : {
-            size : {
-                $gt : 0
+        $match: {
+            size: {
+                $gt: 0
             }
         }
     },
@@ -919,9 +918,9 @@ export const getMostLikeProducts = (size: number, offset: number): Array<Record<
 export const getMostViewProducts = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
+                { deletedAt: null },
             ]
         }
     },
@@ -940,18 +939,18 @@ export const getMostViewProducts = (size: number, offset: number): Array<Record<
             createdAt: 1,
             updatedAt: 1,
             images: "$productimage.filePath",
-            designTools : "$productdesigntools.id",
-            isDisable : 1,
-            deletedAt : 1,
-            size : {
-                $size : "$productimage"
+            designTools: "$productdesigntools.id",
+            isDisable: 1,
+            deletedAt: 1,
+            size: {
+                $size: "$productimage"
             }
         },
     },
     {
-        $match : {
-            size : {
-                $gt : 0
+        $match: {
+            size: {
+                $gt: 0
             }
         }
     },
@@ -991,9 +990,9 @@ export const getMostViewProducts = (size: number, offset: number): Array<Record<
 export const getProductByUserId = (size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null }
+                { deletedAt: null }
             ]
         }
     },
@@ -1027,10 +1026,10 @@ export const getProductByUserId = (size: number, offset: number): Array<Record<s
 export const getProductByDesignToolId = (designToolId: string, size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
-                {designToolId: mongoose.Types.ObjectId(designToolId),}
+                { deletedAt: null },
+                { designToolId: mongoose.Types.ObjectId(designToolId), }
             ]
         }
     },
@@ -1065,10 +1064,10 @@ export const getProductByDesignToolId = (designToolId: string, size: number, off
 export const getProductByCollectionId = (collectionId: string, size: number, offset: number): Array<Record<string, any>> => [
     {
         $match: {
-            $and : [
+            $and: [
                 { isDisable: false },
-                { deletedAt : null },
-                {collectionId: mongoose.Types.ObjectId(collectionId),}
+                { deletedAt: null },
+                { collectionId: mongoose.Types.ObjectId(collectionId), }
             ]
         }
     },

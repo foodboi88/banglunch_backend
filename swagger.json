@@ -98,18 +98,6 @@
 					"size": {
 						"type": "string"
 					},
-					"productDesignTools": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
-					"productDesignStyles": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
 					"productTypeOfArchitecture": {
 						"items": {
 							"type": "string"
@@ -122,8 +110,6 @@
 					"content",
 					"price",
 					"size",
-					"productDesignTools",
-					"productDesignStyles",
 					"productTypeOfArchitecture"
 				],
 				"type": "object",

@@ -64,8 +64,6 @@ const models: TsoaRoute.Models = {
             "price": {"dataType":"double","required":true},
             "originalPrice": {"dataType":"double"},
             "size": {"dataType":"string","required":true},
-            "productDesignTools": {"dataType":"array","array":{"dataType":"string"},"required":true},
-            "productDesignStyles": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "productTypeOfArchitecture": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": true,

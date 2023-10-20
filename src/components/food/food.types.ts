@@ -1,40 +1,36 @@
-export interface IProduct {
+export interface IFood {
     userId: string;
     title: string;
     content: string;
     price: number;
     views: number;
     likes: number;
-    size: string;
-    quantityPurchased: number;
     isDisable: boolean;
-    totalRate : number
+    totalRate: number
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
-    originalPrice : number;
+    originalPrice: number;
 }
 
-export interface IProductInput  {
+export interface IProductInput {
     title: string;
     content: string;
     price: number;
     originalPrice?: number;
     size: string;
-    productDesignTools: string [];
-    productDesignStyles: string [];
-    productTypeOfArchitecture: string [];
+    productTypeOfArchitecture: string[];
 }
 
-export interface IProductDB extends IProduct {
+export interface IProductDB extends IFood {
     id: string;
 }
 
-export interface IProductEdit  {
+export interface IProductEdit {
     title?: string;
     content?: string;
     price?: number;
     originalPrice?: number;
-    productDesignTools?: string [];
-    productTypeOfArchitecture?: string [];
+    productDesignTools?: string[];
+    productTypeOfArchitecture?: string[];
 }

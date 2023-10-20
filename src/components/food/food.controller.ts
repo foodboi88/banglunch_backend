@@ -1,13 +1,11 @@
-import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete } from "tsoa";
-import { IProduct, IProductEdit, IProductInput } from "./food.types";
-import Product from "./food.model";
+import { Body, Controller, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
-import User from "../user/user.model";
-import * as jwt from "jsonwebtoken";
-import { getMostLikeProducts, getMostViewProducts, getProductByDesignToolId, getProductByFilter, getLatestProducts, getMostQuantityPurchasedProducts, getProductById, getFreeProducts } from "./food.queries";
-import TypeOfArchitecture from "../category/category.model";
-import ProductTypeOfArchitecture from "../category/category.model";
+import { default as ProductTypeOfArchitecture, default as TypeOfArchitecture } from "../category/category.model";
 import { deleteFolder } from "../gallery/gallery.controller";
+import User from "../user/user.model";
+import Product from "./food.model";
+import { getFreeProducts, getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts, getProductByDesignToolId, getProductByFilter, getProductById } from "./food.queries";
+import { IProductEdit, IProductInput } from "./food.types";
 
 
 @Route("products")
@@ -137,7 +135,7 @@ export class ProductController extends Controller {
         @Query() designToolId?: string,
         @Query() designStyleId?: string,
         @Query() typeOfArchitectureId?: string,
-        @Query() authorId?:string,
+        @Query() authorId?: string,
 
     ): Promise<any> {
         try {
@@ -146,10 +144,10 @@ export class ProductController extends Controller {
             designToolId = designToolId ? designToolId.trim() : null;
             designStyleId = designStyleId ? designStyleId.trim() : null;
             typeOfArchitectureId = typeOfArchitectureId ? typeOfArchitectureId.trim() : null;
-            authorId = authorId? authorId.trim() : null;
-            let data = await Product.aggregate(getProductByFilter(name, designToolId, designStyleId, typeOfArchitectureId, size, offset,authorId));
-            if(data[0].length > 0){
-                data=data[0]
+            authorId = authorId ? authorId.trim() : null;
+            let data = await Product.aggregate(getProductByFilter(name, designToolId, designStyleId, typeOfArchitectureId, size, offset, authorId));
+            if (data[0].length > 0) {
+                data = data[0]
             }
             return successResponse(data);
         }
@@ -166,7 +164,7 @@ export class ProductController extends Controller {
             const product = await Product.aggregate(getProductById(id));
             //increase views
             await Product.findByIdAndUpdate(id, { views: product[0].info.views + 0.5 }, { new: true });
-            
+
             if (!product) {
                 this.setStatus(404);
                 return failedResponse('Product not found', 'NotFound');
@@ -226,9 +224,9 @@ export class ProductController extends Controller {
             const user_sell = (await Product.findById(productId)).userId
             if (user_id != user_sell && role != "admin") {
                 this.setStatus(400)
-                return failedResponse("Bạn không có quyền xóa sản phẩm này","Bad Request")
+                return failedResponse("Bạn không có quyền xóa sản phẩm này", "Bad Request")
             }
-            await Product.findByIdAndUpdate(productId,{deletedAt : new Date()})
+            await Product.findByIdAndUpdate(productId, { deletedAt: new Date() })
             const folderPath = "product/" + productId + '/file'
             await deleteFolder(folderPath)
             return successResponse("Xóa sản phẩm thành công")
@@ -241,9 +239,9 @@ export class ProductController extends Controller {
         }
     }
 
-    @Security("jwt",['seller'])
+    @Security("jwt", ['seller'])
     @Put("edit-product/{idProduct}")
-    public async editProductById(@Request() request: any, @Path() idProduct : string,@Body() data : IProductEdit): Promise<any> {
+    public async editProductById(@Request() request: any, @Path() idProduct: string, @Body() data: IProductEdit): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const user_id = await User.getIdFromToken(token);
@@ -252,26 +250,26 @@ export class ProductController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
             let product = await Product.findById(idProduct)
-            if(user_id != product.userId ){
+            if (user_id != product.userId) {
                 this.setStatus(400)
-                return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này","Bad Request")
+                return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này", "Bad Request")
             }
-            if(product.quantityPurchased > 0 ){
-                this.setStatus(400)
-                return failedResponse("Sản phẩm đã được bán, bạn không thể chỉnh sửa được","Bad Request")
-            }
-            if(data.content){
+            // if(product.quantityPurchased > 0 ){ // Sửa được chứ không phải không sửa
+            //     this.setStatus(400)
+            //     return failedResponse("Sản phẩm đã được bán, bạn không thể chỉnh sửa được","Bad Request")
+            // }
+            if (data.content) {
                 product.content = data.content
             }
-            if(data.title){
+            if (data.title) {
                 product.title = data.title
             }
-            if(data.price){
+            if (data.price) {
                 product.price = data.price
             }
             await product.save()
-            if(data.productTypeOfArchitecture && data.productTypeOfArchitecture.length > 0){
-                await ProductTypeOfArchitecture.deleteMany({productId : idProduct})
+            if (data.productTypeOfArchitecture && data.productTypeOfArchitecture.length > 0) {
+                await ProductTypeOfArchitecture.deleteMany({ productId: idProduct })
                 for (let i = 0; i < data.productTypeOfArchitecture.length; i++) {
                     const typeOfArchitecture = TypeOfArchitecture.find({ _id: data.productTypeOfArchitecture[i] });
                     if (!typeOfArchitecture) {
@@ -288,11 +286,11 @@ export class ProductController extends Controller {
                 }
             }
             let productNew = await Product.aggregate(getProductById(idProduct))
-            if(productNew.length > 0){
+            if (productNew.length > 0) {
                 productNew = productNew[0]
-            }else{
+            } else {
                 this.setStatus(400)
-                return failedResponse("Không tìm thấy sản phẩm","Bad Request")
+                return failedResponse("Không tìm thấy sản phẩm", "Bad Request")
             }
             return successResponse(productNew)
 

@@ -1,63 +1,62 @@
-import mongoose, { Document, Model} from "mongoose";
-import { IProduct } from "./food.types";
+import mongoose, { Document, Model } from "mongoose";
+import { IFood } from "./food.types";
 
-interface ProductDocument extends IProduct, Document { };
-interface ProductModel extends Model<ProductDocument> { };
+interface FoodDocument extends IFood, Document { };
+interface FoodModel extends Model<FoodDocument> { };
 
-const ProductSchema = new mongoose.Schema<ProductDocument, ProductModel> ( {
-    title : {
-        type : String,
-        require : true
+const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
+    constant_id: {
+        type: String,
+        require: true
     },
-    content : {
-        type : String,
-        default : ''
+    title: {
+        type: String,
+        require: true
     },
-    price : {
-        type : Number,
-        default : 0
+    content: {
+        type: String,
+        default: ''
     },
-    originalPrice : {
-        type : Number,
+    price: {
+        type: Number,
+        default: 0
     },
-    views : {
-        type : Number,
-        default : 0
+    originalPrice: {
+        type: Number,
     },
-    likes : {
-        type : Number,
-        default : 0
+    views: {
+        type: Number,
+        default: 0
     },
-    quantityPurchased : {
-        type : Number,
-        default : 0
+    likes: {
+        type: Number,
+        default: 0
     },
-    userId : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User'
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
-    isDisable : {
-        type : Boolean,
-        default : false
+    isDisable: {
+        type: Boolean,
+        default: false
     },
-    totalRate : {
-        type : Number,
-        default : 0
+    totalRate: {
+        type: Number,
+        default: 0
     },
-    createdAt : Date,
-    updatedAt : Date,
-    deletedAt : {
-        type : Date,
-        default : null,
+    createdAt: Date,
+    deletedAt: {
+        type: Date,
+        default: null,
     }
 })
 
-ProductSchema.set('toJSON', {
-    virtuals : true,
-    versionKey : false,
-    transform: function ( doc, ret ) { delete ret._id }
+FoodSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) { delete ret._id }
 });
 
-const Product = mongoose.model<ProductDocument, ProductModel>('Product', ProductSchema);
+const Food = mongoose.model<FoodDocument, FoodModel>('Food', FoodSchema);
 
-export default Product;
+export default Food;
