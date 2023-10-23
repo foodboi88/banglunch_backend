@@ -7,22 +7,6 @@ export function expressAuthentication(
   scopes?: string[]
 ): Promise<any> {
 
-  if (securityName === "api_key") {
-    let token;
-    if (request.query && request.query.access_token) {
-      token = request.query.access_token;
-    }
-
-    if (token === "abc123456") {
-      return Promise.resolve({
-        id: 1,
-        name: "Ironman",
-      });
-    } else {
-      return Promise.reject({});
-    }
-  }
-
   if (securityName === "jwt") {
     const authHeader = request.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];

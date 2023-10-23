@@ -1,20 +1,22 @@
 import { Body, Controller, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
-import { default as ProductTypeOfArchitecture, default as TypeOfArchitecture } from "../category/category.model";
+import  Category  from "../categories/categories.model";
+import FoodCategory from "../food-categories/food-categories.model";
 import { deleteFolder } from "../gallery/gallery.controller";
-import User from "../user/user.model";
-import Product from "./food.model";
-import { getFreeProducts, getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts, getProductByDesignToolId, getProductByFilter, getProductById } from "./food.queries";
-import { IProductEdit, IProductInput } from "./food.types";
+import User from "../users/users.model";
+import { getFreeProducts, getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts, getProductByFilter, getProductById } from "./foods.queries";
+import { IFoodEdit, IFoodInput } from "./foods.types";
+import Food from "./foods.model";
+const crypto = require('crypto');
 
 
-@Route("products")
-@Tags("Products")
+@Route("foods")
+@Tags("Foods")
 export class ProductController extends Controller {
 
     @Security("jwt", ["seller"])
     @Post()
-    public async createProduct(@Body() data: IProductInput, @Request() request: any): Promise<any> {
+    public async createFood(@Body() data: IFoodInput, @Request() request: any): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             //verify token
@@ -23,41 +25,41 @@ export class ProductController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Token is not valid', 'Unauthorized');
             }
-            //verify product
-            const ProductDTO = {
+            console.log(crypto.randomUUID());
+            //verify food
+            const FoodDTO = {
+                foodId: crypto.randomUUID(),
                 title: data.title,
                 content: data.content,
                 price: data.price,
-                size: data.size,
                 views: 0,
-                likes: 0,
-                quantityPurchased: 0,
                 userId: userId,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                deletedAt: new Date(),
             }
-            //verify productTypeOfArchitectures
-            for (let i = 0; i < data.productTypeOfArchitecture.length; i++) {
-                const typeOfArchitecture = TypeOfArchitecture.find({ _id: data.productTypeOfArchitecture[i] });
+            //verify category
+            for (let i = 0; i < data.category.length; i++) {
+                const typeOfArchitecture = Category.find({ _id: data.category[i] });
                 if (!typeOfArchitecture) {
                     this.setStatus(400);
-                    return failedResponse('TypeOfArchitectureId is not valid', 'BadRequest');
+                    return failedResponse('Category is not valid', 'BadRequest');
                 }
             }
 
-            //save product
-            const product = await new Product(ProductDTO).save();
+            //save food
+            const food = await new Food(FoodDTO).save();
 
             //save productTypeOfArchitecture
-            for (let i = 0; i < data.productTypeOfArchitecture.length; i++) {
+            for (let i = 0; i < data.category.length; i++) {
                 const productTypeOfArchitecture = {
-                    productId: product._id,
-                    typeOfArchitectureId: data.productTypeOfArchitecture[i]
+                    productId: food._id,
+                    typeOfArchitectureId: data.category[i]
                 }
-                await new ProductTypeOfArchitecture(productTypeOfArchitecture).save();
+                await new FoodCategory(productTypeOfArchitecture).save();
             }
 
-            return successResponse(product);
+            return successResponse(food);
         }
         catch (err) {
             this.setStatus(500);
@@ -86,22 +88,22 @@ export class ProductController extends Controller {
             var data;
             switch (type) {
                 case 'latest':
-                    data = await Product.aggregate(getLatestProducts(size, offset));
+                    data = await Food.aggregate(getLatestProducts(size, offset));
                     break;
                 case 'mostView':
-                    data = await Product.aggregate(getMostViewProducts(size, offset));
+                    data = await Food.aggregate(getMostViewProducts(size, offset));
                     break;
                 case 'mostQuantityPurchased':
-                    data = await Product.aggregate(getMostQuantityPurchasedProducts(size, offset));
+                    data = await Food.aggregate(getMostQuantityPurchasedProducts(size, offset));
                     break;
                 case 'mostLike':
-                    data = await Product.aggregate(getMostLikeProducts(size, offset));
+                    data = await Food.aggregate(getMostLikeProducts(size, offset));
                     break;
                 case 'freeProduct':
-                    data = await Product.aggregate(getFreeProducts(size, offset));
+                    data = await Food.aggregate(getFreeProducts(size, offset));
                     break;
                 default:
-                    data = await Product.aggregate(getLatestProducts(size, offset));
+                    data = await Food.aggregate(getLatestProducts(size, offset));
                     break;
             }
             if (data.length === 0 || data[0].items.length === 0) {
@@ -145,7 +147,7 @@ export class ProductController extends Controller {
             designStyleId = designStyleId ? designStyleId.trim() : null;
             typeOfArchitectureId = typeOfArchitectureId ? typeOfArchitectureId.trim() : null;
             authorId = authorId ? authorId.trim() : null;
-            let data = await Product.aggregate(getProductByFilter(name, designToolId, designStyleId, typeOfArchitectureId, size, offset, authorId));
+            let data = await Food.aggregate(getProductByFilter(name, designToolId, designStyleId, typeOfArchitectureId, size, offset, authorId));
             if (data[0].length > 0) {
                 data = data[0]
             }
@@ -161,13 +163,13 @@ export class ProductController extends Controller {
     @Get("by-id")
     public async getProductById(@Request() request: any, @Query() id: string): Promise<any> {
         try {
-            const product = await Product.aggregate(getProductById(id));
+            const product = await Food.aggregate(getProductById(id));
             //increase views
-            await Product.findByIdAndUpdate(id, { views: product[0].info.views + 0.5 }, { new: true });
+            await Food.findByIdAndUpdate(id, { views: product[0].info.views + 0.5 }, { new: true });
 
             if (!product) {
                 this.setStatus(404);
-                return failedResponse('Product not found', 'NotFound');
+                return failedResponse('Food not found', 'NotFound');
             }
 
             return successResponse(product[0]);
@@ -188,21 +190,8 @@ export class ProductController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            const Products = await Product.find({ userId: userInfo._id }).skip(offset).limit(size);
+            const Products = await Food.find({ userId: userInfo._id }).skip(offset).limit(size);
             return successResponse(Products);
-        }
-        catch (err) {
-            this.setStatus(500);
-            return failedResponse('Execute service went wrong', 'ServiceException');
-        }
-    }
-
-
-    @Get("by-design-tool-id")
-    public async getProductsByDesignToolId(@Request() request: any, @Query() designToolId: string, @Query() size: number, @Query() offset: number): Promise<any> {
-        try {
-            const result = Product.aggregate(getProductByDesignToolId(designToolId, size, offset));
-            return successResponse(result);
         }
         catch (err) {
             this.setStatus(500);
@@ -221,12 +210,12 @@ export class ProductController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
             const role = (await User.findById(user_id)).role
-            const user_sell = (await Product.findById(productId)).userId
+            const user_sell = (await Food.findById(productId)).userId
             if (user_id != user_sell && role != "admin") {
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền xóa sản phẩm này", "Bad Request")
             }
-            await Product.findByIdAndUpdate(productId, { deletedAt: new Date() })
+            await Food.findByIdAndUpdate(productId, { deletedAt: new Date() })
             const folderPath = "product/" + productId + '/file'
             await deleteFolder(folderPath)
             return successResponse("Xóa sản phẩm thành công")
@@ -241,7 +230,7 @@ export class ProductController extends Controller {
 
     @Security("jwt", ['seller'])
     @Put("edit-product/{idProduct}")
-    public async editProductById(@Request() request: any, @Path() idProduct: string, @Body() data: IProductEdit): Promise<any> {
+    public async editProductById(@Request() request: any, @Path() idProduct: string, @Body() data: IFoodEdit): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const user_id = await User.getIdFromToken(token);
@@ -249,7 +238,7 @@ export class ProductController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            let product = await Product.findById(idProduct)
+            let product = await Food.findById(idProduct)
             if (user_id != product.userId) {
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này", "Bad Request")
@@ -268,24 +257,24 @@ export class ProductController extends Controller {
                 product.price = data.price
             }
             await product.save()
-            if (data.productTypeOfArchitecture && data.productTypeOfArchitecture.length > 0) {
-                await ProductTypeOfArchitecture.deleteMany({ productId: idProduct })
-                for (let i = 0; i < data.productTypeOfArchitecture.length; i++) {
-                    const typeOfArchitecture = TypeOfArchitecture.find({ _id: data.productTypeOfArchitecture[i] });
+            if (data.category && data.category.length > 0) {
+                await FoodCategory.deleteMany({ productId: idProduct })
+                for (let i = 0; i < data.category.length; i++) {
+                    const typeOfArchitecture = Category.find({ _id: data.category[i] });
                     if (!typeOfArchitecture) {
                         this.setStatus(400);
                         return failedResponse('TypeOfArchitectureId is not valid', 'BadRequest');
                     }
                 }
-                for (let i = 0; i < data.productTypeOfArchitecture.length; i++) {
+                for (let i = 0; i < data.category.length; i++) {
                     const productTypeOfArchitecture = {
                         productId: product._id,
-                        typeOfArchitectureId: data.productTypeOfArchitecture[i]
+                        typeOfArchitectureId: data.category[i]
                     }
-                    await new ProductTypeOfArchitecture(productTypeOfArchitecture).save();
+                    await new FoodCategory(productTypeOfArchitecture).save();
                 }
             }
-            let productNew = await Product.aggregate(getProductById(idProduct))
+            let productNew = await Food.aggregate(getProductById(idProduct))
             if (productNew.length > 0) {
                 productNew = productNew[0]
             } else {
@@ -300,8 +289,4 @@ export class ProductController extends Controller {
             return failedResponse('Execute service went wrong', 'ServiceException');
         }
     }
-
-
-
-
 }

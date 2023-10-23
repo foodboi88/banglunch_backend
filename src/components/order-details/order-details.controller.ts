@@ -1,8 +1,8 @@
 import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete} from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
-import User from "../user/user.model";
-import ProductsSold from "./order-detail.model";
-import { getHistoryBuyUserId, getProductsSoldBuyAdmin, getProductsSoldBuySellerId } from "./order-detail.queries";
+import User from "../users/users.model";
+import ProductsSold from "./order-details.model";
+import { getHistoryBuyUserId, getProductsSoldBuyAdmin, getProductsSoldBuySellerId } from "./order-details.queries";
 
 
 @Route("ProductsSold")

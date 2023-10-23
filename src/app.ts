@@ -13,10 +13,11 @@ import cors from 'cors';
 import mongoose from "mongoose";
 
 
-import './components/user/user.controller';
-import './components/cart/cart.controller';
-import './components/order-detail/order-detail.controller';
-import './components/food/food.controller';
+import './components/users/users.controller';
+// import './components/carts/carts.controller';
+// import './components/order-details/order-details.controller';
+import './components/foods/foods.controller';
+import './components/sellers/sellers.controller';
 
 const app = express();
 

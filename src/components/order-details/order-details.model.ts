@@ -1,5 +1,5 @@
 import mongoose, { Document, Model} from "mongoose";
-import { IOrderDetail } from "./order-detail.types";
+import { IOrderDetail } from "./order-details.types";
 
 interface ProductsSoldDocument extends IOrderDetail, Document { };
 interface ProductsSoldModel extends Model<ProductsSoldDocument> { };
@@ -29,6 +29,6 @@ ProductsSoldSchema.set('toJSON', {
     transform: function ( doc, ret ) { delete ret._id }
 });
 
-const ProductsSold = mongoose.model<ProductsSoldDocument, ProductsSoldModel>('ProductsSold', ProductsSoldSchema);
+const ProductsSold = mongoose.model<ProductsSoldDocument, ProductsSoldModel>('ProductsSolds', ProductsSoldSchema);
 
 export default ProductsSold;

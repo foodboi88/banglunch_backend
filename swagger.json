@@ -79,7 +79,7 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"IProductInput": {
+			"IFoodInput": {
 				"properties": {
 					"title": {
 						"type": "string"
@@ -91,14 +91,7 @@
 						"type": "number",
 						"format": "double"
 					},
-					"originalPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"size": {
-						"type": "string"
-					},
-					"productTypeOfArchitecture": {
+					"category": {
 						"items": {
 							"type": "string"
 						},
@@ -109,13 +102,12 @@
 					"title",
 					"content",
 					"price",
-					"size",
-					"productTypeOfArchitecture"
+					"category"
 				],
 				"type": "object",
 				"additionalProperties": true
 			},
-			"IProductEdit": {
+			"IFoodEdit": {
 				"properties": {
 					"title": {
 						"type": "string"
@@ -127,17 +119,7 @@
 						"type": "number",
 						"format": "double"
 					},
-					"originalPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"productDesignTools": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
-					"productTypeOfArchitecture": {
+					"category": {
 						"items": {
 							"type": "string"
 						},
@@ -146,14 +128,91 @@
 				},
 				"type": "object",
 				"additionalProperties": true
+			},
+			"SellerType": {
+				"enum": [
+					"ARCHITECT",
+					"COMPANY"
+				],
+				"type": "string"
+			},
+			"ISellerRegister": {
+				"properties": {
+					"sellerType": {
+						"$ref": "#/components/schemas/SellerType"
+					},
+					"identityCardNumber": {
+						"type": "string"
+					},
+					"identityCardDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"identityCardPlace": {
+						"type": "string"
+					},
+					"taxCode": {
+						"type": "string"
+					},
+					"bankAccountNumber": {
+						"type": "string"
+					},
+					"bankAccountName": {
+						"type": "string"
+					},
+					"bankName": {
+						"type": "string"
+					},
+					"bankBranch": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"sellerType",
+					"identityCardNumber",
+					"identityCardDate",
+					"identityCardPlace",
+					"taxCode",
+					"bankAccountNumber",
+					"bankAccountName",
+					"bankName",
+					"bankBranch"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ISellerUpdate": {
+				"properties": {
+					"bankAccountNumber": {
+						"type": "string"
+					},
+					"bankAccountName": {
+						"type": "string"
+					},
+					"bankName": {
+						"type": "string"
+					},
+					"bankBranch": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
+			"IShopStatusUpdate": {
+				"properties": {
+					"shopStatus": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"shopStatus"
+				],
+				"type": "object",
+				"additionalProperties": true
 			}
 		},
 		"securitySchemes": {
-			"api_key": {
-				"type": "apiKey",
-				"name": "access_token",
-				"in": "query"
-			},
 			"jwt": {
 				"type": "http",
 				"scheme": "bearer",
@@ -609,9 +668,9 @@
 				}
 			}
 		},
-		"/products": {
+		"/foods": {
 			"post": {
-				"operationId": "CreateProduct",
+				"operationId": "CreateFood",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -623,7 +682,7 @@
 					}
 				},
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [
 					{
@@ -638,14 +697,14 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/IProductInput"
+								"$ref": "#/components/schemas/IFoodInput"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/products/home": {
+		"/foods/home": {
 			"get": {
 				"operationId": "GetHomeProducts",
 				"responses": {
@@ -660,7 +719,7 @@
 				},
 				"description": "Get home products\r\nType = 'latest' or 'mostView' or 'mostQuantityPurchased' or 'mostLike' or 'freeProduct'",
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [],
 				"parameters": [
@@ -693,7 +752,7 @@
 				]
 			}
 		},
-		"/products/filter": {
+		"/foods/filter": {
 			"get": {
 				"operationId": "GetProductsByFilter",
 				"responses": {
@@ -708,7 +767,7 @@
 				},
 				"description": "Get items by filter designToolId, collectionId, size, offset, name",
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [],
 				"parameters": [
@@ -773,7 +832,7 @@
 				]
 			}
 		},
-		"/products/by-id": {
+		"/foods/by-id": {
 			"get": {
 				"operationId": "GetProductById",
 				"responses": {
@@ -787,7 +846,7 @@
 					}
 				},
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [],
 				"parameters": [
@@ -802,7 +861,7 @@
 				]
 			}
 		},
-		"/products/my-products": {
+		"/foods/my-products": {
 			"get": {
 				"operationId": "GetProducts",
 				"responses": {
@@ -816,7 +875,7 @@
 					}
 				},
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [
 					{
@@ -845,54 +904,7 @@
 				]
 			}
 		},
-		"/products/by-design-tool-id": {
-			"get": {
-				"operationId": "GetProductsByDesignToolId",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Products"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "designToolId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/products/delete-product-by-id": {
+		"/foods/delete-product-by-id": {
 			"delete": {
 				"operationId": "DeleteProductById",
 				"responses": {
@@ -906,7 +918,7 @@
 					}
 				},
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [
 					{
@@ -925,7 +937,7 @@
 				]
 			}
 		},
-		"/products/edit-product/{idProduct}": {
+		"/foods/edit-product/{idProduct}": {
 			"put": {
 				"operationId": "EditProductById",
 				"responses": {
@@ -939,7 +951,7 @@
 					}
 				},
 				"tags": [
-					"Products"
+					"Foods"
 				],
 				"security": [
 					{
@@ -963,7 +975,258 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/IProductEdit"
+								"$ref": "#/components/schemas/IFoodEdit"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sellers/register": {
+			"post": {
+				"operationId": "CreateSeller",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"sellerType": "ARCHITECT",
+											"identityCardNumber": "123456789",
+											"identityCardDate": "2021-01-01T00:00:00.000Z",
+											"identityCardPlace": "Hà Nội",
+											"taxCode": "123456789",
+											"bankAccountNumber": "123456789",
+											"bankAccountName": "Nguyễn Văn A",
+											"bankName": "Vietcombank",
+											"bankBranch": "Hà Nội"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "sellerType: ARCHITECT, COMPANY",
+				"summary": "REGISTER NEW SELLER REQUEST (Only user can register seller)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "- Seller's info",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ISellerRegister",
+								"description": "- Seller's info"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sellers/registration-form": {
+			"get": {
+				"operationId": "GetRegistrationForm",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "GET ALL REGISTRATION FORM TO CONFIRM (Only admin can get registration form of all users)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- Number of items per page",
+						"in": "query",
+						"name": "size",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "- Number of skipped items",
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "isApproved",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				]
+			}
+		},
+		"/sellers/approve/{id}": {
+			"put": {
+				"operationId": "ApproveSeller",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "APPROVE SELLER (Only admin can approve seller)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- Seller's id",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/sellers/profile": {
+			"get": {
+				"operationId": "GetSellerProfile",
+				"responses": {
+					"200": {
+						"description": "200 - Return seller's profile",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "GET SELLER PROFILE (Only seller can get their profile)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateSellerProfile",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "UPDATE SELLER PROFILE (Only seller can update their profile)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "- Seller's info",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ISellerUpdate",
+								"description": "- Seller's info"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sellers/shop-status": {
+			"put": {
+				"operationId": "UpdateShopStatus",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "OPEN/CLOSE SHOP (Only seller can)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "- Shop's status",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IShopStatusUpdate",
+								"description": "- Shop's status"
 							}
 						}
 					}

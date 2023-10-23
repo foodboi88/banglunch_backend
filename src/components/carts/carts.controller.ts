@@ -1,7 +1,7 @@
 import { failedResponse, successResponse } from "../../utils/http";
 import { Controller, Get, Route, Security, Tags, Request } from "tsoa";
-import User from "../user/user.model";
-import Cart from "./cart.model";
+import User from "../users/users.model";
+import Cart from "./carts.model";
 
 
 @Route("carts")

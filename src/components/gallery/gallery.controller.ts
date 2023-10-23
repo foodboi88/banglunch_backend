@@ -1,8 +1,8 @@
 import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete, UploadedFiles, UploadedFile ,FormField } from "tsoa";
 import ProductImage from "./gallery.model";
 import { failedResponse, successResponse } from "../../utils/http";
-import User from "../user/user.model";
-import Product from "../food/food.model";
+import User from "../users/users.model";
+import Product from "../foods/foods.model";
 import { bucket } from '../../firebase';
 import multer, { Multer } from 'multer';
 

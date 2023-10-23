@@ -1,15 +1,15 @@
 import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete } from "tsoa";
 import { successResponse, failedResponse } from "../../utils/http";
-import { ITypeOfArchitecture } from "./category.types";
-import TypeOfArchitecture from "./category.model";
+import { ICategory } from "./categories.types";
+import Category from "./categories.model";
 
-@Route("type-of-architectures")
-@Tags("TypeOfArchitectures")
-export class TypeOfArchitectureController extends Controller {
+@Route("categories")
+@Tags("Categories")
+export class CategoriesController extends Controller {
     @Post()
-    public async createTypeOfArchitecture(@Body() data: ITypeOfArchitecture): Promise<any> {
+    public async createCategory(@Body() data: ICategory): Promise<any> {
         try {
-            const result = await new TypeOfArchitecture(data).save();
+            const result = await new Category(data).save();
             return successResponse(result);
         }
         catch (err) {
@@ -19,9 +19,9 @@ export class TypeOfArchitectureController extends Controller {
     }
 
     @Get()
-    public async getAllTypeOfArchitectures(): Promise<any> {
+    public async getCategories(): Promise<any> {
         try {
-            const result = await TypeOfArchitecture.find();
+            const result = await Category.find();
             return successResponse(result);
         }
         catch (err) {

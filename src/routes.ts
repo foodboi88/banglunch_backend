@@ -3,15 +3,17 @@
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { UserController } from './components/user/user.controller';
+import { UserController } from './components/users/users.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { CartController } from './components/cart/cart.controller';
+import { CartController } from './components/carts/carts.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { ProductsSoldController } from './components/order-detail/order-detail.controller';
+import { ProductsSoldController } from './components/order-details/order-details.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductImageController } from './components/gallery/gallery.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { ProductController } from './components/food/food.controller';
+import { ProductController } from './components/foods/foods.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { SellerController } from './components/sellers/sellers.controller';
 import { expressAuthentication } from './middleware/auth';
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require('promise.any');
@@ -56,28 +58,64 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "IProductInput": {
+    "IFoodInput": {
         "dataType": "refObject",
         "properties": {
             "title": {"dataType":"string","required":true},
             "content": {"dataType":"string","required":true},
             "price": {"dataType":"double","required":true},
-            "originalPrice": {"dataType":"double"},
-            "size": {"dataType":"string","required":true},
-            "productTypeOfArchitecture": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "category": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "IProductEdit": {
+    "IFoodEdit": {
         "dataType": "refObject",
         "properties": {
             "title": {"dataType":"string"},
             "content": {"dataType":"string"},
             "price": {"dataType":"double"},
-            "originalPrice": {"dataType":"double"},
-            "productDesignTools": {"dataType":"array","array":{"dataType":"string"}},
-            "productTypeOfArchitecture": {"dataType":"array","array":{"dataType":"string"}},
+            "category": {"dataType":"array","array":{"dataType":"string"}},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SellerType": {
+        "dataType": "refEnum",
+        "enums": ["ARCHITECT","COMPANY"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISellerRegister": {
+        "dataType": "refObject",
+        "properties": {
+            "sellerType": {"ref":"SellerType","required":true},
+            "identityCardNumber": {"dataType":"string","required":true},
+            "identityCardDate": {"dataType":"datetime","required":true},
+            "identityCardPlace": {"dataType":"string","required":true},
+            "taxCode": {"dataType":"string","required":true},
+            "bankAccountNumber": {"dataType":"string","required":true},
+            "bankAccountName": {"dataType":"string","required":true},
+            "bankName": {"dataType":"string","required":true},
+            "bankBranch": {"dataType":"string","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISellerUpdate": {
+        "dataType": "refObject",
+        "properties": {
+            "bankAccountNumber": {"dataType":"string"},
+            "bankAccountName": {"dataType":"string"},
+            "bankName": {"dataType":"string"},
+            "bankBranch": {"dataType":"string"},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IShopStatusUpdate": {
+        "dataType": "refObject",
+        "properties": {
+            "shopStatus": {"dataType":"boolean","required":true},
         },
         "additionalProperties": true,
     },
@@ -392,14 +430,14 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/products',
+        app.post('/foods',
             authenticateMiddleware([{"jwt":["seller"]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.createProduct)),
+            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.createFood)),
 
-            function ProductController_createProduct(request: any, response: any, next: any) {
+            function ProductController_createFood(request: any, response: any, next: any) {
             const args = {
-                    data: {"in":"body","name":"data","required":true,"ref":"IProductInput"},
+                    data: {"in":"body","name":"data","required":true,"ref":"IFoodInput"},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 
@@ -412,14 +450,14 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new ProductController();
 
 
-              const promise = controller.createProduct.apply(controller, validatedArgs as any);
+              const promise = controller.createFood.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/products/home',
+        app.get('/foods/home',
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getHomeProducts)),
 
@@ -447,7 +485,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/products/filter',
+        app.get('/foods/filter',
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getProductsByFilter)),
 
@@ -479,7 +517,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/products/by-id',
+        app.get('/foods/by-id',
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getProductById)),
 
@@ -505,7 +543,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/products/my-products',
+        app.get('/foods/my-products',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getProducts)),
@@ -533,35 +571,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/products/by-design-tool-id',
-            ...(fetchMiddlewares<RequestHandler>(ProductController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getProductsByDesignToolId)),
-
-            function ProductController_getProductsByDesignToolId(request: any, response: any, next: any) {
-            const args = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    designToolId: {"in":"query","name":"designToolId","required":true,"dataType":"string"},
-                    size: {"in":"query","name":"size","required":true,"dataType":"double"},
-                    offset: {"in":"query","name":"offset","required":true,"dataType":"double"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new ProductController();
-
-
-              const promise = controller.getProductsByDesignToolId.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.delete('/products/delete-product-by-id',
+        app.delete('/foods/delete-product-by-id',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.deleteProductById)),
@@ -588,7 +598,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/products/edit-product/:idProduct',
+        app.put('/foods/edit-product/:idProduct',
             authenticateMiddleware([{"jwt":["seller"]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.editProductById)),
@@ -597,7 +607,7 @@ export function RegisterRoutes(app: express.Router) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
                     idProduct: {"in":"path","name":"idProduct","required":true,"dataType":"string"},
-                    data: {"in":"body","name":"data","required":true,"ref":"IProductEdit"},
+                    data: {"in":"body","name":"data","required":true,"ref":"IFoodEdit"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -610,6 +620,167 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.editProductById.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/sellers/register',
+            authenticateMiddleware([{"jwt":["user"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.createSeller)),
+
+            function SellerController_createSeller(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    body: {"in":"body","name":"body","required":true,"ref":"ISellerRegister"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.createSeller.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/sellers/registration-form',
+            authenticateMiddleware([{"jwt":["admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.getRegistrationForm)),
+
+            function SellerController_getRegistrationForm(request: any, response: any, next: any) {
+            const args = {
+                    size: {"in":"query","name":"size","dataType":"double"},
+                    offset: {"in":"query","name":"offset","dataType":"double"},
+                    isApproved: {"in":"query","name":"isApproved","dataType":"boolean"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.getRegistrationForm.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.put('/sellers/approve/:id',
+            authenticateMiddleware([{"jwt":["admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.approveSeller)),
+
+            function SellerController_approveSeller(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.approveSeller.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/sellers/profile',
+            authenticateMiddleware([{"jwt":["seller"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.getSellerProfile)),
+
+            function SellerController_getSellerProfile(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.getSellerProfile.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.put('/sellers/profile',
+            authenticateMiddleware([{"jwt":["seller"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.updateSellerProfile)),
+
+            function SellerController_updateSellerProfile(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    body: {"in":"body","name":"body","required":true,"ref":"ISellerUpdate"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.updateSellerProfile.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.put('/sellers/shop-status',
+            authenticateMiddleware([{"jwt":["seller"]}]),
+            ...(fetchMiddlewares<RequestHandler>(SellerController)),
+            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.updateShopStatus)),
+
+            function SellerController_updateShopStatus(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    body: {"in":"body","name":"body","required":true,"ref":"IShopStatusUpdate"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new SellerController();
+
+
+              const promise = controller.updateShopStatus.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

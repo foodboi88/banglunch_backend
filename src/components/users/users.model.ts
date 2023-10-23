@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from "mongoose"
-import { IUser, IUserProfile, IUserResponse } from "./user.types"
+import { IUser, IUserProfile, IUserResponse } from "./users.types"
 import { FailedResponseType, failedResponse } from "../../utils/http"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -211,6 +211,6 @@ userSchema.statics.comparePassword = async function (email: string, password: st
 // }
 
 
-const User =  mongoose.model<UserDocument, UserModel>('User', userSchema);
+const User =  mongoose.model<UserDocument, UserModel>('Users', userSchema);
 
 export default User;

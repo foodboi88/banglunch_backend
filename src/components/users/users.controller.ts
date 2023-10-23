@@ -1,11 +1,11 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { Body, Controller, Path, Post, Route, Tags } from "tsoa";
 import { instanceOfFailedResponseType, failedResponse, successResponse } from "../../utils/http";
-import User from "./user.model";
-import { IUserLogin, IUserDB, ActiveStatus, IUserRegister, IRefreshTokenReq } from "./user.types";
+import User from "./users.model";
+import { IUserLogin, IUserDB, ActiveStatus, IUserRegister, IRefreshTokenReq } from "./users.types";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
-import Cart from "../cart/cart.model";
+import Cart from "../carts/carts.model";
 
 
 @Route('users')

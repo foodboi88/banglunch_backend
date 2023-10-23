@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import mongoose from "mongoose";
 
-const dataResponseProduct = {
+const dataResponseProduct = { // define form response sẽ trả về cho frontend
     $project: {
         _id: 0,
         id: "$_id",
@@ -1021,44 +1021,6 @@ export const getProductByUserId = (size: number, offset: number): Array<Record<s
     },
 
 ]
-
-//agrigate query for get newest product by designToolId paging size offset
-export const getProductByDesignToolId = (designToolId: string, size: number, offset: number): Array<Record<string, any>> => [
-    {
-        $match: {
-            $and: [
-                { isDisable: false },
-                { deletedAt: null },
-                { designToolId: mongoose.Types.ObjectId(designToolId), }
-            ]
-        }
-    },
-    dataResponseProduct,
-    {
-        $facet: {
-            count: [{ $count: 'total' }],
-
-            items: [
-                { $skip: +offset },
-                { $limit: +size },
-            ],
-        },
-    },
-    {
-        $project: {
-            items: 1,
-            total: {
-                $cond: {
-                    if: { $eq: [{ $size: '$count' }, 0] },
-                    then: 0,
-                    else: { $arrayElemAt: ['$count.total', 0] }
-                },
-            },
-        },
-    },
-
-]
-
 
 //agrigate query for get newest product by collectionId paging size offset  
 export const getProductByCollectionId = (collectionId: string, size: number, offset: number): Array<Record<string, any>> => [

@@ -1,11 +1,11 @@
 import mongoose, { Document, Model } from "mongoose";
-import { IFood } from "./food.types";
+import { IFood } from "./foods.types";
 
 interface FoodDocument extends IFood, Document { };
 interface FoodModel extends Model<FoodDocument> { };
 
 const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
-    constant_id: {
+    foodId: { // To determine version of record
         type: String,
         require: true
     },
@@ -21,14 +21,7 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: Number,
         default: 0
     },
-    originalPrice: {
-        type: Number,
-    },
     views: {
-        type: Number,
-        default: 0
-    },
-    likes: {
         type: Number,
         default: 0
     },
@@ -36,18 +29,14 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    isDisable: {
-        type: Boolean,
-        default: false
-    },
-    totalRate: {
-        type: Number,
-        default: 0
-    },
     createdAt: Date,
     deletedAt: {
         type: Date,
         default: null,
+    },
+    updateAt: {
+        type: Date,
+        default: null
     }
 })
 
@@ -57,6 +46,6 @@ FoodSchema.set('toJSON', {
     transform: function (doc, ret) { delete ret._id }
 });
 
-const Food = mongoose.model<FoodDocument, FoodModel>('Food', FoodSchema);
+const Food = mongoose.model<FoodDocument, FoodModel>('Foods', FoodSchema);
 
 export default Food;

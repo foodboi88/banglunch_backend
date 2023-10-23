@@ -1,5 +1,5 @@
 import mongoose, { Document, Model} from "mongoose";
-import { ICart } from "./cart.types";
+import { ICart } from "./carts.types";
 
 interface CartDocument extends ICart, Document { };
 interface CartModel extends Model<CartDocument> { };
@@ -23,6 +23,6 @@ CartSchema.set('toJSON', {
     transform: function ( doc, ret ) { delete ret._id }
 });
 
-const Cart = mongoose.model<CartDocument, CartModel>('Cart', CartSchema);
+const Cart = mongoose.model<CartDocument, CartModel>('Carts', CartSchema);
 
 export default Cart;

@@ -4,11 +4,6 @@
 		"outputDirectory": ".",
         "specVersion": 3,
 		"securityDefinitions": {
-			"api_key": {
-				"type": "apiKey",
-				"name": "access_token",
-				"in": "query"
-			},
 			"jwt": {
 				"type": "http",
 				"scheme": "bearer",
