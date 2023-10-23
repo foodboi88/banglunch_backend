@@ -46,6 +46,6 @@ FoodSchema.set('toJSON', {
     transform: function (doc, ret) { delete ret._id }
 });
 
-const Food = mongoose.model<FoodDocument, FoodModel>('Foods', FoodSchema);
+const Food = mongoose.model<FoodDocument, FoodModel>('foods', FoodSchema);
 
 export default Food;

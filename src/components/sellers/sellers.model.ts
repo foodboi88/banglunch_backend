@@ -78,6 +78,6 @@ sellerSchema.set('toJSON', {
     transform: function ( doc, ret ) { delete ret._id }
 });
 
-const Seller = mongoose.model<SellerDocument, SellerModel>('Sellers', sellerSchema);
+const Seller = mongoose.model<SellerDocument, SellerModel>('sellers', sellerSchema);
 
 export default Seller;

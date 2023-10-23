@@ -7,12 +7,8 @@ interface CartModel extends Model<CartDocument> { };
 const CartSchema = new mongoose.Schema<CartDocument, CartModel> ( {
     userId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'User'
+        ref : 'user'
     },
-    productIds : [{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Product'
-    }],
     createdAt : Date,
     updatedAt : Date
 })
@@ -23,6 +19,6 @@ CartSchema.set('toJSON', {
     transform: function ( doc, ret ) { delete ret._id }
 });
 
-const Cart = mongoose.model<CartDocument, CartModel>('Carts', CartSchema);
+const Cart = mongoose.model<CartDocument, CartModel>('carts', CartSchema);
 
 export default Cart;

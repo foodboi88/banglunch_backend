@@ -1,12 +1,13 @@
 export interface ICart {
     userId: string,
-    productIds: string[],
     createdAt: Date,
     updatedAt: Date,
     
 }
 export interface ICartInput  {
-    productId: string;
+    foodId: string;
+    cartId: string;
+    quantity: number;
 }
 
 export interface ICartDB extends ICart {

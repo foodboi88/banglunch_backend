@@ -79,6 +79,27 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"ICartInput": {
+				"properties": {
+					"foodId": {
+						"type": "string"
+					},
+					"cartId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"foodId",
+					"cartId",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"IFoodInput": {
 				"properties": {
 					"title": {
@@ -221,7 +242,7 @@
 		}
 	},
 	"info": {
-		"title": "vro_backend",
+		"title": "banglunch_backend",
 		"version": "1.0.0",
 		"license": {
 			"name": "ISC"
@@ -320,9 +341,124 @@
 				}
 			}
 		},
-		"/carts/product-quantity": {
+		"/carts/update-cart": {
+			"put": {
+				"operationId": "AddProductToCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Carts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICartInput"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/carts/delete-one-product/{productId}": {
+			"delete": {
+				"operationId": "DeleteProductCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Carts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/carts/delete-all-product": {
+			"delete": {
+				"operationId": "DeleteAllProductCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Carts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/carts/get-quantity": {
 			"get": {
 				"operationId": "GetQuantityProductMyCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Carts"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/carts/get-all-product": {
+			"get": {
+				"operationId": "GetProductInMyCart",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -358,7 +494,7 @@
 					}
 				},
 				"tags": [
-					"ProductsSold"
+					"Order-details"
 				],
 				"security": [
 					{
@@ -401,7 +537,7 @@
 					}
 				},
 				"tags": [
-					"ProductsSold"
+					"Order-details"
 				],
 				"security": [
 					{
@@ -452,7 +588,7 @@
 					}
 				},
 				"tags": [
-					"ProductsSold"
+					"Order-details"
 				],
 				"security": [
 					{
@@ -497,7 +633,7 @@
 					}
 				},
 				"tags": [
-					"ProductsSold"
+					"Order-details"
 				],
 				"security": [
 					{

@@ -7,11 +7,11 @@ interface FoodCategoryModel extends Model<FoodCategoryDocument> { };
 const foodCategorySchema = new mongoose.Schema<FoodCategoryDocument, FoodCategoryModel>({
     foodId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Foods'
+        ref: 'foods'
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Categories'
+        ref: 'categories'
     }
 });
 
@@ -23,6 +23,6 @@ foodCategorySchema.set('toJSON', {
 });
 
 
-const FoodCategory = mongoose.model<FoodCategoryDocument, FoodCategoryModel>('Food_Categories', foodCategorySchema);
+const FoodCategory = mongoose.model<FoodCategoryDocument, FoodCategoryModel>('food_categories', foodCategorySchema);
 
 export default FoodCategory;

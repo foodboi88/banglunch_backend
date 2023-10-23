@@ -1,8 +1,8 @@
 import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete} from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
 import User from "../users/users.model";
-import OrderDetail from "./order-details.model";
-import { getHistoryBuyUserId, getProductsSoldBuyAdmin, getProductsSoldBuySellerId } from "./order-details.queries";
+import CartFood from "./cart-foods.model";
+// import { getHistoryBuyUserId, getProductsSoldBuyAdmin, getProductsSoldBuySellerId } from "./order-details.queries";
 
 
 @Route("ProductsSold")
@@ -21,9 +21,7 @@ export class ProductsSoldController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            const res = await OrderDetail.find({userId_sell : user_id}).skip(offset).limit(size).select("-userId_sell -userId_buy -voucher");
-            
-            return successResponse(res)
+    
 
         }catch(err){
             this.setStatus(500);
@@ -46,18 +44,7 @@ export class ProductsSoldController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            let data : any = await OrderDetail.aggregate(getProductsSoldBuySellerId(userId,size,offset))
             
-            if(data.length > 0){
-                const l = data[0].items.length
-                data = data[0]
-                let total = 0
-                for(let i =0 ; i < l ; i++){
-                    total += Number(data.items[i].price)
-                }
-                data.totalPrice = total
-            }
-            return successResponse(data)
 
         }catch(err){
             this.setStatus(500);
@@ -76,18 +63,7 @@ export class ProductsSoldController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            let data : any = await OrderDetail.aggregate(getProductsSoldBuyAdmin(size,offset))
             
-            if(data.length > 0){
-                const l = data[0].items.length
-                data = data[0]
-                let total = 0
-                for(let i =0 ; i < l ; i++){
-                    total += Number(data.items[i].price)
-                }
-                data.totalPrice = total
-            }
-            return successResponse(data)
 
         }catch(err){
             this.setStatus(500);
@@ -107,18 +83,7 @@ export class ProductsSoldController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            let data : any = await OrderDetail.aggregate(getHistoryBuyUserId(userId,size,offset))
             
-            if(data.length > 0){
-                const l = data[0].items.lengthN
-                data = data[0]
-                let total = 0
-                for(let i =0 ; i < l ; i++){
-                    total += Number(data.items[i].price)
-                }
-                data.totalPrice = total
-            }
-            return successResponse(data)
 
         }catch(err){
             this.setStatus(500);
