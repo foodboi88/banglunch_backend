@@ -244,10 +244,8 @@ export class SellerController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
-            console.log(userInfo)
             //check seller exist
             const seller = await Seller.findOne({ userId: userInfo._id });
-            console.log(seller)
             if (!seller) {
                 this.setStatus(400);
                 return failedResponse('Người bán hàng không hợp lệ', 'BadRequest');

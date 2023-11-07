@@ -185,13 +185,6 @@ userSchema.statics.comparePassword = async function (email: string, password: st
 
     const isValidPassword = await bcrypt.compare(password, userProfile.password);
     const newPassword = await bcrypt.hash(password, 8);
-
-    console.log(newPassword);
-    
-    console.log(userProfile.password);
-    
-    
-    console.log(isValidPassword);
     
     if (!isValidPassword) {
         return false

@@ -25,7 +25,6 @@ export class ProductController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Token is not valid', 'Unauthorized');
             }
-            console.log(crypto.randomUUID());
             //verify food
             const FoodDTO = {
                 foodId: crypto.randomUUID(),
@@ -38,10 +37,11 @@ export class ProductController extends Controller {
                 updatedAt: new Date(),
                 deletedAt: new Date(),
             }
+
             //verify category
             for (let i = 0; i < data.category.length; i++) {
-                const typeOfArchitecture = Category.find({ _id: data.category[i] });
-                if (!typeOfArchitecture) {
+                const category = Category.find({ _id: data.category[i] });
+                if (!category) {
                     this.setStatus(400);
                     return failedResponse('Category is not valid', 'BadRequest');
                 }
@@ -50,13 +50,12 @@ export class ProductController extends Controller {
             //save food
             const food = await new Food(FoodDTO).save();
 
-            //save productTypeOfArchitecture
             for (let i = 0; i < data.category.length; i++) {
-                const productTypeOfArchitecture = {
-                    productId: food._id,
-                    typeOfArchitectureId: data.category[i]
+                const foodCategory = {
+                    foodId: food._id,
+                    categoryId: data.category[i]
                 }
-                await new FoodCategory(productTypeOfArchitecture).save();
+                await new FoodCategory(foodCategory).save();
             }
 
             return successResponse(food);
@@ -120,7 +119,6 @@ export class ProductController extends Controller {
 
     /**
      * Get items by filter designToolId, collectionId, size, offset, name
-     * @param request
      * @param id
      * @param size
      * @param offset
@@ -130,24 +128,19 @@ export class ProductController extends Controller {
      * **/
     @Get('filter')
     public async getProductsByFilter(
-        @Request() request: any,
         @Query() size: number,
         @Query() offset: number,
         @Query() name?: string,
-        @Query() designToolId?: string,
-        @Query() designStyleId?: string,
-        @Query() typeOfArchitectureId?: string,
-        @Query() authorId?: string,
+        @Query() categoryId?: string,
+        @Query() sellerId?: string,
 
     ): Promise<any> {
         try {
             //verify params (trim)
             name = name ? name.trim() : null;
-            designToolId = designToolId ? designToolId.trim() : null;
-            designStyleId = designStyleId ? designStyleId.trim() : null;
-            typeOfArchitectureId = typeOfArchitectureId ? typeOfArchitectureId.trim() : null;
-            authorId = authorId ? authorId.trim() : null;
-            let data = await Food.aggregate(getProductByFilter(name, designToolId, designStyleId, typeOfArchitectureId, size, offset, authorId));
+            categoryId = categoryId ? categoryId.trim() : null;
+            sellerId = sellerId ? sellerId.trim() : null;
+            let data = await Food.aggregate(getProductByFilter(name, categoryId, size, offset, sellerId));
             if (data[0].length > 0) {
                 data = data[0]
             }
@@ -181,7 +174,7 @@ export class ProductController extends Controller {
     }
 
     @Security("jwt")
-    @Get("my-products")
+    @Get("my-shop")
     public async getProducts(@Request() request: any, @Query() size: number, @Query() offset: number): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
@@ -200,7 +193,7 @@ export class ProductController extends Controller {
     }
 
     @Security("jwt")
-    @Delete("delete-product-by-id")
+    @Delete("delete-food-by-id")
     public async deleteProductById(@Request() request: any, @Query() productId: string): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];

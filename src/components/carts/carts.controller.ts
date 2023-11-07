@@ -26,16 +26,16 @@ export class CartController extends Controller {
                 
                 const item = await CartFood.findOne({cartId : data.cartId , foodId : data.foodId})
                 if (item){
-                    await CartFood.findByIdAndUpdate({cartId : data.cartId , foodId : data.foodId}, data);
+                    await CartFood.findByIdAndUpdate(item._id, data);
 
                     this.setStatus(200);
                     return successResponse({"result" : "cập nhật số lượng của sản phẩm trong giỏ thành công"})
-                }
-
-                const update_cart_food = new CartFood(data);
+                }else{
+                    const update_cart_food = new CartFood(data);
                 
-                await update_cart_food.save()
-                return successResponse({"result" : "Thêm đồ ăn vào giỏ hàng thành công!"})
+                    await update_cart_food.save()
+                    return successResponse({"result" : "Thêm đồ ăn vào giỏ hàng thành công!"})
+                }
                 
 
             }catch(err){

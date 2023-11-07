@@ -96,7 +96,6 @@ export class UserController extends Controller {
                 return failedResponse('Tài khoản chưa được kích hoạt', 'AccountNotActivated');
             }
 
-            console.log(user);
             //check if user is blocked then return error
             if (user.status == "block") {
                 this.setStatus(400);

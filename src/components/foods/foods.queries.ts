@@ -575,6 +575,7 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
         }
     },
     {
+        // Giống joins trong sql
         $lookup: {
             from: 'productdesigntools',
             localField: '_id',
@@ -625,7 +626,7 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
         $match: { 'productimage.isMain': true }
     },
     {
-        $project: {
+        $project: { // Trích ra các trường cần dùng. 1 là lấy
             _id: 1,
             title: 1,
             price: 1,
@@ -633,7 +634,7 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
             likes: 1,
             quantityPurchased: 1,
             typeOfArchitectureId: '$productTypeOfArchitecture.typeOfArchitectureId',
-            productDesignToolId: '$productDesignTool.designToolId',
+            productDesignToolId: '$productDesignTool.designToolId', // Trích xuất thuộc tính con của 1 trường
             productDesignStyleId: '$productDesignStyle.designStyleId',
             image: '$productimage.filePath',
             userId: 1,
