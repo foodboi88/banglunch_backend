@@ -13,14 +13,10 @@ const OrderDetailModelSchema = new mongoose.Schema<OrderDetailDocument, OrderDet
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Users'
     },
-    foodId : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Foods'
-    },
     createdAt : Date,
-    codeOrder : String,
-    voucher : String,
-    price : Number,
+    purchasedAt : Date,
+    amount : Number,
+    isCart: Boolean
 })
 
 OrderDetailModelSchema.set('toJSON', {

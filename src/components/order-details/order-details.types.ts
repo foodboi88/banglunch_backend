@@ -1,11 +1,9 @@
 export interface IOrderDetail {
-    userId_sell: string,
-    userId_buy : string
-    productId: string,
+    idSeller: string,
+    idUser : string
     createdAt: Date,
-    code_Order : string,
-    voucher : string,
-    price : number,  
+    purchasedAt: Date,
+    isCart: Boolean
 }
 
 export interface IOrderDetailDB extends IOrderDetail {

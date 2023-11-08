@@ -565,7 +565,7 @@ export const getProductByName = (name: string): Array<Record<string, any>> => [
 
 
 //agrigate query for get product filter by name?, designToolId?, designStyleId?, typeOfArchitectureId? paging size offset and change _id to id
-export const getProductByFilter = (name: string, designToolId: string, designStyleId: string, typeOfArchitectureId: string, size: number, offset: number, authorId: string): Array<Record<string, any>> => [
+export const getProductByFilter = (name: string, categoryId: string, size: number, offset: number, sellerId: string): Array<Record<string, any>> => [
     {
         $match: {
             $and: [
@@ -575,52 +575,26 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
         }
     },
     {
-        // Giống joins trong sql
         $lookup: {
-            from: 'productdesigntools',
+            from: 'food_categories',
             localField: '_id',
-            foreignField: 'productId',
-            as: 'productDesignTool'
+            foreignField: 'foodId',
+            as: 'categories'
         }
     },
     {
         $lookup: {
-            from: 'productdesignstyles',
+            from: 'gallery',
             localField: '_id',
-            foreignField: 'productId',
-            as: 'productDesignStyle'
+            foreignField: 'foodId',
+            as: 'food_image'
         }
     },
     {
-        $lookup: {
-            from: 'producttypeofarchitectures',
-            localField: '_id',
-            foreignField: 'productId',
-            as: 'productTypeOfArchitecture'
-        }
+        $unwind: '$categories',
     },
     {
-        $lookup: {
-            from: 'productimages',
-            localField: '_id',
-            foreignField: 'productId',
-            as: 'productimage'
-        }
-    },
-    {
-        $unwind: '$productTypeOfArchitecture',
-    },
-    {
-        $unwind: '$productDesignStyle',
-    },
-    {
-        $unwind: '$productTypeOfArchitecture',
-    },
-    {
-        $unwind: '$productDesignStyle',
-    },
-    {
-        $unwind: '$productimage',
+        $unwind: '$food_image',
     },
     {
         $match: { 'productimage.isMain': true }
@@ -628,17 +602,16 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
     {
         $project: { // Trích ra các trường cần dùng. 1 là lấy
             _id: 1,
+            foodId: 1,
             title: 1,
+            content: 1,
             price: 1,
             views: 1,
-            likes: 1,
-            quantityPurchased: 1,
-            typeOfArchitectureId: '$productTypeOfArchitecture.typeOfArchitectureId',
-            productDesignToolId: '$productDesignTool.designToolId', // Trích xuất thuộc tính con của 1 trường
-            productDesignStyleId: '$productDesignStyle.designStyleId',
-            image: '$productimage.filePath',
+            category: '$categories',
+            createdAt: 1, // Trích xuất thuộc tính con của 1 trường
+            deletedAt: 1,
+            image: '$food_image.filePath',
             userId: 1,
-            isDisable: 1,
         },
     },
     {
@@ -650,8 +623,8 @@ export const getProductByFilter = (name: string, designToolId: string, designSty
         $match: {
             $and: [
                 name ? { 'title': { $regex: name, $options: 'i' }, } : {},
-                authorId ? { userId: new ObjectId(authorId) } : {},
-                designStyleId ? { productDesignStyleId: new ObjectId(designStyleId) } : {},
+                sellerId ? { userId: new ObjectId(sellerId) } : {},
+                categoryId ? { productDesignStyleId: new ObjectId(categoryId) } : {},
                 typeOfArchitectureId ? { typeOfArchitectureId: new ObjectId(typeOfArchitectureId) } : {},
             ]
 
