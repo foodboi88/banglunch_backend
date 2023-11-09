@@ -5,18 +5,15 @@ interface OrderFoodsDocument extends IOrderFoods, Document { };
 interface OrderFoodsModel extends Model<OrderFoodsDocument> { };
 
 const OrderFoodsModelSchema = new mongoose.Schema<OrderFoodsDocument, OrderFoodsModel> ( {
-    idSeller : {
+    orderDetailId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Users'
+        ref : 'order_details'
     },
-    idUser : {
+    foodId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Users'
+        ref : 'foods'
     },
-    createdAt : Date,
-    purchasedAt : Date,
-    amount : Number,
-    isCart: Boolean
+    quantity: Number
 })
 
 OrderFoodsModelSchema.set('toJSON', {

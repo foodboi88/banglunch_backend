@@ -5,7 +5,7 @@ import User from "./users.model";
 import { IUserLogin, IUserDB, ActiveStatus, IUserRegister, IRefreshTokenReq } from "./users.types";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
-import Cart from "../carts/carts.model";
+import OrderDetail from "../order-details/order-details.model";
 
 
 @Route('users')
@@ -40,10 +40,12 @@ export class UserController extends Controller {
             })
             await newUser.save();
 
-            const newCart = new Cart({
+            const newCart = new OrderDetail({
                 userId: newUser.id,
+                idSeller: '',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                purchasedAt: new Date(),
+                isCart: true
             })
             await newCart.save();
 

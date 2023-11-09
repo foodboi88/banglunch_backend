@@ -566,113 +566,113 @@ export const getProductByName = (name: string): Array<Record<string, any>> => [
 
 //agrigate query for get product filter by name?, designToolId?, designStyleId?, typeOfArchitectureId? paging size offset and change _id to id
 export const getProductByFilter = (name: string, categoryId: string, size: number, offset: number, sellerId: string): Array<Record<string, any>> => [
-    {
-        $match: {
-            $and: [
-                { isDisable: false },
-                { deletedAt: null }
-            ]
-        }
-    },
-    {
-        $lookup: {
-            from: 'food_categories',
-            localField: '_id',
-            foreignField: 'foodId',
-            as: 'categories'
-        }
-    },
-    {
-        $lookup: {
-            from: 'gallery',
-            localField: '_id',
-            foreignField: 'foodId',
-            as: 'food_image'
-        }
-    },
-    {
-        $unwind: '$categories',
-    },
-    {
-        $unwind: '$food_image',
-    },
-    {
-        $match: { 'productimage.isMain': true }
-    },
-    {
-        $project: { // Trích ra các trường cần dùng. 1 là lấy
-            _id: 1,
-            foodId: 1,
-            title: 1,
-            content: 1,
-            price: 1,
-            views: 1,
-            category: '$categories',
-            createdAt: 1, // Trích xuất thuộc tính con của 1 trường
-            deletedAt: 1,
-            image: '$food_image.filePath',
-            userId: 1,
-        },
-    },
-    {
-        $sort: {
-            views: -1
-        }
-    },
-    {
-        $match: {
-            $and: [
-                name ? { 'title': { $regex: name, $options: 'i' }, } : {},
-                sellerId ? { userId: new ObjectId(sellerId) } : {},
-                categoryId ? { productDesignStyleId: new ObjectId(categoryId) } : {},
-                typeOfArchitectureId ? { typeOfArchitectureId: new ObjectId(typeOfArchitectureId) } : {},
-            ]
+    // {
+    //     $match: {
+    //         $and: [
+    //             { isDisable: false },
+    //             { deletedAt: null }
+    //         ]
+    //     }
+    // },
+    // {
+    //     $lookup: {
+    //         from: 'food_categories',
+    //         localField: '_id',
+    //         foreignField: 'foodId',
+    //         as: 'categories'
+    //     }
+    // },
+    // {
+    //     $lookup: {
+    //         from: 'gallery',
+    //         localField: '_id',
+    //         foreignField: 'foodId',
+    //         as: 'food_image'
+    //     }
+    // },
+    // {
+    //     $unwind: '$categories',
+    // },
+    // {
+    //     $unwind: '$food_image',
+    // },
+    // {
+    //     $match: { 'productimage.isMain': true }
+    // },
+    // {
+    //     $project: { // Trích ra các trường cần dùng. 1 là lấy
+    //         _id: 1,
+    //         foodId: 1,
+    //         title: 1,
+    //         content: 1,
+    //         price: 1,
+    //         views: 1,
+    //         category: '$categories',
+    //         createdAt: 1, // Trích xuất thuộc tính con của 1 trường
+    //         deletedAt: 1,
+    //         image: '$food_image.filePath',
+    //         userId: 1,
+    //     },
+    // },
+    // {
+    //     $sort: {
+    //         views: -1
+    //     }
+    // },
+    // {
+    //     $match: {
+    //         $and: [
+    //             name ? { 'title': { $regex: name, $options: 'i' }, } : {},
+    //             sellerId ? { userId: new ObjectId(sellerId) } : {},
+    //             categoryId ? { productDesignStyleId: new ObjectId(categoryId) } : {},
+    //             typeOfArchitectureId ? { typeOfArchitectureId: new ObjectId(typeOfArchitectureId) } : {},
+    //         ]
 
-        }
-    },
-    {
-        $facet: {
-            count: [{ $count: 'total' }],
+    //     }
+    // },
+    // {
+    //     $facet: {
+    //         count: [{ $count: 'total' }],
 
-            items: [
-                { $skip: +offset },
-                { $limit: +size },
-            ],
-        },
-    },
-    {
-        $project: {
-            items: {
-                $map: {
-                    input: '$items',
-                    as: 'item',
-                    in: {
-                        id: '$$item._id',
-                        title: '$$item.title',
-                        price: '$$item.price',
-                        views: '$$item.views',
-                        likes: '$$item.likes',
-                        quantityPurchased: '$$item.quantityPurchased',
-                        typeOfArchitectureId: '$$item.typeOfArchitectureId',
-                        productDesignToolId: '$$item.productDesignToolId',
-                        productDesignStyleId: '$$item.productDesignStyleId',
-                        image: '$$item.image'
-                    }
-                }
-            },
-            total: { $arrayElemAt: ['$count.total', 0] },
-        },
-    },
-    {
-        $replaceRoot: {
-            newRoot: {
-                $mergeObjects: [
-                    { total: '$total' },
-                    { items: '$items' }
-                ]
-            }
-        }
-    },
+    //         items: [
+    //             { $skip: +offset },
+    //             { $limit: +size },
+    //         ],
+    //     },
+    // },
+    // {
+    //     $project: {
+    //         items: {
+    //             $map: {
+    //                 input: '$items',
+    //                 as: 'item',
+    //                 in: {
+    //                     id: '$$item._id',
+    //                     title: '$$item.title',
+    //                     price: '$$item.price',
+    //                     views: '$$item.views',
+    //                     likes: '$$item.likes',
+    //                     quantityPurchased: '$$item.quantityPurchased',
+    //                     typeOfArchitectureId: '$$item.typeOfArchitectureId',
+    //                     productDesignToolId: '$$item.productDesignToolId',
+    //                     productDesignStyleId: '$$item.productDesignStyleId',
+    //                     image: '$$item.image'
+    //                 }
+    //             }
+    //         },
+    //         total: { $arrayElemAt: ['$count.total', 0] },
+    //     },
+    // },
+    // {
+    //     $replaceRoot: {
+    //         newRoot: {
+    //             $mergeObjects: [
+    //                 { total: '$total' },
+    //                 { items: '$items' }
+    //             ]
+    //         }
+    //     }
+    // },
 ]
 
 
