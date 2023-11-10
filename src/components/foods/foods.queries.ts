@@ -566,113 +566,64 @@ export const getProductByName = (name: string): Array<Record<string, any>> => [
 
 //agrigate query for get product filter by name?, designToolId?, designStyleId?, typeOfArchitectureId? paging size offset and change _id to id
 export const getProductByFilter = (name: string, categoryId: string, size: number, offset: number, sellerId: string): Array<Record<string, any>> => [
-    // {
-    //     $match: {
-    //         $and: [
-    //             { isDisable: false },
-    //             { deletedAt: null }
-    //         ]
-    //     }
-    // },
-    // {
-    //     $lookup: {
-    //         from: 'food_categories',
-    //         localField: '_id',
-    //         foreignField: 'foodId',
-    //         as: 'categories'
-    //     }
-    // },
-    // {
-    //     $lookup: {
-    //         from: 'gallery',
-    //         localField: '_id',
-    //         foreignField: 'foodId',
-    //         as: 'food_image'
-    //     }
-    // },
-    // {
-    //     $unwind: '$categories',
-    // },
-    // {
-    //     $unwind: '$food_image',
-    // },
-    // {
-    //     $match: { 'productimage.isMain': true }
-    // },
-    // {
-    //     $project: { // Trích ra các trường cần dùng. 1 là lấy
-    //         _id: 1,
-    //         foodId: 1,
-    //         title: 1,
-    //         content: 1,
-    //         price: 1,
-    //         views: 1,
-    //         category: '$categories',
-    //         createdAt: 1, // Trích xuất thuộc tính con của 1 trường
-    //         deletedAt: 1,
-    //         image: '$food_image.filePath',
-    //         userId: 1,
-    //     },
-    // },
-    // {
-    //     $sort: {
-    //         views: -1
-    //     }
-    // },
-    // {
-    //     $match: {
-    //         $and: [
-    //             name ? { 'title': { $regex: name, $options: 'i' }, } : {},
-    //             sellerId ? { userId: new ObjectId(sellerId) } : {},
-    //             categoryId ? { productDesignStyleId: new ObjectId(categoryId) } : {},
-    //             typeOfArchitectureId ? { typeOfArchitectureId: new ObjectId(typeOfArchitectureId) } : {},
-    //         ]
-
-    //     }
-    // },
-    // {
-    //     $facet: {
-    //         count: [{ $count: 'total' }],
-
-    //         items: [
-    //             { $skip: +offset },
-    //             { $limit: +size },
-    //         ],
-    //     },
-    // },
-    // {
-    //     $project: {
-    //         items: {
-    //             $map: {
-    //                 input: '$items',
-    //                 as: 'item',
-    //                 in: {
-    //                     id: '$$item._id',
-    //                     title: '$$item.title',
-    //                     price: '$$item.price',
-    //                     views: '$$item.views',
-    //                     likes: '$$item.likes',
-    //                     quantityPurchased: '$$item.quantityPurchased',
-    //                     typeOfArchitectureId: '$$item.typeOfArchitectureId',
-    //                     productDesignToolId: '$$item.productDesignToolId',
-    //                     productDesignStyleId: '$$item.productDesignStyleId',
-    //                     image: '$$item.image'
-    //                 }
-    //             }
-    //         },
-    //         total: { $arrayElemAt: ['$count.total', 0] },
-    //     },
-    // },
-    // {
-    //     $replaceRoot: {
-    //         newRoot: {
-    //             $mergeObjects: [
-    //                 { total: '$total' },
-    //                 { items: '$items' }
-    //             ]
-    //         }
-    //     }
-    // },
+    {
+        $match: {
+            $and: [
+                {
+                    title: {
+                        $regex: "Mỳ",
+                        $options: "i",
+                    },
+                },
+            ],
+        },
+    },
+    {
+        $lookup: {
+            from: "food_categories",
+            localField: "_id",
+            foreignField: "foodId",
+            as: "food_categories",
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "categories",
+            localField: "food_categories.categoryId",
+            foreignField: "_id",
+            as: "categories",
+        },
+    },
+    {
+        $project: {
+            _id: 1,
+            title: 1,
+            content: 1,
+            price: 1,
+            views: 1,
+            categories: "$categories",
+            image: "$food_image.filePath",
+            userId: 1,
+        },
+    },
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+            "categories._id": new ObjectId("64231030edf9dd11e488c252"),
+        },
+    },
 ]
 
 
