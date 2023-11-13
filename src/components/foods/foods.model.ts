@@ -5,7 +5,7 @@ interface FoodDocument extends IFood, Document { };
 interface FoodModel extends Model<FoodDocument> { };
 
 const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
-    foodId: { // To determine version of record
+    constantId: { // To determine version of record
         type: String,
         require: true
     },
@@ -25,9 +25,9 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: Number,
         default: 0
     },
-    userId: {
+    sellerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'sellerId'
     },
     createdAt: Date,
     deletedAt: {

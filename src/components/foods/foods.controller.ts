@@ -4,7 +4,7 @@ import  Category  from "../categories/categories.model";
 import FoodCategory from "../food-categories/food-categories.model";
 import { deleteFolder } from "../gallery/gallery.controller";
 import User from "../users/users.model";
-import { getFreeProducts, getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts, getProductByFilter, getProductById } from "./foods.queries";
+import {getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts, getProductByFilter, getProductById } from "./foods.queries";
 import { IFoodEdit, IFoodInput } from "./foods.types";
 import Food from "./foods.model";
 const crypto = require('crypto');
@@ -27,12 +27,12 @@ export class ProductController extends Controller {
             }
             //verify food
             const FoodDTO = {
-                foodId: crypto.randomUUID(),
+                constantId: crypto.randomUUID(),
                 title: data.title,
                 content: data.content,
                 price: data.price,
                 views: 0,
-                userId: userId,
+                sellerId: userId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 deletedAt: new Date(),
@@ -78,7 +78,7 @@ export class ProductController extends Controller {
      * @returns successResponse
      */
     @Get('home')
-    public async getHomeProducts(@Request() request: any, @Query() size?: number, @Query() offset?: number, @Query() type?: string): Promise<any> {
+    public async getHomeProducts(@Query() size?: number, @Query() offset?: number, @Query() type?: string): Promise<any> {
         //validate size and offset
         size = size ? size : 10;
         offset = offset ? offset : 0;
@@ -97,9 +97,6 @@ export class ProductController extends Controller {
                     break;
                 case 'mostLike':
                     data = await Food.aggregate(getMostLikeProducts(size, offset));
-                    break;
-                case 'freeProduct':
-                    data = await Food.aggregate(getFreeProducts(size, offset));
                     break;
                 default:
                     data = await Food.aggregate(getLatestProducts(size, offset));
@@ -203,7 +200,7 @@ export class ProductController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
             const role = (await User.findById(user_id)).role
-            const user_sell = (await Food.findById(productId)).userId
+            const user_sell = (await Food.findById(productId)).sellerId
             if (user_id != user_sell && role != "admin") {
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền xóa sản phẩm này", "Bad Request")
@@ -232,7 +229,7 @@ export class ProductController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
             let product = await Food.findById(idProduct)
-            if (user_id != product.userId) {
+            if (user_id != product.sellerId) {
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này", "Bad Request")
             }

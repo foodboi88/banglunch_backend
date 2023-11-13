@@ -1,6 +1,6 @@
 export interface IFood {
-    foodId: string;
-    userId: string;
+    constantId: string;
+    sellerId: string;
     title: string;
     content: string;
     price: number;

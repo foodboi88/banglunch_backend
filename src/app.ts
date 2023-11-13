@@ -14,10 +14,10 @@ import mongoose from "mongoose";
 
 
 import './components/users/users.controller';
-// import './components/carts/carts.controller';
-// import './components/order-details/order-details.controller';
+import './components/orders/orders.controller';
 import './components/foods/foods.controller';
 import './components/sellers/sellers.controller';
+import './components/order-details/order-details.controller';
 
 const app = express();
 
@@ -31,7 +31,6 @@ mongoose.connect(process.env.MONGO_DB ?? '', {
   dbName: process.env.MONGO_DB_NAME,
 }).then(() => console.log('Connected to mongodb')).catch(err => { console.log(process.env.MONGO_DB); console.log({ err }) });
 
-
 app.use(cors());
 
 /* Swagger files start */
@@ -40,14 +39,12 @@ const swaggerData: any = fs.readFileSync(swaggerFile, 'utf8');
 const swaggerDocument = JSON.parse(swaggerData);
 /* Swagger files end */
 
-
 app.use(
   urlencoded({
     extended: true,
   })
 );
 app.use(json());
-
 
 RegisterRoutes(app);
 
@@ -59,6 +56,5 @@ app.use(function notFoundHandler(_req, res: ExResponse) {
     message: "Not Found",
   });
 });
-
 
 export { app };

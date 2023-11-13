@@ -40,7 +40,7 @@ export class ProductImageController extends Controller {
 
             // check product 
             const item = await Product.findById(productId_in)
-            if(item.userId != userInfo){
+            if(item.sellerId != userInfo){
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền","Bad Request")
             }
@@ -162,7 +162,7 @@ export class ProductImageController extends Controller {
 
             // check product 
             const item = await Product.findById(productId_in)
-            if(item.userId != userInfo){
+            if(item.sellerId != userInfo){
                 return "not have access";
             }
 

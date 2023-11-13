@@ -1,30 +1,28 @@
 import mongoose, { Document, Model} from "mongoose";
-import { IOrderDetail } from "./order-details.types";
+import { IOrderDetails } from "./order-details.types";
 
-interface OrderDetailDocument extends IOrderDetail, Document { };
-interface OrderDetailModel extends Model<OrderDetailDocument> { };
+interface OrderDetailsDocument extends IOrderDetails, Document { };
+interface OrderDetailsModel extends Model<OrderDetailsDocument> { };
 
-const OrderDetailModelSchema = new mongoose.Schema<OrderDetailDocument, OrderDetailModel> ( {
-    idSeller : {
+const OrderDetailsModelSchema = new mongoose.Schema<OrderDetailsDocument, OrderDetailsModel> ( {
+    orderId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Users'
+        ref : 'orders'
     },
-    idUser : {
+    foodId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Users'
+        ref : 'foods'
     },
-    createdAt : Date,
-    purchasedAt : Date,
-    amount : Number,
-    isCart: Boolean
+    quantity: Number,
+    price: Number,
 })
 
-OrderDetailModelSchema.set('toJSON', {
+OrderDetailsModelSchema.set('toJSON', {
     virtuals : true,
     versionKey : false,
     transform: function ( doc, ret ) { delete ret._id }
 });
 
-const OrderDetail = mongoose.model<OrderDetailDocument, OrderDetailModel>('order_details', OrderDetailModelSchema);
+const OrderDetails = mongoose.model<OrderDetailsDocument, OrderDetailsModel>('order_details', OrderDetailsModelSchema);
 
-export default OrderDetail;
+export default OrderDetails;

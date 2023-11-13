@@ -79,6 +79,27 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"IUpdateCartBodyrequest": {
+				"properties": {
+					"foodId": {
+						"type": "string"
+					},
+					"sellerId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"foodId",
+					"sellerId",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"IFoodInput": {
 				"properties": {
 					"title": {
@@ -320,9 +341,9 @@
 				}
 			}
 		},
-		"/ProductsSold": {
+		"/orders/cart-by-user": {
 			"get": {
-				"operationId": "GetProductSolds",
+				"operationId": "GetCartByUser",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -334,38 +355,19 @@
 					}
 				},
 				"tags": [
-					"Order-details"
+					"Orders"
 				],
 				"security": [
 					{
 						"jwt": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
+				"parameters": []
 			}
 		},
-		"/ProductsSold/sell-history-by-seller": {
-			"get": {
-				"operationId": "GetProductSoldsBySeller",
+		"/orders/update-cart": {
+			"post": {
+				"operationId": "Register",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -377,137 +379,24 @@
 					}
 				},
 				"tags": [
-					"Order-details"
+					"Orders"
 				],
 				"security": [
 					{
 						"jwt": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/ProductsSold/sell-history-by-admin": {
-			"get": {
-				"operationId": "GetProductSoldsByAdmin",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IUpdateCartBodyrequest"
 							}
 						}
 					}
-				},
-				"tags": [
-					"Order-details"
-				],
-				"security": [
-					{
-						"jwt": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/ProductsSold/sell-history-buy-user": {
-			"get": {
-				"operationId": "GetUserPurchaseHistory",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Order-details"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
+				}
 			}
 		},
 		"/product-images": {

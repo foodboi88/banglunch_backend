@@ -1,11 +1,9 @@
-export interface IOrderDetail {
-    idSeller: string,
-    idUser : string
-    createdAt: Date,
-    purchasedAt: Date,
-    isCart: Boolean
+export interface IOrderDetails {
+    orderDetailId: string,
+    foodId: string,
+    quantity: number
 }
 
-export interface IOrderDetailDB extends IOrderDetail {
+export interface IOrderDetailDB extends IOrderDetails {
     id: string;
 }
