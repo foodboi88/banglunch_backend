@@ -112,6 +112,22 @@
 						"type": "number",
 						"format": "double"
 					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					},
+					"length": {
+						"type": "number",
+						"format": "double"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
 					"category": {
 						"items": {
 							"type": "string"
@@ -123,6 +139,10 @@
 					"title",
 					"content",
 					"price",
+					"weight",
+					"length",
+					"width",
+					"height",
 					"category"
 				],
 				"type": "object",
@@ -228,6 +248,62 @@
 				},
 				"required": [
 					"shopStatus"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ICaculateShippingCostInput": {
+				"properties": {
+					"service_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"insurance_value": {
+						"type": "number",
+						"format": "double"
+					},
+					"coupon": {
+						"type": "string"
+					},
+					"from_district_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"to_district_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"to_ward_code": {
+						"type": "string"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"length": {
+						"type": "number",
+						"format": "double"
+					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"service_id",
+					"insurance_value",
+					"coupon",
+					"from_district_id",
+					"to_district_id",
+					"to_ward_code",
+					"height",
+					"length",
+					"weight",
+					"width"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -1076,6 +1152,44 @@
 							"schema": {
 								"$ref": "#/components/schemas/IShopStatusUpdate",
 								"description": "- Shop's status"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/delivery/caculate-shipping-cost": {
+			"post": {
+				"operationId": "CaculateShippingCost",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "Caculate shipping cost depend on size and weight of food - GIAOHANGNHANH",
+				"tags": [
+					"Delivery"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"seller"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICaculateShippingCostInput"
 							}
 						}
 					}

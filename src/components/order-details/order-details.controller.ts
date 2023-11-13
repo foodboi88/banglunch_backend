@@ -2,6 +2,6 @@ import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query
 
 @Route("order-details")
 @Tags("OrderDetails")
-export class SellerController extends Controller {
+export class OrderDetailsController extends Controller {
 
 }

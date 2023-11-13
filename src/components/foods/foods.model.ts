@@ -21,6 +21,22 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: Number,
         default: 0
     },
+    weight: { // Gram
+        type: Number,
+        default: 0,
+    },
+    length: {
+        type: Number,
+        default: 0
+    },
+    width: {
+        type: Number,
+        default: 0,
+    },
+    height: {
+        type: Number,
+        default: 0
+    },
     views: {
         type: Number,
         default: 0

@@ -5,6 +5,10 @@ export interface IFood {
     content: string;
     price: number;
     views: number;
+    weight: number;
+    length: number;
+    width: number;
+    height: number;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
@@ -14,6 +18,10 @@ export interface IFoodInput {
     title: string;
     content: string;
     price: number;
+    weight: number;
+    length: number;
+    width: number;
+    height: number;
     category: string[];
 }
 

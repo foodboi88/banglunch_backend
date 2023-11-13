@@ -12,6 +12,10 @@ import { ProductImageController } from './components/gallery/gallery.controller'
 import { ProductController } from './components/foods/foods.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { SellerController } from './components/sellers/sellers.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { OrderDetailsController } from './components/order-details/order-details.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { DeliveryController } from './components/delivery/delivery.controller';
 import { expressAuthentication } from './middleware/auth';
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require('promise.any');
@@ -72,6 +76,10 @@ const models: TsoaRoute.Models = {
             "title": {"dataType":"string","required":true},
             "content": {"dataType":"string","required":true},
             "price": {"dataType":"double","required":true},
+            "weight": {"dataType":"double","required":true},
+            "length": {"dataType":"double","required":true},
+            "width": {"dataType":"double","required":true},
+            "height": {"dataType":"double","required":true},
             "category": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": true,
@@ -124,6 +132,23 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "shopStatus": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ICaculateShippingCostInput": {
+        "dataType": "refObject",
+        "properties": {
+            "service_id": {"dataType":"double","required":true},
+            "insurance_value": {"dataType":"double","required":true},
+            "coupon": {"dataType":"string","required":true},
+            "from_district_id": {"dataType":"double","required":true},
+            "to_district_id": {"dataType":"double","required":true},
+            "to_ward_code": {"dataType":"string","required":true},
+            "height": {"dataType":"double","required":true},
+            "length": {"dataType":"double","required":true},
+            "weight": {"dataType":"double","required":true},
+            "width": {"dataType":"double","required":true},
         },
         "additionalProperties": true,
     },
@@ -698,6 +723,33 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.updateShopStatus.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/delivery/caculate-shipping-cost',
+            authenticateMiddleware([{"jwt":["user","seller"]}]),
+            ...(fetchMiddlewares<RequestHandler>(DeliveryController)),
+            ...(fetchMiddlewares<RequestHandler>(DeliveryController.prototype.caculateShippingCost)),
+
+            function DeliveryController_caculateShippingCost(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    body: {"in":"body","name":"body","required":true,"ref":"ICaculateShippingCostInput"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new DeliveryController();
+
+
+              const promise = controller.caculateShippingCost.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

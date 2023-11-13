@@ -132,7 +132,7 @@ userSchema.statics.generateRefreshToken = function (user: UserDocument): string 
 };
 
 userSchema.statics.checkLogin = async function (email: string, password: string): Promise<UserDocument | undefined | FailedResponseType<string>> {
-    const user = await User.findOne({ email });
+    const user = await Users.findOne({ email });
 
     if (!user) {
         return failedResponse('Sai tài khoản hoặc mật khẩu', 'WrongCredentials');
@@ -148,7 +148,7 @@ userSchema.statics.checkLogin = async function (email: string, password: string)
 
 userSchema.statics.getUserProfile = async function (token: string): Promise<any> {
     const { email } = jwt.verify(token, 'dqPyPxJnDS4e2iU0815m' ) as { email: string };
-    const userProfile = await User.findOne({ email })  ;
+    const userProfile = await Users.findOne({ email })  ;
     
 
     if (!userProfile) {
@@ -161,7 +161,7 @@ userSchema.statics.getUserProfile = async function (token: string): Promise<any>
 //update profile
 userSchema.statics.updateProfile = async function (token: string): Promise<any> {
     const { email } = jwt.verify(token, 'dqPyPxJnDS4e2iU0815m') as { email: string };
-    const userProfile = await User.findOne({ email })
+    const userProfile = await Users.findOne({ email })
     if (!userProfile) {
         return failedResponse('Không tìm thấy tài khoản', 'UserNotFound');
     }
@@ -177,7 +177,7 @@ userSchema.statics.getIdFromToken = async function (token: string): Promise<any>
 
 //compare password
 userSchema.statics.comparePassword = async function (email: string, password: string): Promise<boolean> {
-    const userProfile = await User.findOne({ email })
+    const userProfile = await Users.findOne({ email })
     if (!userProfile) {
         return false
     }
@@ -204,6 +204,6 @@ userSchema.statics.comparePassword = async function (email: string, password: st
 // }
 
 
-const User =  mongoose.model<UserDocument, UserModel>('users', userSchema);
+const Users =  mongoose.model<UserDocument, UserModel>('users', userSchema);
 
-export default User;
+export default Users;

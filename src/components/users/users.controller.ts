@@ -1,11 +1,13 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { Body, Controller, Path, Post, Route, Tags } from "tsoa";
 import { instanceOfFailedResponseType, failedResponse, successResponse } from "../../utils/http";
-import User from "./users.model";
+import Users from "./users.model";
 import { IUserLogin, IUserDB, ActiveStatus, IUserRegister, IRefreshTokenReq } from "./users.types";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
 import OrderDetail from "../orders/orders.model";
+import Orders from "../orders/orders.model";
+import { ObjectId } from "mongodb";
 
 
 @Route('users')
@@ -20,12 +22,13 @@ export class UserController extends Controller {
                 this.setStatus(400);
                 return failedResponse('Xác nhận mật khẩu không trùng khớp','NotEqualPassword');
             }
-            const user = await User.findOne({email});
+            const user = await Users.findOne({email,password});
+            console.log(user)
             if(user){
                 this.setStatus(400);
                 return failedResponse('Email này đã được đăng ký', 'RegisteredEmail');
             }
-            const newUser = new User({
+            const newUser = new Users({
                 email,
                 password,
                 name,
@@ -40,11 +43,12 @@ export class UserController extends Controller {
             })
             await newUser.save();
 
-            const newCart = new OrderDetail({
+            const newCart = new Orders({
                 userId: newUser.id,
                 sellerId: '',
                 createdAt: new Date(),
                 purchasedAt: null,
+                amount: 0,
                 isCart: true
             })
             await newCart.save();
@@ -82,7 +86,7 @@ export class UserController extends Controller {
     public async login(@Body() data: IUserLogin): Promise<any> {
         try {
             const { email, password, remember } = data;
-            const user = await User.checkLogin(email, password);
+            const user = await Users.checkLogin(email, password);
             if (instanceOfFailedResponseType<string>(user)) {
                 this.setStatus(400);
                 return failedResponse(user, 'FailedLogin');

@@ -18,6 +18,7 @@ import './components/orders/orders.controller';
 import './components/foods/foods.controller';
 import './components/sellers/sellers.controller';
 import './components/order-details/order-details.controller';
+import './components/delivery/delivery.controller';
 
 const app = express();
 
