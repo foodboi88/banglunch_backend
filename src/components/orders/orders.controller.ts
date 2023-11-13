@@ -1,9 +1,9 @@
-import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete} from "tsoa";
+import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
+import Food from "../foods/foods.model";
+import OrderDetails from "../order-details/order-details.model";
 import User from "../users/users.model";
 import OrderDetail from "./orders.model";
-import Food from "../foods/foods.model";
-import OrderFoods from "../order-details/order-details.model";
 import { IUpdateCartBodyrequest } from "./orders.types";
 
 
@@ -22,11 +22,11 @@ export class OrderController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            const res = await OrderDetail.findOne({userId : userId, isCart: true });
-            
+            const res = await OrderDetail.findOne({ userId: userId, isCart: true });
+
             return successResponse(res)
 
-        }catch(err){
+        } catch (err) {
             this.setStatus(500);
             return failedResponse('Execute service went wrong', 'ServiceException');
         }
@@ -34,9 +34,9 @@ export class OrderController extends Controller {
 
     @Security("jwt")
     @Post('update-cart')
-    public async register(@Body() input: IUpdateCartBodyrequest, @Request() request: any): Promise<any>{
-        try{
-            const {foodId, sellerId, quantity } = input;
+    public async register(@Body() input: IUpdateCartBodyrequest, @Request() request: any): Promise<any> {
+        try {
+            const { foodId, sellerId, quantity } = input;
             //Check xem người dùng đăng nhập chưa
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
@@ -46,9 +46,9 @@ export class OrderController extends Controller {
             }
 
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
-            let cartOfUser = await OrderDetail.findOne({userId : userId, isCart: true });
-            console.log(cartOfUser);
-            if(!cartOfUser){
+            let cartOfUser = await OrderDetail.findOne({ userId: userId, isCart: true });
+            console.log('Thông tin cart của user hiện tại', cartOfUser);
+            if (!cartOfUser) {
                 const newCart = new OrderDetail({
                     userId: userId,
                     sellerId: sellerId,
@@ -62,24 +62,24 @@ export class OrderController extends Controller {
 
             // Tìm đồ ăn theo id
             const foodById = await Food.findById(foodId);
-            if(!foodById){
+            if (!foodById) {
                 this.setStatus(400);
                 return failedResponse('Không tìm thấy sản phẩm', 'NotFoundData');
             }
 
             //Tìm đồ ăn được đặt và update
-            const orderFood = OrderFoods.findOne({foodId: foodById.id, orderDetailId: cartOfUser.id});
-            console.log(orderFood);
-            if(!orderFood){
-                const newOrderFood = new OrderFoods({
-                    orderDetailId: cartOfUser.id,
+            const orderDetail = await OrderDetails.findOne({ foodId: foodById.id, orderId: cartOfUser.id });
+            if (!orderDetail) {
+                const newOrderDetail = new OrderDetails({
+                    orderId: cartOfUser.id,
                     foodId: foodById.id,
-                    quantity: quantity
+                    quantity: quantity,
+                    price: foodById.price
                 })
-                console.log(newOrderFood)
-                newOrderFood.save();
-            }else{
-                await orderFood.update({quantity: quantity})
+                console.log(newOrderDetail)
+                newOrderDetail.save();
+            } else {
+                await orderDetail.update({ quantity: quantity, price: foodById.price })
             }
 
             const result = {
@@ -87,8 +87,8 @@ export class OrderController extends Controller {
                 message: 'Cập nhật giỏ hàng thành công',
             }
             return successResponse(result);
-            
-        }catch(error){
+
+        } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
         }
