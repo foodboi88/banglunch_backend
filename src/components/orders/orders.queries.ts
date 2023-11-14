@@ -1,5 +1,75 @@
 import { ObjectId } from 'mongodb';
 
+// Get foods in cart by user Id
+export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+            $and: [
+                {
+                    userId: new ObjectId(
+                        userId
+                    ),
+                    isCart: true
+                },
+            ],
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "order_details",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "order_details",
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "foods",
+            localField: "order_details.foodId",
+            foreignField: "_id",
+            as: "foods",
+        },
+    },
+    {
+        $project:
+        /**
+         * specifications: The fields to
+         *   include or exclude.
+         */
+        {
+            _id: 1,
+            userId: 1,
+            sellerId: 1,
+            createdAt: 1,
+            purchasedAt: 1,
+            isCart: 1,
+            foods: 1,
+        },
+    },
+]
+
 //agrigate query for get products sold by seller
 export const getProductsSoldBuySellerId = (sellerId: string, size: number, offset: number): Array<Record<string, any>> => [
     {

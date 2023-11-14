@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import mongoose from "mongoose";
 
 const dataResponseProduct = { // define form response sẽ trả về cho frontend
     $project: {
@@ -504,7 +503,7 @@ export const getProductByFilter = (name: string, categoryId: string, size: numbe
             $and: [
                 {
                     title: {
-                        $regex: "Mỳ",
+                        $regex: name,
                         $options: "i",
                     },
                 },
@@ -513,9 +512,9 @@ export const getProductByFilter = (name: string, categoryId: string, size: numbe
     },
     {
         $lookup: {
-            from: "food_categories",
-            localField: "_id",
-            foreignField: "foodId",
+            from: "food_categories", // bảng muốn tham chiếu tới
+            localField: "_id", // id chính của bảng hiện tại
+            foreignField: "foodId", // id ngoại tham chiếu từ id chính của bảng hiện tại
             as: "food_categories",
         },
     },
@@ -531,8 +530,8 @@ export const getProductByFilter = (name: string, categoryId: string, size: numbe
          */
         {
             from: "categories",
-            localField: "food_categories.categoryId",
-            foreignField: "_id",
+            localField: "food_categories.categoryId", // id ngoại (ở bảng hiện tại) tham chiếu từ id chính của bảng khác 
+            foreignField: "_id", // id chính của bảng khác
             as: "categories",
         },
     },
@@ -554,7 +553,7 @@ export const getProductByFilter = (name: string, categoryId: string, size: numbe
          * query: The query in MQL.
          */
         {
-            "categories._id": new ObjectId("64231030edf9dd11e488c252"),
+            "categories._id": new ObjectId(categoryId),
         },
     },
 ]

@@ -1,13 +1,11 @@
 import jwt, { Secret } from "jsonwebtoken";
-import { Body, Controller, Path, Post, Route, Tags } from "tsoa";
-import { instanceOfFailedResponseType, failedResponse, successResponse } from "../../utils/http";
-import Users from "./users.model";
-import { IUserLogin, IUserDB, ActiveStatus, IUserRegister, IRefreshTokenReq } from "./users.types";
+import { Body, Controller, Post, Route, Tags } from "tsoa";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
-import OrderDetail from "../orders/orders.model";
+import { failedResponse, instanceOfFailedResponseType, successResponse } from "../../utils/http";
 import Orders from "../orders/orders.model";
-import { ObjectId } from "mongodb";
+import Users from "./users.model";
+import { ActiveStatus, IRefreshTokenReq, IUserDB, IUserLogin, IUserRegister } from "./users.types";
 
 
 @Route('users')
@@ -15,16 +13,16 @@ import { ObjectId } from "mongodb";
 export class UserController extends Controller {
 
     @Post('register')
-    public async register(@Body() input: IUserRegister): Promise<any>{
-        try{
-            const {email, password, confirmPassword, name, phone, address, dob, gender } = input;
-            if(password != confirmPassword){
+    public async register(@Body() input: IUserRegister): Promise<any> {
+        try {
+            const { email, password, confirmPassword, name, phone, address, dob, gender } = input;
+            if (password != confirmPassword) {
                 this.setStatus(400);
-                return failedResponse('Xác nhận mật khẩu không trùng khớp','NotEqualPassword');
+                return failedResponse('Xác nhận mật khẩu không trùng khớp', 'NotEqualPassword');
             }
-            const user = await Users.findOne({email,password});
+            const user = await Users.findOne({ email });
             console.log(user)
-            if(user){
+            if (user) {
                 this.setStatus(400);
                 return failedResponse('Email này đã được đăng ký', 'RegisteredEmail');
             }
@@ -45,7 +43,7 @@ export class UserController extends Controller {
 
             const newCart = new Orders({
                 userId: newUser.id,
-                sellerId: '',
+                sellerId: null,
                 createdAt: new Date(),
                 purchasedAt: null,
                 amount: 0,
@@ -75,8 +73,8 @@ export class UserController extends Controller {
                 message: 'Đăng kí tài khoản thành công! Vui lòng kiểm tra email để kích hoạt tài khoản'
             }
             return successResponse(result);
-            
-        }catch(error){
+
+        } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
         }
@@ -132,21 +130,21 @@ export class UserController extends Controller {
     @Post('refresh-token')
     public async refreshToken(@Body() data: IRefreshTokenReq): Promise<any> {
         try {
-            const {refreshToken} = data;
-            if(!refreshToken){
+            const { refreshToken } = data;
+            if (!refreshToken) {
                 this.setStatus(400);
                 return failedResponse('Refresh này không tồn tại', 'RefreshTokenNotFound');
             }
             jwt.verify(refreshToken, 'DQpYpXjNds4E2Iu0815M' as Secret, (error, user: any) => {
-                if(error){
+                if (error) {
                     this.setStatus(400);
                     return failedResponse('Refresh token không hợp lệ', 'RefreshTokenInvalid');
                 }
 
-                const accessToken = jwt.sign({email: user.email}, 'dqPyPxJnDS4e2iU0815m' as Secret, {expiresIn: '1d'});
-                const refreshToken = jwt.sign({email: user.email}, 'DQpYpXjNds4E2Iu0815M' as Secret, {expiresIn: '7d'});
+                const accessToken = jwt.sign({ email: user.email }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
+                const refreshToken = jwt.sign({ email: user.email }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
 
-                return successResponse({accessToken, refreshToken});
+                return successResponse({ accessToken, refreshToken });
             })
         } catch (error) {
             this.setStatus(500);

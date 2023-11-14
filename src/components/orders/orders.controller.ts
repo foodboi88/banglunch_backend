@@ -3,7 +3,8 @@ import { failedResponse, successResponse } from "../../utils/http";
 import Food from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
 import User from "../users/users.model";
-import OrderDetail from "./orders.model";
+import { default as OrderDetail, default as Orders } from "./orders.model";
+import { getCartByUserId } from "./orders.queries";
 import { IUpdateCartBodyrequest } from "./orders.types";
 
 
@@ -22,7 +23,7 @@ export class OrderController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            const res = await OrderDetail.findOne({ userId: userId, isCart: true });
+            const res = await Orders.aggregate(getCartByUserId(userId));
 
             return successResponse(res)
 
@@ -48,16 +49,18 @@ export class OrderController extends Controller {
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
             let cartOfUser = await OrderDetail.findOne({ userId: userId, isCart: true });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
+            const newCart = new OrderDetail({
+                userId: userId,
+                sellerId: sellerId,
+                createdAt: new Date(),
+                purchasedAt: null,
+                isCart: true
+            })
             if (!cartOfUser) {
-                const newCart = new OrderDetail({
-                    userId: userId,
-                    sellerId: sellerId,
-                    createdAt: new Date(),
-                    purchasedAt: null,
-                    isCart: true
-                })
-                await newCart.save();
                 cartOfUser = newCart;
+                await cartOfUser.save();
+            } else {
+                cartOfUser.update(newCart);
             }
 
             // Tìm đồ ăn theo id
