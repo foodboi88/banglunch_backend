@@ -1,9 +1,10 @@
 export interface IOrders {
     sellerId: string,
-    userId : string
+    userId: string
     createdAt: Date,
     purchasedAt: Date,
-    isCart: Boolean
+    deliveryCost: number,
+    orderStatus: number
 }
 
 export interface IUpdateCartBodyrequest {

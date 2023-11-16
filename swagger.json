@@ -252,9 +252,46 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"IShippedFood": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"height": {
+						"type": "number",
+						"format": "double"
+					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					},
+					"length": {
+						"type": "number",
+						"format": "double"
+					},
+					"width": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"quantity",
+					"height",
+					"weight",
+					"length",
+					"width"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"ICaculateShippingCostInput": {
 				"properties": {
-					"service_id": {
+					"service_type_id": {
 						"type": "number",
 						"format": "double"
 					},
@@ -276,34 +313,21 @@
 					"to_ward_code": {
 						"type": "string"
 					},
-					"height": {
-						"type": "number",
-						"format": "double"
-					},
-					"length": {
-						"type": "number",
-						"format": "double"
-					},
-					"weight": {
-						"type": "number",
-						"format": "double"
-					},
-					"width": {
-						"type": "number",
-						"format": "double"
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/IShippedFood"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"service_id",
+					"service_type_id",
 					"insurance_value",
 					"coupon",
 					"from_district_id",
 					"to_district_id",
 					"to_ward_code",
-					"height",
-					"length",
-					"weight",
-					"width"
+					"items"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -443,7 +467,7 @@
 		},
 		"/orders/update-cart": {
 			"post": {
-				"operationId": "Register",
+				"operationId": "UpdateCart",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -470,6 +494,38 @@
 							"schema": {
 								"$ref": "#/components/schemas/IUpdateCartBodyrequest"
 							}
+						}
+					}
+				}
+			}
+		},
+		"/orders/purchase": {
+			"post": {
+				"operationId": "Purchase",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
 						}
 					}
 				}
@@ -1177,10 +1233,7 @@
 				],
 				"security": [
 					{
-						"jwt": [
-							"user",
-							"seller"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": [],

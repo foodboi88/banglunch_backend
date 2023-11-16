@@ -136,19 +136,29 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IShippedFood": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "height": {"dataType":"double","required":true},
+            "weight": {"dataType":"double","required":true},
+            "length": {"dataType":"double","required":true},
+            "width": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ICaculateShippingCostInput": {
         "dataType": "refObject",
         "properties": {
-            "service_id": {"dataType":"double","required":true},
+            "service_type_id": {"dataType":"double","required":true},
             "insurance_value": {"dataType":"double","required":true},
             "coupon": {"dataType":"string","required":true},
             "from_district_id": {"dataType":"double","required":true},
             "to_district_id": {"dataType":"double","required":true},
             "to_ward_code": {"dataType":"string","required":true},
-            "height": {"dataType":"double","required":true},
-            "length": {"dataType":"double","required":true},
-            "weight": {"dataType":"double","required":true},
-            "width": {"dataType":"double","required":true},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
         },
         "additionalProperties": true,
     },
@@ -267,9 +277,9 @@ export function RegisterRoutes(app: express.Router) {
         app.post('/orders/update-cart',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
-            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.register)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.updateCart)),
 
-            function OrderController_register(request: any, response: any, next: any) {
+            function OrderController_updateCart(request: any, response: any, next: any) {
             const args = {
                     input: {"in":"body","name":"input","required":true,"ref":"IUpdateCartBodyrequest"},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
@@ -284,7 +294,34 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new OrderController();
 
 
-              const promise = controller.register.apply(controller, validatedArgs as any);
+              const promise = controller.updateCart.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/orders/purchase',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.purchase)),
+
+            function OrderController_purchase(request: any, response: any, next: any) {
+            const args = {
+                    input: {"in":"body","name":"input","required":true,"dataType":"any"},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new OrderController();
+
+
+              const promise = controller.purchase.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
@@ -730,7 +767,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/delivery/caculate-shipping-cost',
-            authenticateMiddleware([{"jwt":["user","seller"]}]),
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(DeliveryController)),
             ...(fetchMiddlewares<RequestHandler>(DeliveryController.prototype.caculateShippingCost)),
 
