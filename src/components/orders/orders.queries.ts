@@ -69,6 +69,68 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
             foods: 1,
         },
     },
+
+    // [
+    //     {
+    //       $lookup: {
+    //         from: "order_details",
+    //         let: {
+    //           orderId: "$_id", // Dat ten primary key _id cua order la orderId
+    //         },
+      
+    //         pipeline: [
+    //           //Tao duong ong moi
+    //           {
+    //             $match: {
+    //               $expr: {
+    //                 $and: [
+    //                   {
+    //                     $eq: ["$orderId", "$$orderId"],
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //           {
+    //             $lookup: {
+    //               from: "foods",
+    //               // localField: "foodId",
+    //               // foreignField: "_id",
+      
+    //               let: {
+    //                 foodId: "$foodId", // Dat ten primary key _id cua order la orderId
+    //               },
+      
+    //               pipeline: [
+    //                 {
+    //                   $match: {
+    //                     $expr: {
+    //                       $and: [
+    //                         {
+    //                           $eq: ["$_id", "$$foodId"],
+    //                         },
+    //                       ],
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   $project: {
+    //                     _id: 0,
+    //                     id: "$_id",
+    //                   },
+    //                 },
+    //               ],
+    //               as: "foods",
+    //             },
+    //           },
+    //           {
+    //             $unwind: "$foods",
+    //           },
+    //         ],
+    //         as: "order_details",
+    //       },
+    //     },
+    //   ]
 ]
 
 //agrigate query for get products sold by seller
