@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
+import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, successResponse } from "../../utils/http";
 import Food from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
 import User from "../users/users.model";
-import { default as OrderDetail, default as Orders } from "./orders.model";
+import { default as Orders } from "./orders.model";
 import { getCartByUserId } from "./orders.queries";
 import { IUpdateCartBodyrequest } from "./orders.types";
 
@@ -35,7 +36,7 @@ export class OrderController extends Controller {
 
     @Security("jwt")
     @Post('update-cart')
-    public async register(@Body() input: IUpdateCartBodyrequest, @Request() request: any): Promise<any> {
+    public async updateCart(@Body() input: IUpdateCartBodyrequest, @Request() request: any): Promise<any> {
         try {
             const { foodId, sellerId, quantity } = input;
             //Check xem người dùng đăng nhập chưa
@@ -47,14 +48,15 @@ export class OrderController extends Controller {
             }
 
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
-            let cartOfUser = await OrderDetail.findOne({ userId: userId, isCart: true });
+            let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
-            const newCart = new OrderDetail({
+            const newCart = new Orders({
                 userId: userId,
                 sellerId: sellerId,
                 createdAt: new Date(),
                 purchasedAt: null,
-                isCart: true
+                deliveryCost: 0,
+                orderStatus: OrderStatus.Cart
             })
             if (!cartOfUser) {
                 cartOfUser = newCart;
@@ -91,6 +93,31 @@ export class OrderController extends Controller {
             }
             return successResponse(result);
 
+        } catch (error) {
+            this.setStatus(500);
+            return failedResponse(`Caught error ${error}`, 'ServiceException');
+        }
+    }
+
+    @Security("jwt")
+    @Post('purchase')
+    public async purchase(@Request() request: any): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await User.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            //Check xem shop đã mở cửa chưa
+            //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
+            let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
+            //Viết aggregate lấy thông tin shop mà người dùng đang mua - cart => user => sellerInfo
+
+            //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
+
+            //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');

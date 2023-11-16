@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { OrderStatus } from '../../shared/enums/order.enums';
 
 // Get foods in cart by user Id
 export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
@@ -13,7 +14,7 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
                     userId: new ObjectId(
                         userId
                     ),
-                    isCart: true
+                    orderStatus: OrderStatus.Cart
                 },
             ],
         },
@@ -64,7 +65,7 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
             sellerId: 1,
             createdAt: 1,
             purchasedAt: 1,
-            isCart: 1,
+            orderStatus: 1,
             foods: 1,
         },
     },

@@ -2,6 +2,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import { Body, Controller, Post, Route, Tags } from "tsoa";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
+import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, instanceOfFailedResponseType, successResponse } from "../../utils/http";
 import Orders from "../orders/orders.model";
 import Users from "./users.model";
@@ -46,8 +47,8 @@ export class UserController extends Controller {
                 sellerId: null,
                 createdAt: new Date(),
                 purchasedAt: null,
-                amount: 0,
-                isCart: true
+                deliveryCost: 0,
+                orderStatus: OrderStatus.Cart
             })
             await newCart.save();
 
