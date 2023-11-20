@@ -301,14 +301,13 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/orders/purchase',
+        app.get('/orders/purchase',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
             ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.purchase)),
 
             function OrderController_purchase(request: any, response: any, next: any) {
             const args = {
-                    input: {"in":"body","name":"input","required":true,"dataType":"any"},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 

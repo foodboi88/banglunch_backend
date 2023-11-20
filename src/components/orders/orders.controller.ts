@@ -3,6 +3,7 @@ import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, successResponse } from "../../utils/http";
 import Food from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
+import Sellers from "../sellers/sellers.model";
 import User from "../users/users.model";
 import { default as Orders } from "./orders.model";
 import { getCartByUserId } from "./orders.queries";
@@ -14,8 +15,29 @@ import { IUpdateCartBodyrequest } from "./orders.types";
 export class OrderController extends Controller {
 
     @Security("jwt")
-    @Get('cart-by-user')
+    @Get('cart-by-user') // Lấy cart theo người mua
     public async getCartByUser(@Request() request: any): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await User.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            const res = await Orders.aggregate(getCartByUserId(userId));
+
+            return successResponse(res)
+
+        } catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
+
+    @Security("jwt")
+    @Get('order-by-seller')
+    public async getCartBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
@@ -100,7 +122,7 @@ export class OrderController extends Controller {
     }
 
     @Security("jwt")
-    @Post('purchase')
+    @Get('purchase')
     public async purchase(@Request() request: any): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
@@ -112,12 +134,22 @@ export class OrderController extends Controller {
 
             //Check xem shop đã mở cửa chưa
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
-            let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
+            const cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             //Viết aggregate lấy thông tin shop mà người dùng đang mua - cart => user => sellerInfo
-
+            const sellerId = cartOfUser.sellerId;
+            const sellerInfo = await Sellers.findOne({ userId: sellerId });
+            if (!sellerInfo.shopStatus) {
+                this.setStatus(400);
+                return failedResponse('Shop chưa mở cửa, vui lòng chờ', 'ClosedShop');
+            }
             //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
-
+            cartOfUser.orderStatus = OrderStatus.WaitingApproved;
+            await cartOfUser.update(cartOfUser)
             //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
+
+
+
+            return successResponse(cartOfUser)
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');

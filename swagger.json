@@ -500,7 +500,7 @@
 			}
 		},
 		"/orders/purchase": {
-			"post": {
+			"get": {
 				"operationId": "Purchase",
 				"responses": {
 					"200": {
@@ -520,15 +520,7 @@
 						"jwt": []
 					}
 				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/product-images": {
