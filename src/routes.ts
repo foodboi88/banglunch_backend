@@ -60,12 +60,21 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "IUpdateCartBodyrequest": {
+    "IUpdateFoodInCartBodyrequest": {
         "dataType": "refObject",
         "properties": {
             "foodId": {"dataType":"string","required":true},
             "sellerId": {"dataType":"string","required":true},
             "quantity": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IApproveOrder": {
+        "dataType": "refObject",
+        "properties": {
+            "orderId": {"dataType":"string","required":true},
+            "status": {"dataType":"double","required":true},
         },
         "additionalProperties": true,
     },
@@ -248,6 +257,32 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/users/orders-by-seller',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getOrdersBySeller)),
+
+            function UserController_getOrdersBySeller(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new UserController();
+
+
+              const promise = controller.getOrdersBySeller.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/orders/cart-by-user',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
@@ -274,14 +309,14 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/orders/update-cart',
+        app.post('/orders/update-food-in-cart',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
             ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.updateCart)),
 
             function OrderController_updateCart(request: any, response: any, next: any) {
             const args = {
-                    input: {"in":"body","name":"input","required":true,"ref":"IUpdateCartBodyrequest"},
+                    input: {"in":"body","name":"input","required":true,"ref":"IUpdateFoodInCartBodyrequest"},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 
@@ -301,12 +336,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/orders/purchase',
+        app.get('/orders/create-order',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
-            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.purchase)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.createOrder)),
 
-            function OrderController_purchase(request: any, response: any, next: any) {
+            function OrderController_createOrder(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
@@ -320,7 +355,34 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new OrderController();
 
 
-              const promise = controller.purchase.apply(controller, validatedArgs as any);
+              const promise = controller.createOrder.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/orders/approve-order',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(OrderController)),
+            ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.approveOrder)),
+
+            function OrderController_approveOrder(request: any, response: any, next: any) {
+            const args = {
+                    input: {"in":"body","name":"input","required":true,"ref":"IApproveOrder"},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new OrderController();
+
+
+              const promise = controller.approveOrder.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

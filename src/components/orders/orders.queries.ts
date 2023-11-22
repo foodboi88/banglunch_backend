@@ -12,7 +12,7 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
                 userId: new ObjectId(
                     userId
                 ),
-                orderStatus: 0,
+                orderStatus: 1,
             },
         },
         {

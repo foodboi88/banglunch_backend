@@ -79,7 +79,7 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"IUpdateCartBodyrequest": {
+			"IUpdateFoodInCartBodyrequest": {
 				"properties": {
 					"foodId": {
 						"type": "string"
@@ -96,6 +96,23 @@
 					"foodId",
 					"sellerId",
 					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"IApproveOrder": {
+				"properties": {
+					"orderId": {
+						"type": "string"
+					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"orderId",
+					"status"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -441,9 +458,9 @@
 				}
 			}
 		},
-		"/orders/cart-by-user": {
+		"/users/orders-by-seller": {
 			"get": {
-				"operationId": "GetCartByUser",
+				"operationId": "GetOrdersBySeller",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -455,6 +472,31 @@
 					}
 				},
 				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/orders/cart-by-user": {
+			"get": {
+				"operationId": "GetCartByUser",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "for user",
+				"tags": [
 					"Orders"
 				],
 				"security": [
@@ -465,12 +507,12 @@
 				"parameters": []
 			}
 		},
-		"/orders/update-cart": {
+		"/orders/update-food-in-cart": {
 			"post": {
 				"operationId": "UpdateCart",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "200 - Return message and status",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -478,6 +520,7 @@
 						}
 					}
 				},
+				"summary": "for user",
 				"tags": [
 					"Orders"
 				],
@@ -492,19 +535,19 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/IUpdateCartBodyrequest"
+								"$ref": "#/components/schemas/IUpdateFoodInCartBodyrequest"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/orders/purchase": {
+		"/orders/create-order": {
 			"get": {
-				"operationId": "Purchase",
+				"operationId": "CreateOrder",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "200 - Return message and status",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -512,6 +555,7 @@
 						}
 					}
 				},
+				"summary": "for user",
 				"tags": [
 					"Orders"
 				],
@@ -521,6 +565,41 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/orders/approve-order": {
+			"post": {
+				"operationId": "ApproveOrder",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "for seller\r\nstatus: 2 (Shipping), 3 (Rejected)",
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IApproveOrder"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/product-images": {

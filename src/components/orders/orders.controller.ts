@@ -7,13 +7,18 @@ import Sellers from "../sellers/sellers.model";
 import User from "../users/users.model";
 import { default as Orders } from "./orders.model";
 import { getCartByUserId } from "./orders.queries";
-import { IUpdateCartBodyrequest } from "./orders.types";
+import { IApproveOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
 
 
 @Route("orders")
 @Tags("Orders")
 export class OrderController extends Controller {
 
+    /**
+     * @summary for user
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
     @Security("jwt")
     @Get('cart-by-user') // Lấy cart theo người mua
     public async getCartByUser(@Request() request: any): Promise<any> {
@@ -35,30 +40,14 @@ export class OrderController extends Controller {
         }
     }
 
+    /**
+     * @summary for user
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
     @Security("jwt")
-    @Get('order-by-seller')
-    public async getCartBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
-        try {
-            const token = request.headers.authorization.split(' ')[1];
-            const userId = await User.getIdFromToken(token);
-            if (!userId) {
-                this.setStatus(401);
-                return failedResponse('Unauthorized', 'Unauthorized');
-            }
-
-            const res = await Orders.aggregate(getCartByUserId(userId));
-
-            return successResponse(res)
-
-        } catch (err) {
-            this.setStatus(500);
-            return failedResponse('Execute service went wrong', 'ServiceException');
-        }
-    }
-
-    @Security("jwt")
-    @Post('update-cart')
-    public async updateCart(@Body() input: IUpdateCartBodyrequest, @Request() request: any): Promise<any> {
+    @Post('update-food-in-cart')
+    public async updateCart(@Body() input: IUpdateFoodInCartBodyrequest, @Request() request: any): Promise<any> {
         try {
             const { foodId, sellerId, quantity } = input;
             //Check xem người dùng đăng nhập chưa
@@ -69,22 +58,32 @@ export class OrderController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
+            //Lấy cart của người dùng
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
             const newCart = new Orders({
                 userId: userId,
-                sellerId: sellerId,
+                sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
                 createdAt: new Date(),
                 purchasedAt: null,
                 deliveryCost: 0,
                 orderStatus: OrderStatus.Cart
             })
+
+            
+            //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
             if (!cartOfUser) {
                 cartOfUser = newCart;
                 await cartOfUser.save();
             } else {
                 cartOfUser.update(newCart);
+            }
+
+            
+            // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
+            if(sellerId.toString() !== cartOfUser.sellerId.toString()){
+                this.setStatus(400);
+                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
             }
 
             // Tìm đồ ăn theo id
@@ -121,9 +120,14 @@ export class OrderController extends Controller {
         }
     }
 
+    /**
+     * @summary for user
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
     @Security("jwt")
-    @Get('purchase')
-    public async purchase(@Request() request: any): Promise<any> {
+    @Get('create-order')
+    public async createOrder(@Request() request: any): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
@@ -145,11 +149,51 @@ export class OrderController extends Controller {
             //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
             cartOfUser.orderStatus = OrderStatus.WaitingApproved;
             await cartOfUser.update(cartOfUser)
-            //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
 
+            //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
+            
 
 
             return successResponse(cartOfUser)
+        } catch (error) {
+            this.setStatus(500);
+            return failedResponse(`Caught error ${error}`, 'ServiceException');
+        }
+    }
+
+    /**
+     * @summary for seller
+     * status: 2 (Shipping), 3 (Rejected)
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Security("jwt")
+    @Post('approve-order')
+    public async approveOrder(@Body() input: IApproveOrder, @Request() request: any, ): Promise<any> {
+        try {
+            const {orderId, status} = input;
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await User.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            //Lấy order của người dùng
+            const orderOfUser = await Orders.findOne({ _id: orderId});
+            
+            const cloneOrderOfUser: IOrders = {
+                sellerId: orderOfUser.sellerId,
+                userId: orderOfUser.userId,
+                createdAt: new Date(), // Lấy thời điểm tạo đơn là thời điểm shop duyệt đơn
+                purchasedAt: undefined,
+                deliveryCost: orderOfUser.deliveryCost,
+                orderStatus: status // Chuyển sang status được truyền vào
+            }
+
+            await orderOfUser.update(cloneOrderOfUser)
+            
+            return successResponse(orderOfUser)
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
