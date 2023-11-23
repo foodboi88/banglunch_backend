@@ -1,5 +1,5 @@
 import jwt, { Secret } from "jsonwebtoken";
-import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Post, Route, Tags } from "tsoa";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
 import { OrderStatus } from "../../shared/enums/order.enums";
@@ -7,8 +7,6 @@ import { failedResponse, instanceOfFailedResponseType, successResponse } from ".
 import Orders from "../orders/orders.model";
 import Users from "./users.model";
 import { ActiveStatus, IRefreshTokenReq, IUserDB, IUserLogin, IUserRegister } from "./users.types";
-import { getOrdersBySeller } from "./users.queries";
-
 
 @Route('users')
 @Tags('Users')
@@ -151,27 +149,6 @@ export class UserController extends Controller {
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
-        }
-    }
-
-    @Security("jwt")
-    @Get('orders-by-seller')
-    public async getOrdersBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
-        try {
-            const token = request.headers.authorization.split(' ')[1];
-            const userId = await Users.getIdFromToken(token);
-            if (!userId) {
-                this.setStatus(401);
-                return failedResponse('Unauthorized', 'Unauthorized');
-            }
-
-            const res = await Users.aggregate(getOrdersBySeller(userId));
-
-            return successResponse(res)
-
-        } catch (err) {
-            this.setStatus(500);
-            return failedResponse('Execute service went wrong', 'ServiceException');
         }
     }
 }

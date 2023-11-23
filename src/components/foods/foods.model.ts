@@ -43,7 +43,7 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
     },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'sellerId'
+        ref: 'Users'
     },
     createdAt: Date,
     deletedAt: {
@@ -62,6 +62,6 @@ FoodSchema.set('toJSON', {
     transform: function (doc, ret) { delete ret._id }
 });
 
-const Food = mongoose.model<FoodDocument, FoodModel>('foods', FoodSchema);
+const Foods = mongoose.model<FoodDocument, FoodModel>('foods', FoodSchema);
 
-export default Food;
+export default Foods;

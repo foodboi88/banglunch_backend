@@ -165,28 +165,6 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"IFoodEdit": {
-				"properties": {
-					"title": {
-						"type": "string"
-					},
-					"content": {
-						"type": "string"
-					},
-					"price": {
-						"type": "number",
-						"format": "double"
-					},
-					"category": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					}
-				},
-				"type": "object",
-				"additionalProperties": true
-			},
 			"SellerType": {
 				"enum": [
 					"ARCHITECT",
@@ -458,30 +436,6 @@
 				}
 			}
 		},
-		"/users/orders-by-seller": {
-			"get": {
-				"operationId": "GetOrdersBySeller",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/orders/cart-by-user": {
 			"get": {
 				"operationId": "GetCartByUser",
@@ -600,6 +554,31 @@
 						}
 					}
 				}
+			}
+		},
+		"/orders/orders-by-seller": {
+			"get": {
+				"operationId": "GetOrdersBySeller",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "for seller",
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/product-images": {
@@ -736,7 +715,7 @@
 				}
 			}
 		},
-		"/foods": {
+		"/foods/create-food": {
 			"post": {
 				"operationId": "CreateFood",
 				"responses": {
@@ -772,12 +751,12 @@
 				}
 			}
 		},
-		"/foods/home": {
+		"/foods/get-foods-of-my-shop": {
 			"get": {
-				"operationId": "GetHomeProducts",
+				"operationId": "GetFoodsOfMyShop",
 				"responses": {
 					"200": {
-						"description": "successResponse",
+						"description": "200 - Return message and status",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -785,147 +764,7 @@
 						}
 					}
 				},
-				"description": "Get home products\r\nType = 'latest' or 'mostView' or 'mostQuantityPurchased' or 'mostLike' or 'freeProduct'",
-				"tags": [
-					"Foods"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "size",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "type",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/foods/filter": {
-			"get": {
-				"operationId": "GetProductsByFilter",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Get items by filter designToolId, collectionId, size, offset, name",
-				"tags": [
-					"Foods"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "name",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "categoryId",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "sellerId",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/foods/by-id": {
-			"get": {
-				"operationId": "GetProductById",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Foods"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/foods/my-shop": {
-			"get": {
-				"operationId": "GetProducts",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
+				"summary": "for seller",
 				"tags": [
 					"Foods"
 				],
@@ -934,104 +773,7 @@
 						"jwt": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "size",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "offset",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/foods/delete-food-by-id": {
-			"delete": {
-				"operationId": "DeleteProductById",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Foods"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "productId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/foods/edit-product/{idProduct}": {
-			"put": {
-				"operationId": "EditProductById",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Foods"
-				],
-				"security": [
-					{
-						"jwt": [
-							"seller"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "idProduct",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IFoodEdit"
-							}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/sellers/register": {
@@ -1318,6 +1060,116 @@
 						}
 					}
 				}
+			}
+		},
+		"/delivery/create-shipping-order": {
+			"post": {
+				"operationId": "CreateShippingOrder",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "Create a shipping order - GIAOHANGNHANH",
+				"tags": [
+					"Delivery"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICaculateShippingCostInput"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/delivery/get-province": {
+			"post": {
+				"operationId": "GetProvince",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "Get provinces - GIAOHANGNHANH",
+				"tags": [
+					"Delivery"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/delivery/get-district-by-province": {
+			"post": {
+				"operationId": "GetDistrictsByProvince",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "Get districts by province - GIAOHANGNHANH",
+				"tags": [
+					"Delivery"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/delivery/get-ward-by-district": {
+			"post": {
+				"operationId": "GetWardsByDistrict",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "Get districts by province - GIAOHANGNHANH",
+				"tags": [
+					"Delivery"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		}
 	},

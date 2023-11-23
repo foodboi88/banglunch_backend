@@ -4,9 +4,9 @@ import { failedResponse, successResponse } from "../../utils/http";
 import Food from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
 import Sellers from "../sellers/sellers.model";
-import User from "../users/users.model";
+import { default as User, default as Users } from "../users/users.model";
 import { default as Orders } from "./orders.model";
-import { getCartByUserId } from "./orders.queries";
+import { getCartByUserId, getOrdersBySeller } from "./orders.queries";
 import { IApproveOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
 
 
@@ -61,27 +61,27 @@ export class OrderController extends Controller {
             //Lấy cart của người dùng
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
-            const newCart = new Orders({
+            const newCart: IOrders = {
                 userId: userId,
                 sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
                 createdAt: new Date(),
                 purchasedAt: null,
                 deliveryCost: 0,
                 orderStatus: OrderStatus.Cart
-            })
-
-            
-            //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
-            if (!cartOfUser) {
-                cartOfUser = newCart;
-                await cartOfUser.save();
-            } else {
-                cartOfUser.update(newCart);
             }
 
-            
+
+            //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
+            if (!cartOfUser) {
+                cartOfUser = new Orders(newCart);
+                await cartOfUser.save();
+            } else {
+                await cartOfUser.update(newCart); // update chỉ nhận param là 1 object thường
+            }
+
+
             // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
-            if(sellerId.toString() !== cartOfUser.sellerId.toString()){
+            if (sellerId.toString() !== cartOfUser.sellerId.toString()) {
                 this.setStatus(400);
                 return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
             }
@@ -151,7 +151,7 @@ export class OrderController extends Controller {
             await cartOfUser.update(cartOfUser)
 
             //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
-            
+
 
 
             return successResponse(cartOfUser)
@@ -169,9 +169,9 @@ export class OrderController extends Controller {
      */
     @Security("jwt")
     @Post('approve-order')
-    public async approveOrder(@Body() input: IApproveOrder, @Request() request: any, ): Promise<any> {
+    public async approveOrder(@Body() input: IApproveOrder, @Request() request: any,): Promise<any> {
         try {
-            const {orderId, status} = input;
+            const { orderId, status } = input;
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
             if (!userId) {
@@ -180,8 +180,8 @@ export class OrderController extends Controller {
             }
 
             //Lấy order của người dùng
-            const orderOfUser = await Orders.findOne({ _id: orderId});
-            
+            const orderOfUser = await Orders.findOne({ _id: orderId });
+
             const cloneOrderOfUser: IOrders = {
                 sellerId: orderOfUser.sellerId,
                 userId: orderOfUser.userId,
@@ -192,11 +192,37 @@ export class OrderController extends Controller {
             }
 
             await orderOfUser.update(cloneOrderOfUser)
-            
+
             return successResponse(orderOfUser)
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
+        }
+    }
+
+    /**
+     * @summary for seller
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Security("jwt")
+    @Get('orders-by-seller')
+    public async getOrdersBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await Users.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            const res = await Orders.aggregate(getOrdersBySeller(userId));
+
+            return successResponse(res)
+
+        } catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
         }
     }
 }
