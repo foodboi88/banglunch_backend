@@ -5,7 +5,7 @@ import { failedResponse } from "../../utils/http";
 import Orders from "../orders/orders.model";
 import { IOrders } from "../orders/orders.types";
 import Users from "../users/users.model";
-import { ICaculateShippingCostInput } from "./delivery.types";
+import { ICaculateShippingCostInput, ICreateShippingOrder } from "./delivery.types";
 
 @Route("delivery")
 @Tags("Delivery")
@@ -56,7 +56,8 @@ export class DeliveryController extends Controller {
                 createdAt: cartOfUser.createdAt ? cartOfUser.createdAt : new Date(),
                 purchasedAt: null,
                 deliveryCost: response.data.data.total, // Cập nhật giá vận chuyển mới cho cart để tiện convert sang order
-                orderStatus: OrderStatus.Cart
+                orderStatus: OrderStatus.Cart,
+                expectedDeliveryTime: null
             }
             const newCartMongo = new Orders(newCart)
             if (!cartOfUser) { // Chưa có thì thêm mới cart
@@ -75,13 +76,13 @@ export class DeliveryController extends Controller {
 
     /**
      * @summary Create a shipping order - GIAOHANGNHANH
-     * @param {ICaculateShippingCostInput}
+     * @param {ICreateShippingOrder}
      * @returns {Promise<any>} 200 - Return message and status
      * @returns {Promise<any>} 400 - Return error message
      */
     @Security('jwt')
     @Post('/create-shipping-order')
-    public async createShippingOrder(@Request() request: any, @Body() body: ICaculateShippingCostInput): Promise<any> {
+    public async createShippingOrder(@Request() request: any, @Body() body: ICreateShippingOrder): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await Users.getIdFromToken(token);
@@ -90,49 +91,23 @@ export class DeliveryController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
+            const {fromWardCode, toWardCode, toDistrictId, items} = body;
+
             const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', {
                 "payment_type_id": 2,
-                "note": "Tintest 123",
-                "from_ward_code": "20314",
+                "from_ward_code": fromWardCode, // Sau nay lam truong nay
                 "required_note": "KHONGCHOXEMHANG",
-                "return_phone": "0332190458",
-                "return_address": "39 NTT",
-                "return_district_id": null,
-                "return_ward_code": "20107",
-                "client_order_code": "",
                 "to_name": "TinTest124",
                 "to_phone": "0987654321",
                 "to_address": "72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam",
-                "to_ward_code": "20107",
-                "to_district_id": 1442,
-                "cod_amount": 200000,
-                "content": "ABCDEF",
+                "to_ward_code": toWardCode, // Sau nay lam truong nay
+                "to_district_id": toDistrictId, // Sau nay lam truong nay
                 "weight": 200,
-                "length": 15,
-                "width": 15,
-                "height": 15,
-                "pick_station_id": 0,
-                "insurance_value": 0,
-                "service_id": 0,
-                "service_type_id": 2,
-                "coupon": null,
-                "pick_shift": [
-                    2
-                ],
-                "items": [
-                    {
-                        "name": "Áo Polo",
-                        "code": "Polo123",
-                        "quantity": 1,
-                        "price": 200000,
-                        "length": 12,
-                        "width": 12,
-                        "height": 12,
-                        "category": {
-                            "level1": "Áo"
-                        }
-                    }
-                ]
+                "length": 1,
+                "width": 1,
+                "height": 1,
+                "service_type_id": 2, 
+                "items": items
             }, {
                 headers: {
                     'Token': `ee813073-822e-11ee-96dc-de6f804954c9`,
@@ -140,9 +115,6 @@ export class DeliveryController extends Controller {
                     'Content-Type': 'application/json'
                 }
             })
-
-
-
             return response.data
         } catch (error) {
             this.setStatus(500);

@@ -7,7 +7,7 @@ import Sellers from "../sellers/sellers.model";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Orders } from "./orders.model";
 import { getCartByUserId, getOrdersBySeller } from "./orders.queries";
-import { IApproveOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
+import { IApproveOrder, ICreateOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
 
 
 @Route("orders")
@@ -67,7 +67,8 @@ export class OrderController extends Controller {
                 createdAt: new Date(),
                 purchasedAt: null,
                 deliveryCost: 0,
-                orderStatus: OrderStatus.Cart
+                orderStatus: OrderStatus.Cart,
+                expectedDeliveryTime: null
             }
 
 
@@ -126,8 +127,8 @@ export class OrderController extends Controller {
      * @returns {Promise<any>} 400 - Return error message
      */
     @Security("jwt")
-    @Get('create-order')
-    public async createOrder(@Request() request: any): Promise<any> {
+    @Post('create-order')
+    public async createOrder(@Request() request: any, @Body() input: ICreateOrder): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
@@ -146,12 +147,19 @@ export class OrderController extends Controller {
                 this.setStatus(400);
                 return failedResponse('Shop chưa mở cửa, vui lòng chờ', 'ClosedShop');
             }
+
+
             //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
             cartOfUser.orderStatus = OrderStatus.WaitingApproved;
+
+            //Lưu giá vận chuyển 
+            const {deliveryCost, expectedDeliveryTime} = input;
+            cartOfUser.deliveryCost = deliveryCost;
+            cartOfUser.expectedDeliveryTime = expectedDeliveryTime;
             await cartOfUser.update(cartOfUser)
 
             //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
-
+            
 
 
             return successResponse(cartOfUser)
@@ -188,7 +196,8 @@ export class OrderController extends Controller {
                 createdAt: new Date(), // Lấy thời điểm tạo đơn là thời điểm shop duyệt đơn
                 purchasedAt: undefined,
                 deliveryCost: orderOfUser.deliveryCost,
-                orderStatus: status // Chuyển sang status được truyền vào
+                orderStatus: status, // Chuyển sang status được truyền vào,
+                expectedDeliveryTime: undefined
             }
 
             await orderOfUser.update(cloneOrderOfUser)
