@@ -100,6 +100,24 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"ICreateOrder": {
+				"properties": {
+					"deliveryCost": {
+						"type": "number",
+						"format": "double"
+					},
+					"expectedDeliveryTime": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"deliveryCost",
+					"expectedDeliveryTime"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"IApproveOrder": {
 				"properties": {
 					"orderId": {
@@ -277,7 +295,6 @@
 					"name",
 					"quantity",
 					"height",
-					"weight",
 					"length",
 					"width"
 				],
@@ -322,6 +339,34 @@
 					"from_district_id",
 					"to_district_id",
 					"to_ward_code",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ICreateShippingOrder": {
+				"properties": {
+					"fromWardCode": {
+						"type": "string"
+					},
+					"toWardCode": {
+						"type": "string"
+					},
+					"toDistrictId": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/IShippedFood"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"fromWardCode",
+					"toWardCode",
+					"toDistrictId",
 					"items"
 				],
 				"type": "object",
@@ -497,7 +542,7 @@
 			}
 		},
 		"/orders/create-order": {
-			"get": {
+			"post": {
 				"operationId": "CreateOrder",
 				"responses": {
 					"200": {
@@ -518,7 +563,17 @@
 						"jwt": []
 					}
 				],
-				"parameters": []
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateOrder"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/orders/approve-order": {
@@ -751,7 +806,55 @@
 				}
 			}
 		},
-		"/foods/get-foods-of-my-shop": {
+		"/foods/get-home-food": {
+			"get": {
+				"operationId": "GetHomeFoods",
+				"responses": {
+					"200": {
+						"description": "successResponse",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Get home products\r\nType = 'latest' or 'mostView' or 'mostQuantityPurchased' or 'mostLike' or 'freeProduct'",
+				"tags": [
+					"Foods"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "size",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/foods/get-foods-by-shop": {
 			"get": {
 				"operationId": "GetFoodsOfMyShop",
 				"responses": {
@@ -764,16 +867,20 @@
 						}
 					}
 				},
-				"summary": "for seller",
 				"tags": [
 					"Foods"
 				],
-				"security": [
+				"security": [],
+				"parameters": [
 					{
-						"jwt": []
+						"in": "query",
+						"name": "shopId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
 					}
-				],
-				"parameters": []
+				]
 			}
 		},
 		"/sellers/register": {
@@ -1090,7 +1197,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ICaculateShippingCostInput"
+								"$ref": "#/components/schemas/ICreateShippingOrder"
 							}
 						}
 					}

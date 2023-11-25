@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Get, Post, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
 import Category from "../categories/categories.model";
 import FoodCategory from "../food-categories/food-categories.model";
 import User from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
 import { IFoodInput } from "./foods.types";
+import { getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts } from "./foods.queries";
 const crypto = require('crypto');
 
 
@@ -69,52 +70,52 @@ export class ProductController extends Controller {
     }
 
 
-    // /**
-    //  * Get home products
-    //  * Type = 'latest' or 'mostView' or 'mostQuantityPurchased' or 'mostLike' or 'freeProduct'
-    //  * 
-    //  * @param request 
-    //  * @param size 
-    //  * @param offset 
-    //  * @param type 
-    //  * @returns successResponse
-    //  */
-    // @Get('get-home-food')
-    // public async getHomeFoods(@Query() size?: number, @Query() offset?: number, @Query() type?: string): Promise<any> {
-    //     //validate size and offset
-    //     size = size ? size : 10;
-    //     offset = offset ? offset : 0;
-    //     type = type ? type : 'latest';
-    //     try {
-    //         var data;
-    //         switch (type) {
-    //             case 'latest':
-    //                 data = await Food.aggregate(getLatestProducts(size, offset));
-    //                 break;
-    //             case 'mostView':
-    //                 data = await Food.aggregate(getMostViewProducts(size, offset));
-    //                 break;
-    //             case 'mostQuantityPurchased':
-    //                 data = await Food.aggregate(getMostQuantityPurchasedProducts(size, offset));
-    //                 break;
-    //             case 'mostLike':
-    //                 data = await Food.aggregate(getMostLikeProducts(size, offset));
-    //                 break;
-    //             default:
-    //                 data = await Food.aggregate(getLatestProducts(size, offset));
-    //                 break;
-    //         }
-    //         if (data.length === 0 || data[0].items.length === 0) {
-    //             return successResponse([]);
-    //         }
-    //         const result = data[0];
-    //         return successResponse(result);
-    //     }
-    //     catch (err) {
-    //         this.setStatus(500);
-    //         return failedResponse('Execute service went wrong', 'ServiceException');
-    //     }
-    // }
+    /**
+     * Get home products
+     * Type = 'latest' or 'mostView' or 'mostQuantityPurchased' or 'mostLike' or 'freeProduct'
+     * 
+     * @param request 
+     * @param size 
+     * @param offset 
+     * @param type 
+     * @returns successResponse
+     */
+    @Get('get-home-food')
+    public async getHomeFoods(@Query() size?: number, @Query() offset?: number, @Query() type?: string): Promise<any> {
+        //validate size and offset
+        size = size ? size : 10;
+        offset = offset ? offset : 0;
+        type = type ? type : 'latest';
+        try {
+            var data;
+            switch (type) {
+                case 'latest':
+                    data = await Food.aggregate(getLatestProducts(size, offset));
+                    break;
+                case 'mostView':
+                    data = await Food.aggregate(getMostViewProducts(size, offset));
+                    break;
+                case 'mostQuantityPurchased':
+                    data = await Food.aggregate(getMostQuantityPurchasedProducts(size, offset));
+                    break;
+                case 'mostLike':
+                    data = await Food.aggregate(getMostLikeProducts(size, offset));
+                    break;
+                default:
+                    data = await Food.aggregate(getLatestProducts(size, offset));
+                    break;
+            }
+            if (data.length === 0 || data[0].items.length === 0) {
+                return successResponse([]);
+            }
+            const result = data[0];
+            return successResponse(result);
+        }
+        catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
 
     // @Get("get-food-by-id")
     // public async getFoodById(@Request() request: any, @Query() id: string): Promise<any> {
@@ -137,23 +138,13 @@ export class ProductController extends Controller {
     // }
 
     /**
-     * @summary for seller
      * @returns {Promise<any>} 200 - Return message and status
      * @returns {Promise<any>} 400 - Return error message
      */
-    @Security("jwt")
-    @Get("get-foods-of-my-shop")
-    public async getFoodsOfMyShop(@Request() request: any): Promise<any> {
+    @Get("get-foods-by-shop")
+    public async getFoodsOfMyShop(@Request() request: any, @Query() shopId: string): Promise<any> {
         try {
-            const token = request.headers.authorization.split(' ')[1];
-            //verify token
-            const sellerId = await User.getIdFromToken(token);
-            if (!sellerId) {
-                this.setStatus(401);
-                return failedResponse('Token is not valid', 'Unauthorized');
-            }
-
-            const foodsBySeller = await Foods.find({ sellerId: sellerId })
+            const foodsBySeller = await Foods.find({ sellerId: shopId })
             return successResponse(foodsBySeller);
         }
         catch (err) {

@@ -70,6 +70,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ICreateOrder": {
+        "dataType": "refObject",
+        "properties": {
+            "deliveryCost": {"dataType":"double","required":true},
+            "expectedDeliveryTime": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IApproveOrder": {
         "dataType": "refObject",
         "properties": {
@@ -140,7 +149,7 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "quantity": {"dataType":"double","required":true},
             "height": {"dataType":"double","required":true},
-            "weight": {"dataType":"double","required":true},
+            "weight": {"dataType":"double"},
             "length": {"dataType":"double","required":true},
             "width": {"dataType":"double","required":true},
         },
@@ -156,6 +165,17 @@ const models: TsoaRoute.Models = {
             "from_district_id": {"dataType":"double","required":true},
             "to_district_id": {"dataType":"double","required":true},
             "to_ward_code": {"dataType":"string","required":true},
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ICreateShippingOrder": {
+        "dataType": "refObject",
+        "properties": {
+            "fromWardCode": {"dataType":"string","required":true},
+            "toWardCode": {"dataType":"string","required":true},
+            "toDistrictId": {"dataType":"double","required":true},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
         },
         "additionalProperties": true,
@@ -299,7 +319,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/orders/create-order',
+        app.post('/orders/create-order',
             authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(OrderController)),
             ...(fetchMiddlewares<RequestHandler>(OrderController.prototype.createOrder)),
@@ -307,6 +327,7 @@ export function RegisterRoutes(app: express.Router) {
             function OrderController_createOrder(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    input: {"in":"body","name":"input","required":true,"ref":"ICreateOrder"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -490,14 +511,41 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/foods/get-foods-of-my-shop',
-            authenticateMiddleware([{"jwt":[]}]),
+        app.get('/foods/get-home-food',
+            ...(fetchMiddlewares<RequestHandler>(ProductController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getHomeFoods)),
+
+            function ProductController_getHomeFoods(request: any, response: any, next: any) {
+            const args = {
+                    size: {"in":"query","name":"size","dataType":"double"},
+                    offset: {"in":"query","name":"offset","dataType":"double"},
+                    type: {"in":"query","name":"type","dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ProductController();
+
+
+              const promise = controller.getHomeFoods.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/foods/get-foods-by-shop',
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getFoodsOfMyShop)),
 
             function ProductController_getFoodsOfMyShop(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    shopId: {"in":"query","name":"shopId","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -712,7 +760,7 @@ export function RegisterRoutes(app: express.Router) {
             function DeliveryController_createShippingOrder(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    body: {"in":"body","name":"body","required":true,"ref":"ICaculateShippingCostInput"},
+                    body: {"in":"body","name":"body","required":true,"ref":"ICreateShippingOrder"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

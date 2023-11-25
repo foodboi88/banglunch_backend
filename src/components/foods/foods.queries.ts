@@ -149,9 +149,9 @@ export const lookUpImage = () => ([
 const lookUpMainImage = () => ([
     {
         $lookup: {
-            from: "productimages",
+            from: "gallery",
             let: {
-                productId: "$_id",
+                foodId: "$_id",
             },
             pipeline: [
                 {
@@ -160,8 +160,8 @@ const lookUpMainImage = () => ([
                             $and: [
                                 {
                                     $eq: [
-                                        "$productId",
-                                        "$$productId",
+                                        "$foodId",
+                                        "$$foodId",
                                     ],
                                 },
                                 {

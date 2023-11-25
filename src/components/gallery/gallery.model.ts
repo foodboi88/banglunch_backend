@@ -19,7 +19,7 @@ const productImageSchema = new mongoose.Schema<ProductImageDocument, ProductImag
     },
     productId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Product'
+        ref : 'foods'
     },
     createdAt : Date,
     updatedAt : Date
