@@ -586,5 +586,96 @@ export const getProductByUserId = (size: number, offset: number): Array<Record<s
 export const getProductByCollectionId = (collectionId: string, size: number, offset: number): Array<Record<string, any>> => [
 ]
 
-
+//Get detail food by id (food + gallery + user + category + comments) 
+export const getDetailFoodById = (foodId: string, size?: number, offset?: number): Array<Record<string, any>> => [
+    {
+      $match:
+        /**
+         * query: The query in MQL.
+         */
+  
+        {
+          _id: new ObjectId(foodId),
+        },
+    },
+    {
+      $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+          from: "users",
+          localField: "sellerId",
+          foreignField: "_id",
+          as: "users",
+        },
+    },
+    {
+        $unwind: "$users",
+    },
+    {
+      $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+          from: "gallery",
+          localField: "_id",
+          foreignField: "foodId",
+          as: "gallery",
+        },
+    },
+    {
+      $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+          from: "food_categories",
+          let: {
+            foodId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$foodId", "$$foodId"],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                as: "categories",
+              },
+            },
+            {
+              $unwind: "$categories",
+            },
+          ],
+          as: "food_categories",
+        },
+    },
+  ]
 

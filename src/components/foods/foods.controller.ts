@@ -5,7 +5,7 @@ import FoodCategory from "../food-categories/food-categories.model";
 import User from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
 import { IFoodInput } from "./foods.types";
-import { getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts } from "./foods.queries";
+import { getDetailFoodById, getLatestProducts, getMostLikeProducts, getMostQuantityPurchasedProducts, getMostViewProducts } from "./foods.queries";
 const crypto = require('crypto');
 
 
@@ -117,25 +117,25 @@ export class ProductController extends Controller {
         }
     }
 
-    // @Get("get-food-by-id")
-    // public async getFoodById(@Request() request: any, @Query() id: string): Promise<any> {
-    //     try {
-    //         const product = await Foods.aggregate(getProductById(id));
-    //         //increase views
-    //         await Food.findByIdAndUpdate(id, { views: product[0].info.views + 0.5 }, { new: true });
+    @Get("get-food-by-id")
+    public async getFoodById(@Request() request: any, @Query() id: string): Promise<any> {
+        try {
+            const product = await Foods.aggregate(getDetailFoodById(id));
+            //increase views
+            await Foods.findByIdAndUpdate(id, { views: product[0].views + 1 }, { new: true });
 
-    //         if (!product) {
-    //             this.setStatus(404);
-    //             return failedResponse('Food not found', 'NotFound');
-    //         }
+            if (!product) {
+                this.setStatus(404);
+                return failedResponse('Food not found', 'NotFound');
+            }
 
-    //         return successResponse(product[0]);
-    //     }
-    //     catch (err) {
-    //         this.setStatus(500);
-    //         return failedResponse('Execute service went wrong', 'ServiceException');
-    //     }
-    // }
+            return successResponse(product[0]);
+        }
+        catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
 
     /**
      * @returns {Promise<any>} 200 - Return message and status

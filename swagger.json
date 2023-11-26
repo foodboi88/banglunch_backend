@@ -854,6 +854,35 @@
 				]
 			}
 		},
+		"/foods/get-food-by-id": {
+			"get": {
+				"operationId": "GetFoodById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Foods"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/foods/get-foods-by-shop": {
 			"get": {
 				"operationId": "GetFoodsOfMyShop",

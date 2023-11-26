@@ -19,7 +19,7 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
             $lookup: {
                 from: "order_details",
                 let: {
-                    orderId: "$_id", // Dat ten primary key _id cua order la orderId
+                    orderId: "$_id", // Dat ten primary key _id cua order_details la orderId
                 },
 
                 pipeline: [
@@ -110,8 +110,7 @@ export const getOrdersBySeller = (id: string) => {
                                 $and: [
                                     {
                                         $eq: [
-                                            "$orderId",
-                                            // SellerId bảng hiện tại
+                                            "$orderId", // SellerId bảng hiện tại
                                             "$$orderId", // SellerId bảng quan hệ
                                         ],
                                     },
