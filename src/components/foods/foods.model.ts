@@ -50,7 +50,7 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: Date,
         default: null,
     },
-    updateAt: {
+    updatedAt: {
         type: Date,
         default: null
     }
