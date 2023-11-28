@@ -39,12 +39,13 @@ export class GalleryController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            // check product 
+            // check xem người đang muốn up file có phải chủ nhân món ăn không
             const item = await Foods.findById(foodId)
             if (item.sellerId != userInfo) {
                 this.setStatus(400)
                 return failedResponse("Bạn không có quyền", "Bad Request")
             }
+
             // Lưu
             const image_thum: any = files[0];
             const image_thumName = image_thum.originalname;
