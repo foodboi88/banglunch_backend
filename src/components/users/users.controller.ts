@@ -109,17 +109,17 @@ export class UserController extends Controller {
             if (user.role === 'user') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role });
+                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
             }
             if (user.role === 'admin') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['admin', 'user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['admin', 'user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role });
+                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
             }
             if (user.role === 'seller') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['seller', 'user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['seller', 'user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role });
+                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
             }
         } catch (error) {
             this.setStatus(500);

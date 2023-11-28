@@ -117,12 +117,13 @@ export class ProductController extends Controller {
         }
     }
 
-    @Get("get-food-by-id")
-    public async getFoodById(@Request() request: any, @Query() id: string): Promise<any> {
+    @Get("get-detail-food")
+    public async getDetailFood(@Request() request: any, @Query() foodId: string, @Query() userId: string): Promise<any> {
         try {
-            const product = await Foods.aggregate(getDetailFoodById(id));
+            
+            const product = await Foods.aggregate(getDetailFoodById(foodId, userId));
             //increase views
-            await Foods.findByIdAndUpdate(id, { views: product[0].views + 1 }, { new: true });
+            await Foods.findByIdAndUpdate(foodId, { views: product[0].views + 1 }, { new: true });
 
             if (!product) {
                 this.setStatus(404);
@@ -133,6 +134,7 @@ export class ProductController extends Controller {
         }
         catch (err) {
             this.setStatus(500);
+            console.log(err);
             return failedResponse('Execute service went wrong', 'ServiceException');
         }
     }

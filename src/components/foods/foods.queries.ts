@@ -149,7 +149,7 @@ export const lookUpImage = () => ([
 const lookUpMainImage = () => ([
     {
         $lookup: {
-            from: "gallery",
+            from: "galleries",
             let: {
                 foodId: "$_id",
             },
@@ -587,7 +587,7 @@ export const getProductByCollectionId = (collectionId: string, size: number, off
 ]
 
 //Get detail food by id (food + gallery + user + category + comments) 
-export const getDetailFoodById = (foodId: string, size?: number, offset?: number): Array<Record<string, any>> => [
+export const getDetailFoodById = (foodId: string, userId?: string, size?: number, offset?: number): Array<Record<string, any>> => [
     {
         $match:
         /**
@@ -616,9 +616,6 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
         },
     },
     {
-        $unwind: "$users",
-    },
-    {
         $lookup:
         /**
          * from: The target collection.
@@ -629,10 +626,10 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
          * let: Optional variables to use in the pipeline field stages.
          */
         {
-            from: "gallery",
+            from: "galleries",
             localField: "_id",
             foreignField: "foodId",
-            as: "gallery",
+            as: "galleries",
         },
     },
     {
@@ -675,6 +672,59 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
                 },
             ],
             as: "food_categories",
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "order_details",
+            let: {
+                foodId: "$_id",
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: ["$foodId", "$$foodId"],
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "orders",
+                        localField: "orderId",
+                        foreignField: "_id",
+                        as: "orders",
+                    },
+                },
+                {
+                    $unwind: "$orders",
+                },
+                {
+                    $match: {
+                        /**
+                         * query: The query in MQL.
+                         */
+                        $and: [
+                            { "orders.userId": new ObjectId(userId || '653157b47bd33206a8b429f8') }, // Neu ma nguoi dung chua dang nhap thi truyen tam id seller vao
+                            { "orders.orderStatus": 0 }
+                        ]
+                    }
+                }
+            ],
+            as: "order_details",
         },
     },
 ]

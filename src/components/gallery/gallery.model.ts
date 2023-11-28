@@ -29,6 +29,6 @@ gallerySchema.set('toJSON', {
     transform: function (doc, ret) { delete ret._id }
 });
 
-const Gallery = mongoose.model<GalleryDocument, GalleryModel>('ProductImage', gallerySchema);
+const Gallery = mongoose.model<GalleryDocument, GalleryModel>('galleries', gallerySchema);
 
 export default Gallery; 

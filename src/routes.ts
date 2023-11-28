@@ -494,14 +494,15 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/foods/get-food-by-id',
+        app.get('/foods/get-detail-food',
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getFoodById)),
+            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.getDetailFood)),
 
-            function ProductController_getFoodById(request: any, response: any, next: any) {
+            function ProductController_getDetailFood(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
+                    foodId: {"in":"query","name":"foodId","required":true,"dataType":"string"},
+                    userId: {"in":"query","name":"userId","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -513,7 +514,7 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new ProductController();
 
 
-              const promise = controller.getFoodById.apply(controller, validatedArgs as any);
+              const promise = controller.getDetailFood.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
