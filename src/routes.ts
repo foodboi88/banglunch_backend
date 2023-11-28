@@ -7,7 +7,7 @@ import { UserController } from './components/users/users.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { OrderController } from './components/orders/orders.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { ProductImageController } from './components/gallery/gallery.controller';
+import { GalleryController } from './components/gallery/gallery.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductController } from './components/foods/foods.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -16,6 +16,8 @@ import { SellerController } from './components/sellers/sellers.controller';
 import { OrderDetailsController } from './components/order-details/order-details.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DeliveryController } from './components/delivery/delivery.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { CommentsController } from './components/comments/comments.controller';
 import { expressAuthentication } from './middleware/auth';
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require('promise.any');
@@ -177,6 +179,16 @@ const models: TsoaRoute.Models = {
             "toWardCode": {"dataType":"string","required":true},
             "toDistrictId": {"dataType":"double","required":true},
             "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAddComment": {
+        "dataType": "refObject",
+        "properties": {
+            "foodId": {"dataType":"string","required":true},
+            "rate": {"dataType":"double","required":true},
+            "description": {"dataType":"string","required":true},
         },
         "additionalProperties": true,
     },
@@ -399,15 +411,15 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/product-images',
+        app.post('/gallery/create-food-image',
             authenticateMiddleware([{"jwt":[]}]),
             upload.array('files'),
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController.prototype.createProductImage)),
+            ...(fetchMiddlewares<RequestHandler>(GalleryController)),
+            ...(fetchMiddlewares<RequestHandler>(GalleryController.prototype.createImage)),
 
-            function ProductImageController_createProductImage(request: any, response: any, next: any) {
+            function GalleryController_createImage(request: any, response: any, next: any) {
             const args = {
-                    productId_in: {"in":"formData","name":"productId_in","required":true,"dataType":"string"},
+                    foodId: {"in":"formData","name":"foodId","required":true,"dataType":"string"},
                     files: {"in":"formData","name":"files","required":true,"dataType":"array","array":{"dataType":"file"}},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
@@ -418,66 +430,10 @@ export function RegisterRoutes(app: express.Router) {
             try {
                 validatedArgs = getValidatedArgs(args, request, response);
 
-                const controller = new ProductImageController();
+                const controller = new GalleryController();
 
 
-              const promise = controller.createProductImage.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/product-images',
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController.prototype.getProductImages)),
-
-            function ProductImageController_getProductImages(request: any, response: any, next: any) {
-            const args = {
-                    size: {"in":"query","name":"size","required":true,"dataType":"double"},
-                    offset: {"in":"query","name":"offset","required":true,"dataType":"double"},
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new ProductImageController();
-
-
-              const promise = controller.getProductImages.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/product-images/one-image',
-            authenticateMiddleware([{"jwt":[]}]),
-            upload.single('file'),
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductImageController.prototype.createOneImage)),
-
-            function ProductImageController_createOneImage(request: any, response: any, next: any) {
-            const args = {
-                    productId_in: {"in":"formData","name":"productId_in","required":true,"dataType":"string"},
-                    file: {"in":"formData","name":"file","required":true,"dataType":"file"},
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new ProductImageController();
-
-
-              const promise = controller.createOneImage.apply(controller, validatedArgs as any);
+              const promise = controller.createImage.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
@@ -877,6 +833,59 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.getWardsByDistrict.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/comments/get-comments-by-food',
+            ...(fetchMiddlewares<RequestHandler>(CommentsController)),
+            ...(fetchMiddlewares<RequestHandler>(CommentsController.prototype.getCommentsByFood)),
+
+            function CommentsController_getCommentsByFood(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    foodId: {"in":"query","name":"foodId","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new CommentsController();
+
+
+              const promise = controller.getCommentsByFood.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/comments/create-comment',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(CommentsController)),
+            ...(fetchMiddlewares<RequestHandler>(CommentsController.prototype.createComment)),
+
+            function CommentsController_createComment(request: any, response: any, next: any) {
+            const args = {
+                    data: {"in":"body","name":"data","required":true,"ref":"IAddComment"},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new CommentsController();
+
+
+              const promise = controller.createComment.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

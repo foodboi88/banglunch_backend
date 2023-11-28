@@ -497,7 +497,7 @@ export const getMostQuantityPurchasedProducts = (size: number, offset: number): 
 ]
 
 //agrigate query for get product filter by name?, designToolId?, designStyleId?, typeOfArchitectureId? paging size offset and change _id to id
-export const getProductByFilter = (name: string, categoryId: string, size: number, offset: number, sellerId: string): Array<Record<string, any>> => [
+export const getFoodsByFilter = (name: string, categoryId: string, size: number, offset: number, sellerId: string): Array<Record<string, any>> => [
     {
         $match: {
             $and: [
@@ -589,17 +589,17 @@ export const getProductByCollectionId = (collectionId: string, size: number, off
 //Get detail food by id (food + gallery + user + category + comments) 
 export const getDetailFoodById = (foodId: string, size?: number, offset?: number): Array<Record<string, any>> => [
     {
-      $match:
+        $match:
         /**
          * query: The query in MQL.
          */
-  
+
         {
-          _id: new ObjectId(foodId),
+            _id: new ObjectId(foodId),
         },
     },
     {
-      $lookup:
+        $lookup:
         /**
          * from: The target collection.
          * localField: The local join field.
@@ -609,17 +609,17 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
          * let: Optional variables to use in the pipeline field stages.
          */
         {
-          from: "users",
-          localField: "sellerId",
-          foreignField: "_id",
-          as: "users",
+            from: "users",
+            localField: "sellerId",
+            foreignField: "_id",
+            as: "users",
         },
     },
     {
         $unwind: "$users",
     },
     {
-      $lookup:
+        $lookup:
         /**
          * from: The target collection.
          * localField: The local join field.
@@ -629,14 +629,14 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
          * let: Optional variables to use in the pipeline field stages.
          */
         {
-          from: "gallery",
-          localField: "_id",
-          foreignField: "foodId",
-          as: "gallery",
+            from: "gallery",
+            localField: "_id",
+            foreignField: "foodId",
+            as: "gallery",
         },
     },
     {
-      $lookup:
+        $lookup:
         /**
          * from: The target collection.
          * localField: The local join field.
@@ -646,36 +646,35 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
          * let: Optional variables to use in the pipeline field stages.
          */
         {
-          from: "food_categories",
-          let: {
-            foodId: "$_id",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    {
-                      $eq: ["$foodId", "$$foodId"],
+            from: "food_categories",
+            let: {
+                foodId: "$_id",
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: ["$foodId", "$$foodId"],
+                                },
+                            ],
+                        },
                     },
-                  ],
                 },
-              },
-            },
-            {
-              $lookup: {
-                from: "categories",
-                localField: "categoryId",
-                foreignField: "_id",
-                as: "categories",
-              },
-            },
-            {
-              $unwind: "$categories",
-            },
-          ],
-          as: "food_categories",
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "categoryId",
+                        foreignField: "_id",
+                        as: "categories",
+                    },
+                },
+                {
+                    $unwind: "$categories",
+                },
+            ],
+            as: "food_categories",
         },
     },
-  ]
-
+]

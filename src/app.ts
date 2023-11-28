@@ -1,24 +1,23 @@
+import cors from 'cors';
 import express, {
   Response as ExResponse,
-  Request as ExRequest,
-  NextFunction,
   json,
-  urlencoded,
+  urlencoded
 } from "express";
-import { ValidateError } from "tsoa";
+import fs from 'fs';
+import mongoose from "mongoose";
 import { RegisterRoutes } from './routes';
 import swaggerUi = require('swagger-ui-express');
-import fs from 'fs';
-import cors from 'cors';
-import mongoose from "mongoose";
 
 
-import './components/users/users.controller';
-import './components/orders/orders.controller';
-import './components/foods/foods.controller';
-import './components/sellers/sellers.controller';
-import './components/order-details/order-details.controller';
+import './components/comments/comments.controller';
 import './components/delivery/delivery.controller';
+import './components/foods/foods.controller';
+import './components/gallery/gallery.controller';
+import './components/order-details/order-details.controller';
+import './components/orders/orders.controller';
+import './components/sellers/sellers.controller';
+import './components/users/users.controller';
 
 const app = express();
 
@@ -59,3 +58,4 @@ app.use(function notFoundHandler(_req, res: ExResponse) {
 });
 
 export { app };
+

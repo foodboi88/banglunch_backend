@@ -1,12 +1,10 @@
-export interface IProductImage {
+export interface IGallery {
     fileName: string;
     filePath: string;
     isMain: boolean;
-    productId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    foodId: string;
 }
 
-export interface IProductImageDB extends IProductImage {
+export interface IGalleryDB extends IGallery {
     id: string;
 }

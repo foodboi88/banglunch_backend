@@ -500,7 +500,40 @@ export const getHistoryBuyUserId = (userId: string, size: number, offset: number
             total: { $arrayElemAt: ['$count.total', 0] },
         },
     },
-
-
-
 ]
+
+//Get detail food by id (food + gallery + user + category + comments) 
+export const getOrderByFoodAndUser = (foodId: string, userId: string, size?: number, offset?: number): Array<Record<string, any>> => [
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+            userId: new ObjectId(
+                userId
+            ),
+            orderStatus: 0,
+        },
+    },
+    {
+        $lookup: {
+            from: "order_details",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "order_details",
+        },
+    },
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+            "order_details.foodId": new ObjectId(
+                foodId
+            ),
+        },
+    },
+]
+
