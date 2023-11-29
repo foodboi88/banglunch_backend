@@ -118,7 +118,7 @@ export class ProductController extends Controller {
     }
 
     @Get("get-detail-food")
-    public async getDetailFood(@Request() request: any, @Query() foodId: string, @Query() userId: string): Promise<any> {
+    public async getDetailFood(@Request() request: any, @Query() foodId: string, @Query() userId?: string): Promise<any> {
         try {
 
             const product = await Foods.aggregate(getDetailFoodById(foodId, userId));
