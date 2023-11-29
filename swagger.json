@@ -502,6 +502,32 @@
 				}
 			}
 		},
+		"/users/profile": {
+			"get": {
+				"operationId": "GetProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/orders/cart-by-user": {
 			"get": {
 				"operationId": "GetCartByUser",
@@ -743,7 +769,7 @@
 				}
 			}
 		},
-		"/foods/get-home-food": {
+		"/foods/home": {
 			"get": {
 				"operationId": "GetHomeFoods",
 				"responses": {
@@ -830,7 +856,7 @@
 		},
 		"/foods/get-foods-by-shop": {
 			"get": {
-				"operationId": "GetFoodsOfMyShop",
+				"operationId": "GetFoodsByShop",
 				"responses": {
 					"200": {
 						"description": "200 - Return message and status",

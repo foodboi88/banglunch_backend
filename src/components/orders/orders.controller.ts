@@ -3,6 +3,7 @@ import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, successResponse } from "../../utils/http";
 import Food from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
+import { IOrderDetails } from "../order-details/order-details.types";
 import Sellers from "../sellers/sellers.model";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Orders } from "./orders.model";
@@ -31,8 +32,11 @@ export class OrderController extends Controller {
             }
 
             const res = await Orders.aggregate(getCartByUserId(userId));
-
-            return successResponse(res)
+            let numberOfFood = 0;
+            res[0].order_details.forEach((item: IOrderDetails) => {
+                numberOfFood += item.quantity;
+            });
+            return successResponse({ ...res[0], numberOfFood })
 
         } catch (err) {
             this.setStatus(500);
@@ -153,13 +157,13 @@ export class OrderController extends Controller {
             cartOfUser.orderStatus = OrderStatus.WaitingApproved;
 
             //Lưu giá vận chuyển 
-            const {deliveryCost, expectedDeliveryTime} = input;
+            const { deliveryCost, expectedDeliveryTime } = input;
             cartOfUser.deliveryCost = deliveryCost;
             cartOfUser.expectedDeliveryTime = expectedDeliveryTime;
             await cartOfUser.update(cartOfUser)
 
             //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
-            
+
 
 
             return successResponse(cartOfUser)

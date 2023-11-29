@@ -2,78 +2,76 @@ import { ObjectId } from 'mongodb';
 
 // Get foods in cart by user Id
 export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
-    [
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
         {
-            $match:
-            /**
-             * query: The query in MQL.
-             */
-            {
-                userId: new ObjectId(
-                    userId
-                ),
-                orderStatus: 1,
-            },
+            userId: new ObjectId(
+                userId
+            ),
+            orderStatus: 1,
         },
-        {
-            $lookup: {
-                from: "order_details",
-                let: {
-                    orderId: "$_id", // Dat ten primary key _id cua order_details la orderId
+    },
+    {
+        $lookup: {
+            from: "order_details",
+            let: {
+                orderId: "$_id", // Dat ten primary key _id cua order_details la orderId
+            },
+
+            pipeline: [
+                //Tao duong ong moi
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: ["$orderId", "$$orderId"],
+                                },
+                            ],
+                        },
+                    },
                 },
+                {
+                    $lookup: {
+                        from: "foods",
+                        localField: "foodId",
+                        foreignField: "_id",
+                        // let: {
+                        //   foodId: "$foodId", // Dat ten primary key _id cua order la orderId
+                        // },
 
-                pipeline: [
-                    //Tao duong ong moi
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    {
-                                        $eq: ["$orderId", "$$orderId"],
-                                    },
-                                ],
-                            },
-                        },
+                        // pipeline: [ // Convert _id to id
+                        //   {
+                        //     $match: {
+                        //       $expr: {
+                        //         $and: [
+                        //           {
+                        //             $eq: ["$_id", "$$foodId"],
+                        //           },
+                        //         ],
+                        //       },
+                        //     },
+                        //   },
+                        //   {
+                        //     $project: {
+                        //       _id: 0,
+                        //       id: "$_id",
+                        //     },
+                        //   },
+                        // ],
+                        as: "foods",
                     },
-                    {
-                        $lookup: {
-                            from: "foods",
-                            localField: "foodId",
-                            foreignField: "_id",
-                            // let: {
-                            //   foodId: "$foodId", // Dat ten primary key _id cua order la orderId
-                            // },
-
-                            // pipeline: [ // Convert _id to id
-                            //   {
-                            //     $match: {
-                            //       $expr: {
-                            //         $and: [
-                            //           {
-                            //             $eq: ["$_id", "$$foodId"],
-                            //           },
-                            //         ],
-                            //       },
-                            //     },
-                            //   },
-                            //   {
-                            //     $project: {
-                            //       _id: 0,
-                            //       id: "$_id",
-                            //     },
-                            //   },
-                            // ],
-                            as: "foods",
-                        },
-                    },
-                    {
-                        $unwind: "$foods",
-                    },
-                ],
-                as: "order_details",
-            },
+                },
+                {
+                    $unwind: "$foods",
+                },
+            ],
+            as: "order_details",
         },
-    ]
+    }
 ]
 
 export const getOrdersBySeller = (id: string) => {

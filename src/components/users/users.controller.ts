@@ -1,12 +1,12 @@
 import jwt, { Secret } from "jsonwebtoken";
-import { Body, Controller, Post, Route, Tags } from "tsoa";
+import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
 import { RegisterMailHTML } from "../../service/mail-service/register-mail-html";
 import { SendMail } from "../../service/mail-service/send-mail";
 import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, instanceOfFailedResponseType, successResponse } from "../../utils/http";
 import Orders from "../orders/orders.model";
 import Users from "./users.model";
-import { ActiveStatus, IRefreshTokenReq, IUserDB, IUserLogin, IUserRegister } from "./users.types";
+import { ActiveStatus, IRefreshTokenReq, IUser, IUserDB, IUserLogin, IUserProfile, IUserRegister } from "./users.types";
 
 @Route('users')
 @Tags('Users')
@@ -109,17 +109,17 @@ export class UserController extends Controller {
             if (user.role === 'user') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
+                return successResponse({ accessToken, refreshToken, role: user.role });
             }
             if (user.role === 'admin') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['admin', 'user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['admin', 'user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
+                return successResponse({ accessToken, refreshToken, role: user.role });
             }
             if (user.role === 'seller') {
                 const accessToken = jwt.sign({ id: user.id, email: user.email, scopes: ['seller', 'user'] }, 'dqPyPxJnDS4e2iU0815m' as Secret, { expiresIn: '1d' });
                 const refreshToken = jwt.sign({ id: user.id, email: user.email, scopes: ['seller', 'user'] }, 'DQpYpXjNds4E2Iu0815M' as Secret, { expiresIn: '7d' });
-                return successResponse({ accessToken, refreshToken, role: user.role, id: user._id });
+                return successResponse({ accessToken, refreshToken, role: user.role });
             }
         } catch (error) {
             this.setStatus(500);
@@ -146,6 +146,38 @@ export class UserController extends Controller {
 
                 return successResponse({ accessToken, refreshToken });
             })
+        } catch (error) {
+            this.setStatus(500);
+            return failedResponse(`Caught error ${error}`, 'ServiceException');
+        }
+    }
+
+    //get profile user by token in header
+    @Security('jwt', ['user'])
+    @Get('profile')
+    public async getProfile(@Request() request: any): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userInfo = await Users.getUserProfile(token);
+            if (instanceOfFailedResponseType<IUser>(userInfo)) {
+                this.setStatus(400);
+                return userInfo;
+            }
+            userInfo as IUserProfile;
+
+            const result = {
+                id: userInfo._id,
+                email: userInfo.email,
+                name: userInfo.name,
+                phone: userInfo.phone,
+                address: userInfo.address,
+                dob: userInfo.dob,
+                gender: userInfo.gender,
+                createdAt: userInfo.createdAt,
+                updatedAt: userInfo.updatedAt,
+                accessToken: token,
+            }
+            return successResponse(result);
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');

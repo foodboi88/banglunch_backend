@@ -612,8 +612,11 @@ export const getDetailFoodById = (foodId: string, userId?: string, size?: number
             from: "users",
             localField: "sellerId",
             foreignField: "_id",
-            as: "users",
+            as: "seller",
         },
+    },
+    {
+        $unwind: "$seller",
     },
     {
         $lookup:
@@ -727,4 +730,34 @@ export const getDetailFoodById = (foodId: string, userId?: string, size?: number
             as: "order_details",
         },
     },
+]
+
+//get food by shop (detail food + gallery) 
+export const getFoodsByShop = (shopId: string, size?: number, offset?: number): Array<Record<string, any>> => [
+    {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+            sellerId: new ObjectId(shopId),
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "galleries",
+            localField: "_id",
+            foreignField: "foodId",
+            as: "galleries",
+        },
+    }
 ]
