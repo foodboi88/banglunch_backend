@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { OrderStatus } from '../../shared/enums/order.enums';
 
 // Get foods in cart by user Id
 export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
@@ -11,7 +12,7 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
             userId: new ObjectId(
                 userId
             ),
-            orderStatus: 1,
+            orderStatus: OrderStatus.Cart,
         },
     },
     {
@@ -37,31 +38,33 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
                 {
                     $lookup: {
                         from: "foods",
-                        localField: "foodId",
-                        foreignField: "_id",
-                        // let: {
-                        //   foodId: "$foodId", // Dat ten primary key _id cua order la orderId
-                        // },
+                        // localField: "foodId",
+                        // foreignField: "_id",
+                        let: {
+                          foodId: "$foodId", // Dat ten primary key _id cua order la orderId
+                        },
 
-                        // pipeline: [ // Convert _id to id
-                        //   {
-                        //     $match: {
-                        //       $expr: {
-                        //         $and: [
-                        //           {
-                        //             $eq: ["$_id", "$$foodId"],
-                        //           },
-                        //         ],
-                        //       },
-                        //     },
-                        //   },
-                        //   {
-                        //     $project: {
-                        //       _id: 0,
-                        //       id: "$_id",
-                        //     },
-                        //   },
-                        // ],
+                        pipeline: [ // Convert _id to id
+                          {
+                            $match: {
+                              $expr: {
+                                $and: [
+                                  {
+                                    $eq: ["$_id", "$$foodId"],
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                          {
+                            $lookup: {
+                              from: 'galleries',
+                              localField: '_id',
+                              foreignField: 'foodId',
+                              as: 'galleries'
+                            },
+                          },
+                        ],
                         as: "foods",
                     },
                 },

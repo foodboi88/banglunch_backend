@@ -100,17 +100,17 @@ export class OrderController extends Controller {
 
             //Tìm đồ ăn được đặt và update
             const orderDetail = await OrderDetails.findOne({ foodId: foodById.id, orderId: cartOfUser.id });
+            const newOrderDetail: IOrderDetails = {
+                orderId: cartOfUser.id,
+                foodId: foodById.id,
+                quantity: quantity,
+                price: foodById.price
+            }
             if (!orderDetail) {
-                const newOrderDetail = new OrderDetails({
-                    orderId: cartOfUser.id,
-                    foodId: foodById.id,
-                    quantity: quantity,
-                    price: foodById.price
-                })
                 console.log(newOrderDetail)
-                newOrderDetail.save();
+                await new OrderDetails(newOrderDetail).save();
             } else {
-                await orderDetail.update({ quantity: quantity, price: foodById.price })
+                await orderDetail.update(newOrderDetail);
             }
 
             const result = {

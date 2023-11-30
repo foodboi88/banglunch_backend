@@ -1,7 +1,8 @@
 export interface IOrderDetails {
-    orderDetailId: string,
+    orderId: string,
     foodId: string,
     quantity: number
+    price: number,
 }
 
 export interface IOrderDetailDB extends IOrderDetails {

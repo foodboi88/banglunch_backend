@@ -846,7 +846,7 @@
 					{
 						"in": "query",
 						"name": "userId",
-						"required": true,
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
