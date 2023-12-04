@@ -151,7 +151,7 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "quantity": {"dataType":"double","required":true},
             "height": {"dataType":"double","required":true},
-            "weight": {"dataType":"double"},
+            "weight": {"dataType":"double","required":true},
             "length": {"dataType":"double","required":true},
             "width": {"dataType":"double","required":true},
         },
@@ -742,7 +742,7 @@ export function RegisterRoutes(app: express.Router) {
             function DeliveryController_caculateShippingCost(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    body: {"in":"body","name":"body","required":true,"ref":"ICaculateShippingCostInput"},
+                    input: {"in":"body","name":"input","required":true,"ref":"ICaculateShippingCostInput"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -768,8 +768,8 @@ export function RegisterRoutes(app: express.Router) {
 
             function DeliveryController_createShippingOrder(request: any, response: any, next: any) {
             const args = {
+                    input: {"in":"body","name":"input","required":true,"ref":"ICreateShippingOrder"},
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    body: {"in":"body","name":"body","required":true,"ref":"ICreateShippingOrder"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

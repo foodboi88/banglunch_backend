@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Request, Route, Security, Tags } from "tsoa";
 import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse, successResponse } from "../../utils/http";
-import Food from "../foods/foods.model";
+import { default as Food, default as Foods } from "../foods/foods.model";
 import OrderDetails from "../order-details/order-details.model";
 import { IOrderDetails } from "../order-details/order-details.types";
 import Sellers from "../sellers/sellers.model";
@@ -108,9 +108,15 @@ export class OrderController extends Controller {
             }
             if (!orderDetail) {
                 console.log(newOrderDetail)
-                await new OrderDetails(newOrderDetail).save();
+                if (quantity > 0) {
+                    await new OrderDetails(newOrderDetail).save(); // Nếu số lượng > 0 thì mới lưu đồ ăn mới vào giỏ
+                }
             } else {
-                await orderDetail.update(newOrderDetail);
+                if (quantity > 0) {
+                    await orderDetail.update(newOrderDetail); // Nếu số lượng > 0 thì mới lưu số lượng mới vào giỏ
+                } else {
+                    await orderDetail.delete(orderDetail._id)
+                }
             }
 
             const result = {
@@ -141,32 +147,50 @@ export class OrderController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            //Check xem shop đã mở cửa chưa
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
             const cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
-            //Viết aggregate lấy thông tin shop mà người dùng đang mua - cart => user => sellerInfo
+
             const sellerId = cartOfUser.sellerId;
             const sellerInfo = await Sellers.findOne({ userId: sellerId });
+            //Check xem shop đã mở cửa chưa
             if (!sellerInfo.shopStatus) {
                 this.setStatus(400);
                 return failedResponse('Shop chưa mở cửa, vui lòng chờ', 'ClosedShop');
             }
 
+            const { deliveryCost, expectedDeliveryTime } = input;
 
             //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
-            cartOfUser.orderStatus = OrderStatus.WaitingApproved;
-
             //Lưu giá vận chuyển 
-            const { deliveryCost, expectedDeliveryTime } = input;
-            cartOfUser.deliveryCost = deliveryCost;
-            cartOfUser.expectedDeliveryTime = expectedDeliveryTime;
-            await cartOfUser.update(cartOfUser)
+            const OrderDTO: IOrders = {
+                sellerId: cartOfUser.sellerId,
+                userId: userId,
+                createdAt: cartOfUser.createdAt,
+                purchasedAt: null,
+                deliveryCost: deliveryCost,
+                orderStatus: OrderStatus.WaitingApproved,
+                expectedDeliveryTime: expectedDeliveryTime,
+            }
+            await cartOfUser.update(OrderDTO)
 
+            // Lưu lại giá đồ ăn hiện tại vào từng order_details
+            const currentOrderDetails = await OrderDetails.find({ orderId: cartOfUser._id }) // Lấy ra danh sách orderdetails theo id của giỏ hàng hiện tại
+            console.log(currentOrderDetails);
+            currentOrderDetails.forEach(async (item) => {
+                const foodById = await Foods.findById(item.foodId);
+                const OrderDetailDTO = {
+                    orderId: item.orderId,
+                    foodId: item.foodId,
+                    quantity: item.quantity,
+                    price: foodById.price
+                }
+                await item.update(OrderDetailDTO);
+            })
             //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
 
 
 
-            return successResponse(cartOfUser)
+            return successResponse(currentOrderDetails)
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');

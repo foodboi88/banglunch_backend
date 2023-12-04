@@ -18,8 +18,8 @@ export class DeliveryController extends Controller {
      * @returns {Promise<any>} 400 - Return error message
      */
     @Security('jwt')
-    @Post('/caculate-shipping-cost')
-    public async caculateShippingCost(@Request() request: any, @Body() body: ICaculateShippingCostInput): Promise<any> {
+    @Post('caculate-shipping-cost')
+    public async caculateShippingCost(@Request() request: any, @Body() input: ICaculateShippingCostInput): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await Users.getIdFromToken(token);
@@ -76,13 +76,12 @@ export class DeliveryController extends Controller {
 
     /**
      * @summary Create a shipping order - GIAOHANGNHANH
-     * @param {ICreateShippingOrder}
      * @returns {Promise<any>} 200 - Return message and status
      * @returns {Promise<any>} 400 - Return error message
      */
     @Security('jwt')
-    @Post('/create-shipping-order')
-    public async createShippingOrder(@Request() request: any, @Body() body: ICreateShippingOrder): Promise<any> {
+    @Post('create-shipping-order')
+    public async createShippingOrder(@Body() input: ICreateShippingOrder, @Request() request: any): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await Users.getIdFromToken(token);
@@ -91,22 +90,30 @@ export class DeliveryController extends Controller {
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
 
-            const {fromWardCode, toWardCode, toDistrictId, items} = body;
+            const { fromWardCode, toWardCode, toDistrictId, items } = input;
 
+            console.log(input)
             const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', {
                 "payment_type_id": 2,
-                "from_ward_code": fromWardCode, // Sau nay lam truong nay
+                "note": "Tintest 123",
+                "from_ward_code": fromWardCode,
                 "required_note": "KHONGCHOXEMHANG",
                 "to_name": "TinTest124",
                 "to_phone": "0987654321",
                 "to_address": "72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam",
-                "to_ward_code": toWardCode, // Sau nay lam truong nay
-                "to_district_id": toDistrictId, // Sau nay lam truong nay
+                "to_ward_code": toWardCode,
+                "to_district_id": toDistrictId,
+                "cod_amount": 200000,
+                "content": "ABCDEF",
                 "weight": 200,
                 "length": 1,
                 "width": 1,
                 "height": 1,
-                "service_type_id": 2, 
+                "service_type_id": 2,
+                "coupon": null,
+                "pick_shift": [
+                    2
+                ],
                 "items": items
             }, {
                 headers: {

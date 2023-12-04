@@ -295,6 +295,7 @@
 					"name",
 					"quantity",
 					"height",
+					"weight",
 					"length",
 					"width"
 				],

@@ -12,7 +12,7 @@ export interface IShippedFood {
     name: string,
     quantity: number,
     height: number,
-    weight?: number,
+    weight: number,
     length: number,
     width: number
 }
