@@ -41,29 +41,29 @@ export const getCartByUserId = (userId: string): Array<Record<string, any>> => [
                         // localField: "foodId",
                         // foreignField: "_id",
                         let: {
-                          foodId: "$foodId", // Dat ten primary key _id cua order la orderId
+                            foodId: "$foodId", // Dat ten primary key _id cua order la orderId
                         },
 
                         pipeline: [ // Convert _id to id
-                          {
-                            $match: {
-                              $expr: {
-                                $and: [
-                                  {
-                                    $eq: ["$_id", "$$foodId"],
-                                  },
-                                ],
-                              },
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            {
+                                                $eq: ["$_id", "$$foodId"],
+                                            },
+                                        ],
+                                    },
+                                },
                             },
-                          },
-                          {
-                            $lookup: {
-                              from: 'galleries',
-                              localField: '_id',
-                              foreignField: 'foodId',
-                              as: 'galleries'
+                            {
+                                $lookup: {
+                                    from: 'galleries',
+                                    localField: '_id',
+                                    foreignField: 'foodId',
+                                    as: 'galleries'
+                                },
                             },
-                          },
                         ],
                         as: "foods",
                     },
@@ -86,7 +86,67 @@ export const getOrdersBySeller = (id: string) => {
              */
             {
                 sellerId: new ObjectId(id),
-                orderStatus: 1, // 1 là đang đợi duyệt, 0 là đang là giỏ hàng
+                orderStatus: { $ne: 0 }, // 1 là đang đợi duyệt, 0 là đang là giỏ hàng
+            },
+        },
+        {
+            $lookup:
+            /**
+             * from: The target collection.
+             * localField: The local join field.
+             * foreignField: The target join field.
+             * as: The name for the results.
+             * pipeline: Optional pipeline to run on the foreign collection.
+             * let: Optional variables to use in the pipeline field stages.
+             */
+            {
+                from: "order_details",
+                let: {
+                    orderId: "$_id",
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: [
+                                            "$orderId", // SellerId bảng hiện tại
+                                            "$$orderId", // SellerId bảng quan hệ
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "foods",
+                            localField: "foodId",
+                            foreignField: "_id",
+                            as: "food",
+                        },
+                    },
+                    {
+                        $unwind: "$food",
+                    },
+                ],
+                as: "order_details",
+            },
+        },
+    ]
+}
+
+export const getOrdersByUser = (id: string) => {
+    return [
+        {
+            $match:
+            /**
+             * query: The query in MQL.
+             */
+            {
+                userId: new ObjectId(id),
+                orderStatus: { $ne: 0 }, // 1 là đang đợi duyệt, 0 là đang là giỏ hàng
             },
         },
         {

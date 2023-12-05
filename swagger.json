@@ -684,6 +684,31 @@
 				"parameters": []
 			}
 		},
+		"/orders/orders-by-user": {
+			"get": {
+				"operationId": "GetOrdersByUser",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "for user",
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/gallery/create-food-image": {
 			"post": {
 				"operationId": "CreateImage",

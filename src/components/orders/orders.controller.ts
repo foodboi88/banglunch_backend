@@ -7,7 +7,7 @@ import { IOrderDetails } from "../order-details/order-details.types";
 import Sellers from "../sellers/sellers.model";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Orders } from "./orders.model";
-import { getCartByUserId, getOrdersBySeller } from "./orders.queries";
+import { getCartByUserId, getOrdersBySeller, getOrdersByUser } from "./orders.queries";
 import { IApproveOrder, ICreateOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
 
 
@@ -254,6 +254,32 @@ export class OrderController extends Controller {
             }
 
             const res = await Orders.aggregate(getOrdersBySeller(userId));
+
+            return successResponse(res)
+
+        } catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
+
+    /**
+     * @summary for user
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Security("jwt")
+    @Get('orders-by-user')
+    public async getOrdersByUser(@Request() request: any): Promise<any> { // Lấy danh sách các đơn mình đang đặt
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await Users.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            const res = await Orders.aggregate(getOrdersByUser(userId));
 
             return successResponse(res)
 
