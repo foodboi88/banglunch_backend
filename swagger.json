@@ -183,6 +183,28 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"IFoodEdit": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"content": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"category": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
+			},
 			"SellerType": {
 				"enum": [
 					"ARCHITECT",
@@ -389,6 +411,22 @@
 				"required": [
 					"foodId",
 					"rate",
+					"description"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ICategory": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
 					"description"
 				],
 				"type": "object",
@@ -909,6 +947,84 @@
 				]
 			}
 		},
+		"/foods/delete-by-id": {
+			"delete": {
+				"operationId": "DeleteProductById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Foods"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "foodId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/foods/edit-food/{foodId}": {
+			"put": {
+				"operationId": "EditProductById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Foods"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "foodId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IFoodEdit"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/sellers/register": {
 			"post": {
 				"operationId": "CreateSeller",
@@ -1366,6 +1482,56 @@
 						}
 					}
 				}
+			}
+		},
+		"/categories/create": {
+			"post": {
+				"operationId": "CreateCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICategory"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/get-all": {
+			"get": {
+				"operationId": "GetCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": []
 			}
 		}
 	},

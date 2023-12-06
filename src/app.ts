@@ -13,6 +13,7 @@ import swaggerUi = require('swagger-ui-express');
 
 
 import { ValidateError } from 'tsoa';
+import './components/categories/categories.controller';
 import './components/comments/comments.controller';
 import './components/delivery/delivery.controller';
 import './components/foods/foods.controller';

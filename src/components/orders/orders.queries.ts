@@ -150,6 +150,17 @@ export const getOrdersByUser = (id: string) => {
             },
         },
         {
+            $lookup: {
+                from: "users",
+                localField: "sellerId",
+                foreignField: "_id",
+                as: "seller",
+            },
+        },
+        {
+            $unwind: "$seller",
+        },
+        {
             $lookup:
             /**
              * from: The target collection.

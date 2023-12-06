@@ -33,11 +33,25 @@ export class OrderController extends Controller {
 
             const res = await Orders.aggregate(getCartByUserId(userId));
             let numberOfFood = 0;
-            res[0].order_details.forEach((item: IOrderDetails) => {
-                numberOfFood += item.quantity;
-            });
-            return successResponse({ ...res[0], numberOfFood })
-
+            if (res) {
+                res[0].order_details.forEach((item: IOrderDetails) => {
+                    numberOfFood += item.quantity;
+                });
+                return successResponse({ ...res[0], numberOfFood })
+            } else {
+                const newCart: IOrders = {
+                    userId: userId,
+                    sellerId: '', // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
+                    createdAt: new Date(),
+                    purchasedAt: null,
+                    deliveryCost: 0,
+                    orderStatus: OrderStatus.Cart,
+                    expectedDeliveryTime: null
+                }
+                //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
+                await new Orders(newCart).save();
+                return successResponse({ ...newCart, numberOfFood })
+            }
         } catch (err) {
             this.setStatus(500);
             return failedResponse('Execute service went wrong', 'ServiceException');
@@ -158,35 +172,43 @@ export class OrderController extends Controller {
                 return failedResponse('Shop chưa mở cửa, vui lòng chờ', 'ClosedShop');
             }
 
-            const { deliveryCost, expectedDeliveryTime } = input;
-
-            //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
-            //Lưu giá vận chuyển 
-            const OrderDTO: IOrders = {
-                sellerId: cartOfUser.sellerId,
-                userId: userId,
-                createdAt: cartOfUser.createdAt,
-                purchasedAt: null,
-                deliveryCost: deliveryCost,
-                orderStatus: OrderStatus.WaitingApproved,
-                expectedDeliveryTime: expectedDeliveryTime,
-            }
-            await cartOfUser.update(OrderDTO)
-
-            // Lưu lại giá đồ ăn hiện tại vào từng order_details
+            //Check giỏ có hàng không
             const currentOrderDetails = await OrderDetails.find({ orderId: cartOfUser._id }) // Lấy ra danh sách orderdetails theo id của giỏ hàng hiện tại
             console.log(currentOrderDetails);
-            currentOrderDetails.forEach(async (item) => {
-                const foodById = await Foods.findById(item.foodId);
-                const OrderDetailDTO = {
-                    orderId: item.orderId,
-                    foodId: item.foodId,
-                    quantity: item.quantity,
-                    price: foodById.price
+            if (currentOrderDetails) { // Nếu như trong giỏ có hàng thì mới lưu thông tin cart thành order và lưu giá vào các orderDetail
+                const { deliveryCost, expectedDeliveryTime } = input;
+
+                //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
+                //Lưu giá vận chuyển 
+                const OrderDTO: IOrders = {
+                    sellerId: cartOfUser.sellerId,
+                    userId: userId,
+                    createdAt: cartOfUser.createdAt,
+                    purchasedAt: null,
+                    deliveryCost: deliveryCost,
+                    orderStatus: OrderStatus.WaitingApproved,
+                    expectedDeliveryTime: expectedDeliveryTime,
                 }
-                await item.update(OrderDetailDTO);
-            })
-            //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
+                await cartOfUser.update(OrderDTO)
+
+                // Lưu lại giá đồ ăn hiện tại vào từng order_details
+                currentOrderDetails.forEach(async (item) => {
+                    const foodById = await Foods.findById(item.foodId);
+                    const OrderDetailDTO = {
+                        orderId: item.orderId,
+                        foodId: item.foodId,
+                        quantity: item.quantity,
+                        price: foodById.price
+                    }
+                    await item.update(OrderDetailDTO);
+                })
+                //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
+
+            }
+            else {
+                this.setStatus(400);
+                return failedResponse(`Trong giỏ của bạn chưa có sản phẩm nào`, 'CartEmpty');
+            }
 
 
 

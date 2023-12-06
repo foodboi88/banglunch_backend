@@ -1,12 +1,12 @@
-import { Controller, Route, Tags, Post, Body, Get, Request, Security, Put, Query, Path, Delete } from "tsoa";
-import { successResponse, failedResponse } from "../../utils/http";
-import { ICategory } from "./categories.types";
+import { Body, Controller, Get, Post, Route, Tags } from "tsoa";
+import { failedResponse, successResponse } from "../../utils/http";
 import Category from "./categories.model";
+import { ICategory } from "./categories.types";
 
 @Route("categories")
 @Tags("Categories")
 export class CategoriesController extends Controller {
-    @Post()
+    @Post('create')
     public async createCategory(@Body() data: ICategory): Promise<any> {
         try {
             const result = await new Category(data).save();
@@ -18,7 +18,7 @@ export class CategoriesController extends Controller {
         }
     }
 
-    @Get()
+    @Get('get-all')
     public async getCategories(): Promise<any> {
         try {
             const result = await Category.find();

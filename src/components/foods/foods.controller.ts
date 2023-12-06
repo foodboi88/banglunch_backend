@@ -1,11 +1,12 @@
-import { Body, Controller, Get, Post, Query, Request, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
 import Category from "../categories/categories.model";
 import FoodCategory from "../food-categories/food-categories.model";
+import { deleteFolder } from "../gallery/gallery.controller";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
 import { getDetailFoodById, getFoodsByShop } from "./foods.queries";
-import { IFoodInput } from "./foods.types";
+import { IFoodEdit, IFoodInput } from "./foods.types";
 const crypto = require('crypto');
 
 
@@ -159,94 +160,85 @@ export class ProductController extends Controller {
         }
     }
 
-    // @Security("jwt")
-    // @Delete("delete-food-by-id")
-    // public async deleteProductById(@Request() request: any, @Query() productId: string): Promise<any> {
-    //     try {
-    //         const token = request.headers.authorization.split(' ')[1];
-    //         const user_id = await User.getIdFromToken(token);
-    //         if (!user_id) {
-    //             this.setStatus(401);
-    //             return failedResponse('Unauthorized', 'Unauthorized');
-    //         }
-    //         const role = (await User.findById(user_id)).role
-    //         const user_sell = (await Food.findById(productId)).sellerId
-    //         if (user_id != user_sell && role != "admin") {
-    //             this.setStatus(400)
-    //             return failedResponse("Bạn không có quyền xóa sản phẩm này", "Bad Request")
-    //         }
-    //         await Food.findByIdAndUpdate(productId, { deletedAt: new Date() })
-    //         const folderPath = "product/" + productId + '/file'
-    //         await deleteFolder(folderPath)
-    //         return successResponse("Xóa sản phẩm thành công")
+    @Security("jwt")
+    @Delete("delete-by-id")
+    public async deleteProductById(@Request() request: any, @Query() foodId: string): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const user_id = await User.getIdFromToken(token);
+            if (!user_id) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+            const role = (await User.findById(user_id)).role
+            const foodById = await Food.findById(foodId)
+            const user_sell = foodById.sellerId
+            if (user_id !== user_sell && role != "admin") {
+                this.setStatus(400)
+                return failedResponse("Bạn không có quyền xóa sản phẩm này", "Bad Request")
+            }
+            await Food.findByIdAndUpdate(foodId, { deletedAt: new Date() })
+            const folderPath = "product/" + foodId + '/file'
+            await deleteFolder(folderPath)
+            return successResponse(foodById);
 
 
-    //     }
-    //     catch (err) {
-    //         this.setStatus(500);
-    //         return failedResponse('Execute service went wrong', 'ServiceException');
-    //     }
-    // }
+        }
+        catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
 
-    // @Security("jwt", ['seller'])
-    // @Put("edit-product/{idProduct}")
-    // public async editProductById(@Request() request: any, @Path() idProduct: string, @Body() data: IFoodEdit): Promise<any> {
-    //     try {
-    //         const token = request.headers.authorization.split(' ')[1];
-    //         const user_id = await User.getIdFromToken(token);
-    //         if (!user_id) {
-    //             this.setStatus(401);
-    //             return failedResponse('Unauthorized', 'Unauthorized');
-    //         }
-    //         let product = await Food.findById(idProduct)
-    //         if (user_id != product.sellerId) {
-    //             this.setStatus(400)
-    //             return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này", "Bad Request")
-    //         }
-    //         // if(product.quantityPurchased > 0 ){ // Sửa được chứ không phải không sửa
-    //         //     this.setStatus(400)
-    //         //     return failedResponse("Sản phẩm đã được bán, bạn không thể chỉnh sửa được","Bad Request")
-    //         // }
-    //         if (data.content) {
-    //             product.content = data.content
-    //         }
-    //         if (data.title) {
-    //             product.title = data.title
-    //         }
-    //         if (data.price) {
-    //             product.price = data.price
-    //         }
-    //         await product.save()
-    //         if (data.category && data.category.length > 0) {
-    //             await FoodCategory.deleteMany({ productId: idProduct })
-    //             for (let i = 0; i < data.category.length; i++) {
-    //                 const typeOfArchitecture = Category.find({ _id: data.category[i] });
-    //                 if (!typeOfArchitecture) {
-    //                     this.setStatus(400);
-    //                     return failedResponse('TypeOfArchitectureId is not valid', 'BadRequest');
-    //                 }
-    //             }
-    //             for (let i = 0; i < data.category.length; i++) {
-    //                 const productTypeOfArchitecture = {
-    //                     productId: product._id,
-    //                     typeOfArchitectureId: data.category[i]
-    //                 }
-    //                 await new FoodCategory(productTypeOfArchitecture).save();
-    //             }
-    //         }
-    //         let productNew = await Food.aggregate(getProductById(idProduct))
-    //         if (productNew.length > 0) {
-    //             productNew = productNew[0]
-    //         } else {
-    //             this.setStatus(400)
-    //             return failedResponse("Không tìm thấy sản phẩm", "Bad Request")
-    //         }
-    //         return successResponse(productNew)
+    @Security("jwt", ['seller'])
+    @Put("edit-food/{foodId}")
+    public async editProductById(@Request() request: any, @Path() foodId: string, @Body() data: IFoodEdit): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const user_id = await User.getIdFromToken(token);
+            if (!user_id) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+            let food = await Food.findById(foodId)
+            if (user_id != food.sellerId) {
+                this.setStatus(400)
+                return failedResponse("Bạn không có quyền chỉnh sửa sản phầm này", "Bad Request")
+            }
+            if (data.content) {
+                food.content = data.content
+            }
+            if (data.title) {
+                food.title = data.title
+            }
+            if (data.price) {
+                food.price = data.price
+            }
+            await food.save()
 
-    //     }
-    //     catch (err) {
-    //         this.setStatus(500);
-    //         return failedResponse('Execute service went wrong', 'ServiceException');
-    //     }
-    // }
+            if (data.category && data.category.length > 0) {
+                await FoodCategory.deleteMany({ foodId: foodId })
+                // Check xem trong array category có cái nào không tồn tại trong database không
+                for (let i = 0; i < data.category.length; i++) {
+                    const category = Category.find({ _id: data.category[i] });
+                    if (!category) {
+                        this.setStatus(400);
+                        return failedResponse('Category is not existed', 'BadRequest');
+                    }
+                }
+                for (let i = 0; i < data.category.length; i++) {
+                    const foodCategory = {
+                        foodId: food._id,
+                        categoryId: data.category[i]
+                    }
+                    await new FoodCategory(foodCategory).save();
+                }
+            }
+            return successResponse(food)
+        }
+        catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
 }
