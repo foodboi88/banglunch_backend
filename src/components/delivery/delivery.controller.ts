@@ -56,7 +56,8 @@ export class DeliveryController extends Controller {
                 userId: userId,
                 sellerId: cartOfUser.sellerId ? cartOfUser.sellerId : '',
                 createdAt: cartOfUser.createdAt ? cartOfUser.createdAt : new Date(),
-                purchasedAt: null,
+                approvedAt: null,
+                rejectedAt: null,
                 deliveryCost: response.data.data.total, // Cập nhật giá vận chuyển mới cho cart để tiện convert sang order
                 orderStatus: OrderStatus.Cart,
                 expectedDeliveryTime: null

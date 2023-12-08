@@ -43,7 +43,8 @@ export class OrderController extends Controller {
                     userId: userId,
                     sellerId: '', // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
                     createdAt: new Date(),
-                    purchasedAt: null,
+                    approvedAt: null,
+                    rejectedAt: null,
                     deliveryCost: 0,
                     orderStatus: OrderStatus.Cart,
                     expectedDeliveryTime: null
@@ -83,7 +84,8 @@ export class OrderController extends Controller {
                 userId: userId,
                 sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
                 createdAt: new Date(),
-                purchasedAt: null,
+                approvedAt: null,
+                rejectedAt: null,
                 deliveryCost: 0,
                 orderStatus: OrderStatus.Cart,
                 expectedDeliveryTime: null
@@ -184,7 +186,8 @@ export class OrderController extends Controller {
                     sellerId: cartOfUser.sellerId,
                     userId: userId,
                     createdAt: cartOfUser.createdAt,
-                    purchasedAt: null,
+                    approvedAt: null,
+                    rejectedAt: null,
                     deliveryCost: deliveryCost,
                     orderStatus: OrderStatus.WaitingApproved,
                     expectedDeliveryTime: expectedDeliveryTime,
@@ -243,8 +246,9 @@ export class OrderController extends Controller {
             const cloneOrderOfUser: IOrders = {
                 sellerId: orderOfUser.sellerId,
                 userId: orderOfUser.userId,
-                createdAt: new Date(), // Lấy thời điểm tạo đơn là thời điểm shop duyệt đơn
-                purchasedAt: undefined,
+                createdAt: orderOfUser.createdAt,
+                rejectedAt: status === OrderStatus.Reject ? new Date() : null,
+                approvedAt: status === OrderStatus.Shipping ? new Date() : null, // Lấy thời điểm tạo đơn là thời điểm shop duyệt đơn
                 deliveryCost: orderOfUser.deliveryCost,
                 orderStatus: status, // Chuyển sang status được truyền vào,
                 expectedDeliveryTime: undefined

@@ -14,11 +14,12 @@ const OrdersModelSchema = new mongoose.Schema<OrdersDocument, OrdersModel>({
         ref: 'Users'
     },
     createdAt: Date,
-    purchasedAt: Date,
+    rejectedAt: Date,
+    approvedAt: Date,
     amount: Number,
     deliveryCost: Number,
     orderStatus: Number,
-    expectedDeliveryTime: Date
+    expectedDeliveryTime: Date,
 })
 
 OrdersModelSchema.set('toJSON', {

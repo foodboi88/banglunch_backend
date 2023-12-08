@@ -2,7 +2,8 @@ export interface IOrders {
     sellerId: string,
     userId: string
     createdAt: Date,
-    purchasedAt?: Date,
+    rejectedAt: Date,
+    approvedAt?: Date,
     deliveryCost: number,
     orderStatus: number,
     expectedDeliveryTime?: Date,
@@ -14,12 +15,12 @@ export interface IUpdateFoodInCartBodyrequest {
     quantity: number,
 }
 
-export interface IApproveOrder{
+export interface IApproveOrder {
     orderId: string,
     status: number,
 }
 
-export interface ICreateOrder{
+export interface ICreateOrder {
     deliveryCost: number,
     expectedDeliveryTime: Date
 }
