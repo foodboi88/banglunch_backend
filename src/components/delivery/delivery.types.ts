@@ -5,7 +5,7 @@ export interface ICaculateShippingCostInput {
     from_district_id: number,
     to_district_id: number,
     to_ward_code: string,
-    items: IShippedFood[]
+    items: string[]
 }
 
 export interface IShippedFood {
@@ -21,5 +21,5 @@ export interface ICreateShippingOrder {
     fromWardCode: string,
     toWardCode: string,
     toDistrictId: number,
-    items: IShippedFood[]
+    items: string[]
 }

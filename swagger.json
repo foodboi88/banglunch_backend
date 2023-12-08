@@ -287,43 +287,6 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"IShippedFood": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"height": {
-						"type": "number",
-						"format": "double"
-					},
-					"weight": {
-						"type": "number",
-						"format": "double"
-					},
-					"length": {
-						"type": "number",
-						"format": "double"
-					},
-					"width": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"name",
-					"quantity",
-					"height",
-					"weight",
-					"length",
-					"width"
-				],
-				"type": "object",
-				"additionalProperties": true
-			},
 			"ICaculateShippingCostInput": {
 				"properties": {
 					"service_type_id": {
@@ -350,7 +313,7 @@
 					},
 					"items": {
 						"items": {
-							"$ref": "#/components/schemas/IShippedFood"
+							"type": "string"
 						},
 						"type": "array"
 					}
@@ -381,7 +344,7 @@
 					},
 					"items": {
 						"items": {
-							"$ref": "#/components/schemas/IShippedFood"
+							"type": "string"
 						},
 						"type": "array"
 					}

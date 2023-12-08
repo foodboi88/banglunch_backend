@@ -158,19 +158,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "IShippedFood": {
-        "dataType": "refObject",
-        "properties": {
-            "name": {"dataType":"string","required":true},
-            "quantity": {"dataType":"double","required":true},
-            "height": {"dataType":"double","required":true},
-            "weight": {"dataType":"double","required":true},
-            "length": {"dataType":"double","required":true},
-            "width": {"dataType":"double","required":true},
-        },
-        "additionalProperties": true,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ICaculateShippingCostInput": {
         "dataType": "refObject",
         "properties": {
@@ -180,7 +167,7 @@ const models: TsoaRoute.Models = {
             "from_district_id": {"dataType":"double","required":true},
             "to_district_id": {"dataType":"double","required":true},
             "to_ward_code": {"dataType":"string","required":true},
-            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
+            "items": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": true,
     },
@@ -191,7 +178,7 @@ const models: TsoaRoute.Models = {
             "fromWardCode": {"dataType":"string","required":true},
             "toWardCode": {"dataType":"string","required":true},
             "toDistrictId": {"dataType":"double","required":true},
-            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"IShippedFood"},"required":true},
+            "items": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": true,
     },

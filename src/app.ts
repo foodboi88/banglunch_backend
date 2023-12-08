@@ -2,14 +2,13 @@ import cors from 'cors';
 import express, {
   Request as ExRequest,
   Response as ExResponse,
-  NextFunction,
-  json,
-  urlencoded
+  NextFunction
 } from "express";
 import fs from 'fs';
 import mongoose from "mongoose";
 import { RegisterRoutes } from './routes';
 import swaggerUi = require('swagger-ui-express');
+var bodyParser = require('body-parser');
 
 
 import { ValidateError } from 'tsoa';
@@ -43,12 +42,12 @@ const swaggerData: any = fs.readFileSync(swaggerFile, 'utf8');
 const swaggerDocument = JSON.parse(swaggerData);
 /* Swagger files end */
 
+app.use(bodyParser.json());
 app.use(
-  urlencoded({
+  bodyParser.urlencoded({
     extended: true,
   })
 );
-app.use(json());
 
 RegisterRoutes(app);
 

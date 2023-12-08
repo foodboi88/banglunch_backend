@@ -2,6 +2,8 @@ import axios from "axios";
 import { Body, Controller, Post, Request, Route, Security, Tags } from "tsoa";
 import { OrderStatus } from "../../shared/enums/order.enums";
 import { failedResponse } from "../../utils/http";
+import Foods from "../foods/foods.model";
+import { IFood } from "../foods/foods.types";
 import Orders from "../orders/orders.model";
 import { IOrders } from "../orders/orders.types";
 import Users from "../users/users.model";
@@ -92,37 +94,48 @@ export class DeliveryController extends Controller {
 
             const { fromWardCode, toWardCode, toDistrictId, items } = input;
 
-            console.log(input)
-            const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', {
-                "payment_type_id": 2,
-                "note": "Tintest 123",
-                "from_ward_code": fromWardCode,
-                "required_note": "KHONGCHOXEMHANG",
-                "to_name": "TinTest124",
-                "to_phone": "0987654321",
-                "to_address": "72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam",
-                "to_ward_code": toWardCode,
-                "to_district_id": toDistrictId,
-                "cod_amount": 200000,
-                "content": "ABCDEF",
-                "weight": 200,
-                "length": 1,
-                "width": 1,
-                "height": 1,
-                "service_type_id": 2,
-                "coupon": null,
-                "pick_shift": [
-                    2
-                ],
-                "items": items
-            }, {
-                headers: {
-                    'Token': `ee813073-822e-11ee-96dc-de6f804954c9`,
-                    'ShopId': `4695506`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            return response.data
+            console.log(items)
+            const processItems = items[0].split(',') // Không hiểu tại sao array id backend nhận được lại là dạng ['1,2'] nên phải split
+            if (processItems.length > 0) {
+                let foodList: IFood[] = [];
+                processItems.forEach(async (item) => {
+                    const foodById = await Foods.findById(item); // Lấy ra từng food theo array id nhận được
+                    foodList.push(foodById);
+                })
+                console.log(foodList)
+                const response = await axios.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', {
+                    "payment_type_id": 2,
+                    "note": "Tintest 123",
+                    "from_ward_code": fromWardCode,
+                    "required_note": "KHONGCHOXEMHANG",
+                    "to_name": "TinTest124",
+                    "to_phone": "0987654321",
+                    "to_address": "72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam",
+                    "to_ward_code": toWardCode,
+                    "to_district_id": toDistrictId,
+                    "cod_amount": 200000,
+                    "content": "ABCDEF",
+                    "weight": 200,
+                    "length": 1,
+                    "width": 1,
+                    "height": 1,
+                    "service_type_id": 2,
+                    "coupon": null,
+                    "pick_shift": [
+                        2
+                    ],
+                    "items": foodList
+                }, {
+                    headers: {
+                        'Token': `ee813073-822e-11ee-96dc-de6f804954c9`,
+                        'ShopId': `4695506`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                return response.data
+            } else {
+                return failedResponse('Giỏ hàng trống', 'EmptyCart');
+            }
         } catch (error) {
             this.setStatus(500);
             return failedResponse(error, 'ServiceException');
