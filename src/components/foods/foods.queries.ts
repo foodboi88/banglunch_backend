@@ -730,6 +730,9 @@ export const getDetailFoodById = (foodId: string, userId?: string, size?: number
             as: "order_details",
         },
     },
+    {
+        $unwind: "$order_details",
+    },
 ]
 
 //get food by shop (detail food + gallery) 

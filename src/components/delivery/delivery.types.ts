@@ -21,5 +21,5 @@ export interface ICreateShippingOrder {
     fromWardCode: string,
     toWardCode: string,
     toDistrictId: number,
-    items: string[]
+    items?: string[]
 }

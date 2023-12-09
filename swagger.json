@@ -352,8 +352,7 @@
 				"required": [
 					"fromWardCode",
 					"toWardCode",
-					"toDistrictId",
-					"items"
+					"toDistrictId"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -1237,6 +1236,31 @@
 						}
 					}
 				}
+			},
+			"get": {
+				"operationId": "GetShopStatus",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "OPEN/CLOSE SHOP (Only seller can)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/delivery/caculate-shipping-cost": {

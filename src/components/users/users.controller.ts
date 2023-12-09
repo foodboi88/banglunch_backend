@@ -7,6 +7,7 @@ import { failedResponse, instanceOfFailedResponseType, successResponse } from ".
 import Orders from "../orders/orders.model";
 import Users from "./users.model";
 import { ActiveStatus, IRefreshTokenReq, IUser, IUserDB, IUserLogin, IUserProfile, IUserRegister } from "./users.types";
+import Sellers from "../sellers/sellers.model";
 
 @Route('users')
 @Tags('Users')
@@ -165,6 +166,7 @@ export class UserController extends Controller {
             }
             userInfo as IUserProfile;
 
+            const sellerInfo = await Sellers.findOne({userId: userInfo._id})
             const result = {
                 id: userInfo._id,
                 email: userInfo.email,
@@ -176,6 +178,7 @@ export class UserController extends Controller {
                 createdAt: userInfo.createdAt,
                 updatedAt: userInfo.updatedAt,
                 accessToken: token,
+                sellerInfo: sellerInfo
             }
             return successResponse(result);
         } catch (error) {

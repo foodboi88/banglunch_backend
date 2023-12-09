@@ -185,10 +185,10 @@ export const getOrdersByUser = (id: string) => {
         },
         {
             $lookup: {
-                from: "users",
-                localField: "sellerId",
-                foreignField: "_id",
-                as: "seller",
+                from: 'users',
+                localField: 'sellerId',
+                foreignField: '_id',
+                as: 'seller'
             },
         },
         {
@@ -227,13 +227,36 @@ export const getOrdersByUser = (id: string) => {
                     {
                         $lookup: {
                             from: "foods",
-                            localField: "foodId",
-                            foreignField: "_id",
-                            as: "food",
+                            let: {
+                                foodId: "$foodId", // Dat ten primary key _id cua order la orderId
+                            },
+
+                            pipeline: [ // Convert _id to id
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                {
+                                                    $eq: ["$_id", "$$foodId"],
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'galleries',
+                                        localField: '_id',
+                                        foreignField: 'foodId',
+                                        as: 'galleries'
+                                    },
+                                },
+                            ],
+                            as: "foods",
                         },
                     },
                     {
-                        $unwind: "$food",
+                        $unwind: "$foods",
                     },
                 ],
                 as: "order_details",
