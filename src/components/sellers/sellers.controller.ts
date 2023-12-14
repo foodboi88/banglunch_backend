@@ -291,7 +291,6 @@ export class SellerController extends Controller {
                 this.setStatus(400);
                 return failedResponse('Người bán hàng không hợp lệ', 'BadRequest');
             }
-
             return successResponse(seller.shopStatus);
         } catch (error) {
             this.setStatus(500);

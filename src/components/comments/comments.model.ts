@@ -1,5 +1,5 @@
 import mongoose, { Document, Model} from "mongoose";
-import { IComment } from "./comment.types";
+import { IComment } from "./comments.types";
 
 interface CommentsDocument extends IComment, Document { };
 interface CommentsModel extends Model<CommentsDocument> { };
