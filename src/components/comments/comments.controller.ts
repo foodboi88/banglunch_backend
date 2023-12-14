@@ -89,9 +89,9 @@ export class CommentsController extends Controller {
                 max_tokens: 150, // Số lượng từ tối đa trong kết quả
               });
           
-              const summary = response.choices[0].text.trim();
-              console.log(summary)
-              return summary;
+            const summary = response.choices[0].text.trim();
+            console.log(summary)
+            return summary;
         }
         catch (err) {
             this.setStatus(500);
