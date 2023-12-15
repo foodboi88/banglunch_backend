@@ -1471,6 +1471,35 @@
 				}
 			}
 		},
+		"/comments/summarize": {
+			"get": {
+				"operationId": "SummarizeComments",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Comments"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "prompt",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/categories/create": {
 			"post": {
 				"operationId": "CreateCategory",

@@ -1,11 +1,15 @@
+import OpenAI from "openai";
 import { Body, Controller, Get, Post, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
 import Orders from "../orders/orders.model";
 import { getOrderByFoodAndUser } from "../orders/orders.queries";
 import Users from "../users/users.model";
-import { getCommentByFood } from "./comment.queries";
-import { IAddComment, IComment } from "./comment.types";
 import Comments from "./comments.model";
+import { getCommentByFood } from "./comments.queries";
+import { IAddComment, IComment } from "./comments.types";
+
+const chatGPT = new OpenAI({ apiKey: process.env.OPENAI_SECRET_KEY });
+
 
 @Route("comments")
 @Tags("Comments")
@@ -22,6 +26,10 @@ export class CommentsController extends Controller {
             commentByFood.forEach(item => {
                 totalRateScore = totalRateScore + item.rate;
             })
+
+
+
+
             return successResponse({
                 items: commentByFood,
                 averageRate: (totalRateScore / commentByFood.length),
@@ -65,6 +73,29 @@ export class CommentsController extends Controller {
             const comment = await new Comments(commentDTO).save();
 
             return successResponse(comment);
+        }
+        catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
+
+    /**
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Get("summarize")
+    public async summarizeComments(@Request() request: any, @Query() prompt: string): Promise<any> {
+        try {
+            const response = await chatGPT.completions.create({
+                model: 'gpt-3.5-turbo-instruct', // Chọn mô hình ChatGPT
+                prompt: 'Tổng hợp lại toàn bộ array bình luận dưới đây ngắn gọn nhưng đầy đủ ý nghĩa nhất: ["Ù ôi xuất sắc, lần đầu ăn miến trộn nên thấy lươn giòn rụm trộn với gia vị ăn đã dễ sợ. Nước sấu chua ngọt có thêm gừng dập ngon xỉu. 2 tô 2 nước chỉ 110k quá ổn.","Chả, nem, miến đều ổn, không quá xuất sắc nhưng ăn cũng tạm, phục vụ nhanh, quán rộng rãi","Chỉ coá lươn chiên khá khô, lần sau ra phải thử lươn mềm hơn mới được","1 tô giá tầm 30k, ăn hơi ít :) lươn cũng hơi ít nhưng với vị trí như vậy cũng chấp nhận đc,miến ăn cực vừa vặn từ miến trộn tới miến nước , mềm dai đúng độ luôn vừa tới,cơ mà chả lươn ăn cũng bt ko quá đặc sắc"]',
+                max_tokens: 300, // Số lượng từ tối đa trong kết quả
+            });
+
+            const summary = response.choices[0].text.trim();
+            console.log(summary)
+            return summary;
         }
         catch (err) {
             this.setStatus(500);
