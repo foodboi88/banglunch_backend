@@ -1484,6 +1484,7 @@
 						}
 					}
 				},
+				"summary": "For user Get summarize for all comments. Use ChatGPT API",
 				"tags": [
 					"Comments"
 				],
