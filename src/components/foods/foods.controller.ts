@@ -6,7 +6,7 @@ import { deleteFolder } from "../gallery/gallery.controller";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
 import { getDetailFoodById, getFoodsByShop } from "./foods.queries";
-import { IFoodEdit, IFoodInput } from "./foods.types";
+import { IFood, IFoodEdit, IFoodInput } from "./foods.types";
 const crypto = require('crypto');
 
 
@@ -26,7 +26,7 @@ export class ProductController extends Controller {
                 return failedResponse('Token is not valid', 'Unauthorized');
             }
             //verify food
-            const FoodDTO = {
+            const FoodDTO: IFood = {
                 constantId: crypto.randomUUID(),
                 title: data.title,
                 content: data.content,
@@ -40,6 +40,7 @@ export class ProductController extends Controller {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 deletedAt: new Date(),
+                summarizedComments: ''
             }
 
             //verify category
