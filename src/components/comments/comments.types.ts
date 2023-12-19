@@ -7,6 +7,7 @@ export interface IComment {
 }
 
 export interface IAddComment {
+    orderId: string,
     foodId: string,
     rate: number,
     description: string,

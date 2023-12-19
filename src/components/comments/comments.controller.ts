@@ -7,6 +7,8 @@ import Users from "../users/users.model";
 import Comments from "./comments.model";
 import { getCommentByFood } from "./comments.queries";
 import { IAddComment, IComment } from "./comments.types";
+import Foods from "../foods/foods.model";
+import { IFood } from "../foods/foods.types";
 
 const openaiInstance = new OpenAI({ apiKey: process.env.OPENAI_SECRET_KEY });
 
@@ -45,21 +47,17 @@ export class CommentsController extends Controller {
     @Post('create-comment')
     public async createComment(@Body() data: IAddComment, @Request() request: any): Promise<any> {
         try {
-            const token = request.headers.authorization.split(' ')[1];
             //verify token
+            const token = request.headers.authorization.split(' ')[1];
             const userId = await Users.getIdFromToken(token);
             if (!userId) {
                 this.setStatus(401);
                 return failedResponse('Token is not valid', 'Unauthorized');
-            }
+            }            
 
-            //Check xem người mua đã từng mua đồ ăn này hay chưa
-            const whetherBuyedOrNot = await Orders.aggregate(getOrderByFoodAndUser(data.foodId, userId));
-            if (whetherBuyedOrNot.length <= 0) {
-                this.setStatus(401);
-                return failedResponse('You must purchase this food first', 'NotPurchaseYet');
-            }
-
+            // Check xem món này ở đơn này đã được thêm bình luận chưa, nếu rồi thì không cho thêm nữa 
+            
+            //save comment 
             const commentDTO: IComment = {
                 userId: userId,
                 foodId: data.foodId,
@@ -67,20 +65,47 @@ export class CommentsController extends Controller {
                 rate: data.rate,
                 createdAt: new Date(),
             }
+            await new Comments(commentDTO).save();
 
-            //save food
-            const comment = await new Comments(commentDTO).save();
+            //Get all comments of food
+            const commentsByFood = await Comments.find({ foodId: data.foodId });
+            let prompt = 'Tóm tắt list bình luận về món ăn sau: ['
+            commentsByFood.forEach((item) => {
+                prompt = prompt + item.description + ",";
+            })
+            prompt+= data.description + "]";
+            console.log(prompt)
 
             //Summarize all comments of food
-            const commentsByFood = await Comments.find({ foodId: data.foodId });
+            const response = await openaiInstance.completions.create({
+                model: 'gpt-3.5-turbo-instruct', // Chọn mô hình ChatGPT
+                prompt: prompt,
+                max_tokens: 300, // Số lượng từ tối đa trong kết quả
+            });
+            const summary = response.choices[0].text.trim();
+            console.log(summary)
 
-            let prompt = 'Tóm tắt list bình luận về món ăn sau: '
+            //Save summarized comment to corresponding food
+            const foodById = await Foods.findById(data.foodId);
+            const foodDTO: IFood = {
+                constantId: foodById.constantId,
+                title: foodById.title,
+                content: foodById.content,
+                price: foodById.price,
+                views: foodById.views,
+                sellerId: userId,
+                weight: foodById.weight,
+                length: foodById.length,
+                width: foodById.width,
+                height: foodById.height,
+                createdAt: foodById.createdAt,
+                updatedAt: foodById.updatedAt,
+                deletedAt: foodById.deletedAt,
+                summarizedComments: summary
+            }
+            const food = await foodById.update(foodDTO);
 
-            commentsByFood.forEach((item) => {
-
-            })
-
-            return successResponse(comment);
+            return successResponse(food);
         }
         catch (err) {
             this.setStatus(500);
