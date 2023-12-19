@@ -53,7 +53,11 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
     updatedAt: {
         type: Date,
         default: null
-    }
+    },
+    summarizedComments: {
+        type: String,
+        default: ''
+    },
 })
 
 FoodSchema.set('toJSON', {

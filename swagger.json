@@ -1489,16 +1489,7 @@
 					"Comments"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "prompt",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
+				"parameters": []
 			}
 		},
 		"/categories/create": {

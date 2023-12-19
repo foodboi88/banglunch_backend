@@ -94,7 +94,7 @@ export class CommentsController extends Controller {
      * @returns {Promise<any>} 400 - Return error message
      */
     @Get("summarize")
-    public async summarizeComments(@Request() request: any, @Query() prompt: string): Promise<any> {
+    public async summarizeComments(@Request() request: any): Promise<any> {
         try {
             const response = await openaiInstance.completions.create({
                 model: 'gpt-3.5-turbo-instruct', // Chọn mô hình ChatGPT

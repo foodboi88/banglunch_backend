@@ -12,6 +12,7 @@ export interface IFood {
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
+    summarizedComments: string;
 }
 
 export interface IFoodInput {

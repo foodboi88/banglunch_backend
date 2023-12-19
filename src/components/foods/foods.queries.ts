@@ -590,24 +590,12 @@ export const getProductByCollectionId = (collectionId: string, size: number, off
 export const getDetailFoodById = (foodId: string, userId?: string, size?: number, offset?: number): Array<Record<string, any>> => [
     {
         $match:
-        /**
-         * query: The query in MQL.
-         */
-
         {
             _id: new ObjectId(foodId),
         },
     },
     {
         $lookup:
-        /**
-         * from: The target collection.
-         * localField: The local join field.
-         * foreignField: The target join field.
-         * as: The name for the results.
-         * pipeline: Optional pipeline to run on the foreign collection.
-         * let: Optional variables to use in the pipeline field stages.
-         */
         {
             from: "users",
             localField: "sellerId",
@@ -620,14 +608,6 @@ export const getDetailFoodById = (foodId: string, userId?: string, size?: number
     },
     {
         $lookup:
-        /**
-         * from: The target collection.
-         * localField: The local join field.
-         * foreignField: The target join field.
-         * as: The name for the results.
-         * pipeline: Optional pipeline to run on the foreign collection.
-         * let: Optional variables to use in the pipeline field stages.
-         */
         {
             from: "galleries",
             localField: "_id",
@@ -637,14 +617,6 @@ export const getDetailFoodById = (foodId: string, userId?: string, size?: number
     },
     {
         $lookup:
-        /**
-         * from: The target collection.
-         * localField: The local join field.
-         * foreignField: The target join field.
-         * as: The name for the results.
-         * pipeline: Optional pipeline to run on the foreign collection.
-         * let: Optional variables to use in the pipeline field stages.
-         */
         {
             from: "food_categories",
             let: {
