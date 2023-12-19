@@ -91,6 +91,11 @@ export class OrderController extends Controller {
                 expectedDeliveryTime: null
             }
 
+            // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
+            if (cartOfUser?.sellerId && sellerId.toString() !== cartOfUser?.sellerId?.toString()) {
+                this.setStatus(400);
+                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
+            }
 
             //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
             if (!cartOfUser) {
@@ -98,13 +103,6 @@ export class OrderController extends Controller {
                 await cartOfUser.save();
             } else {
                 await cartOfUser.update(newCart); // update chỉ nhận param là 1 object thường
-            }
-
-
-            // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
-            if (sellerId.toString() !== cartOfUser.sellerId.toString()) {
-                this.setStatus(400);
-                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
             }
 
             // Tìm đồ ăn theo id
