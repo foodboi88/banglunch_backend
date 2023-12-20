@@ -47,7 +47,9 @@ export class OrderController extends Controller {
                     rejectedAt: null,
                     deliveryCost: 0,
                     orderStatus: OrderStatus.Cart,
-                    expectedDeliveryTime: null
+                    expectedDeliveryTime: null,
+                    fromDetailAddress: null,
+                    toDetailAddress: null
                 }
                 //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
                 await new Orders(newCart).save();
@@ -88,7 +90,9 @@ export class OrderController extends Controller {
                 rejectedAt: null,
                 deliveryCost: 0,
                 orderStatus: OrderStatus.Cart,
-                expectedDeliveryTime: null
+                expectedDeliveryTime: null,
+                fromDetailAddress: null,
+                toDetailAddress: null
             }
 
 
@@ -191,6 +195,8 @@ export class OrderController extends Controller {
                     deliveryCost: deliveryCost,
                     orderStatus: OrderStatus.WaitingApproved,
                     expectedDeliveryTime: expectedDeliveryTime,
+                    fromDetailAddress: null,
+                    toDetailAddress: null
                 }
                 await cartOfUser.update(OrderDTO)
 
@@ -251,7 +257,9 @@ export class OrderController extends Controller {
                 approvedAt: status === OrderStatus.Shipping ? new Date() : null, // Lấy thời điểm tạo đơn là thời điểm shop duyệt đơn
                 deliveryCost: orderOfUser.deliveryCost,
                 orderStatus: status, // Chuyển sang status được truyền vào,
-                expectedDeliveryTime: undefined
+                expectedDeliveryTime: orderOfUser.expectedDeliveryTime,
+                fromDetailAddress: orderOfUser.fromDetailAddress,
+                toDetailAddress: orderOfUser.toDetailAddress
             }
 
             await orderOfUser.update(cloneOrderOfUser)

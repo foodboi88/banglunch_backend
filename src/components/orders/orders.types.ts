@@ -7,6 +7,8 @@ export interface IOrders {
     deliveryCost: number,
     orderStatus: number,
     expectedDeliveryTime?: Date,
+    fromDetailAddress?: string,
+    toDetailAddress?: string
 }
 
 export interface IUpdateFoodInCartBodyrequest {

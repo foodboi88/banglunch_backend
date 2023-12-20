@@ -1,14 +1,12 @@
 import OpenAI from "openai";
 import { Body, Controller, Get, Post, Query, Request, Route, Security, Tags } from "tsoa";
 import { failedResponse, successResponse } from "../../utils/http";
-import Orders from "../orders/orders.model";
-import { getOrderByFoodAndUser } from "../orders/orders.queries";
+import Foods from "../foods/foods.model";
+import { IFood } from "../foods/foods.types";
 import Users from "../users/users.model";
 import Comments from "./comments.model";
 import { getCommentByFood } from "./comments.queries";
 import { IAddComment, IComment } from "./comments.types";
-import Foods from "../foods/foods.model";
-import { IFood } from "../foods/foods.types";
 
 const openaiInstance = new OpenAI({ apiKey: process.env.OPENAI_SECRET_KEY });
 
@@ -27,9 +25,6 @@ export class CommentsController extends Controller {
             commentByFood.forEach(item => {
                 totalRateScore = totalRateScore + item.rate;
             })
-
-
-
 
             return successResponse({
                 items: commentByFood,
@@ -53,10 +48,10 @@ export class CommentsController extends Controller {
             if (!userId) {
                 this.setStatus(401);
                 return failedResponse('Token is not valid', 'Unauthorized');
-            }            
+            }
 
             // Check xem món này ở đơn này đã được thêm bình luận chưa, nếu rồi thì không cho thêm nữa 
-            
+
             //save comment 
             const commentDTO: IComment = {
                 userId: userId,
@@ -73,7 +68,7 @@ export class CommentsController extends Controller {
             commentsByFood.forEach((item) => {
                 prompt = prompt + item.description + ",";
             })
-            prompt+= data.description + "]";
+            prompt += data.description + "]";
             console.log(prompt)
 
             //Summarize all comments of food

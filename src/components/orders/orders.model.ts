@@ -20,6 +20,8 @@ const OrdersModelSchema = new mongoose.Schema<OrdersDocument, OrdersModel>({
     deliveryCost: Number,
     orderStatus: Number,
     expectedDeliveryTime: Date,
+    FromDetailAddress: String,
+    ToDetailAddress: String
 })
 
 OrdersModelSchema.set('toJSON', {
