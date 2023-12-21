@@ -32,6 +32,7 @@ export class OrderController extends Controller {
             }
 
             const res = await Orders.aggregate(getCartByUserId(userId));
+
             let numberOfFood = 0;
             if (res) {
                 res[0].order_details.forEach((item: IOrderDetails) => {
@@ -82,6 +83,14 @@ export class OrderController extends Controller {
             //Lấy cart của người dùng
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
+
+            // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
+            if (cartOfUser?.sellerId && sellerId.toString() !== cartOfUser?.sellerId?.toString()) {
+                this.setStatus(400);
+                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
+            }
+
+            //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
             const newCart: IOrders = {
                 userId: userId,
                 sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
@@ -94,14 +103,6 @@ export class OrderController extends Controller {
                 fromDetailAddress: null,
                 toDetailAddress: null
             }
-
-            // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
-            if (cartOfUser?.sellerId && sellerId.toString() !== cartOfUser?.sellerId?.toString()) {
-                this.setStatus(400);
-                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
-            }
-
-            //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
             if (!cartOfUser) {
                 cartOfUser = new Orders(newCart);
                 await cartOfUser.save();
