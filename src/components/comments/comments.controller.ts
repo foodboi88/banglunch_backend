@@ -51,6 +51,15 @@ export class CommentsController extends Controller {
             }
 
             // Check xem món này ở đơn này đã được thêm bình luận chưa, nếu rồi thì không cho thêm nữa 
+            const commentExist = await Comments.findOne({
+                userId: userId,
+                orderDetailId: data.orderDetailId,
+                foodId: data.foodId
+            })
+            if (commentExist) { // Đã bình luận rồi
+                this.setStatus(400);
+                return failedResponse('Bạn đã bình luận món ăn trong đơn này rồi', 'CommentRestricted');
+            }
 
             //save comment 
             const commentDTO: IComment = {
@@ -59,6 +68,7 @@ export class CommentsController extends Controller {
                 description: data.description,
                 rate: data.rate,
                 createdAt: new Date(),
+                orderDetailId: data.orderDetailId
             }
             await new Comments(commentDTO).save();
 
@@ -66,9 +76,9 @@ export class CommentsController extends Controller {
             const commentsByFood = await Comments.find({ foodId: data.foodId });
             let prompt = 'Tóm tắt list bình luận về món ăn sau: ['
             commentsByFood.forEach((item) => {
-                prompt = prompt + item.description + ",";
+                prompt = prompt + item.description + ","; 
             })
-            prompt += data.description + "]";
+            prompt += data.description + "]";  
             console.log(prompt)
 
             //Summarize all comments of food

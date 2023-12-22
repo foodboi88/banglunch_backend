@@ -3,7 +3,8 @@ export interface IComment {
     foodId: string,
     rate: number,
     description: string,
-    createdAt: Date
+    createdAt: Date,
+    orderDetailId: string
 }
 
 export interface IAddComment {
@@ -11,4 +12,5 @@ export interface IAddComment {
     foodId: string,
     rate: number,
     description: string,
+    orderDetailId: string
 }

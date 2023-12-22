@@ -125,7 +125,7 @@ export class ProductController extends Controller {
 
             const product = await Foods.aggregate(getDetailFoodById(foodId, userId));
             //increase views
-            await Foods.findByIdAndUpdate(foodId, { views: product[0].views + 1 }, { new: true });
+            // await Foods.findByIdAndUpdate(foodId, { views: product[0].views + 1 }, { new: true });
 
             if (!product) {
                 this.setStatus(404);
