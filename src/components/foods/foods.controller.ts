@@ -120,10 +120,10 @@ export class ProductController extends Controller {
     }
 
     @Get("get-detail-food")
-    public async getDetailFood(@Request() request: any, @Query() foodId: string, @Query() userId?: string): Promise<any> {
+    public async getDetailFood(@Request() request: any, @Query() foodId: string): Promise<any> {
         try {
 
-            const product = await Foods.aggregate(getDetailFoodById(foodId, userId));
+            const product = await Foods.aggregate(getDetailFoodById(foodId));
             //increase views
             // await Foods.findByIdAndUpdate(foodId, { views: product[0].views + 1 }, { new: true });
 

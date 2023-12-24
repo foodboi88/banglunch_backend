@@ -74,15 +74,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ICreateOrder": {
-        "dataType": "refObject",
-        "properties": {
-            "deliveryCost": {"dataType":"double","required":true},
-            "expectedDeliveryTime": {"dataType":"datetime","required":true},
-        },
-        "additionalProperties": true,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IApproveOrder": {
         "dataType": "refObject",
         "properties": {
@@ -186,9 +177,11 @@ const models: TsoaRoute.Models = {
     "IAddComment": {
         "dataType": "refObject",
         "properties": {
+            "orderId": {"dataType":"string","required":true},
             "foodId": {"dataType":"string","required":true},
             "rate": {"dataType":"double","required":true},
             "description": {"dataType":"string","required":true},
+            "orderDetailId": {"dataType":"string","required":true},
         },
         "additionalProperties": true,
     },
@@ -374,7 +367,6 @@ export function RegisterRoutes(app: express.Router) {
             function OrderController_createOrder(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    input: {"in":"body","name":"input","required":true,"ref":"ICreateOrder"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -563,7 +555,6 @@ export function RegisterRoutes(app: express.Router) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
                     foodId: {"in":"query","name":"foodId","required":true,"dataType":"string"},
-                    userId: {"in":"query","name":"userId","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

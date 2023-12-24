@@ -259,7 +259,7 @@ export class SellerController extends Controller {
 
             const result = {
                 message : 'Cập nhật trạng thái quán thành công',
-                status : 'Updated'
+                status : shopStatus
             }
             return successResponse(result);
         } catch (error) {

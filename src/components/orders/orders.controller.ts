@@ -157,7 +157,7 @@ export class OrderController extends Controller {
      */
     @Security("jwt")
     @Post('create-order')
-    public async createOrder(@Request() request: any, @Body() input: ICreateOrder): Promise<any> {
+    public async createOrder(@Request() request: any): Promise<any> {
         try {
             const token = request.headers.authorization.split(' ')[1];
             const userId = await User.getIdFromToken(token);
@@ -181,8 +181,6 @@ export class OrderController extends Controller {
             const currentOrderDetails = await OrderDetails.find({ orderId: cartOfUser._id }) // Lấy ra danh sách orderdetails theo id của giỏ hàng hiện tại
             console.log(currentOrderDetails);
             if (currentOrderDetails) { // Nếu như trong giỏ có hàng thì mới lưu thông tin cart thành order và lưu giá vào các orderDetail
-                const { deliveryCost, expectedDeliveryTime } = input;
-
                 //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
                 //Lưu giá vận chuyển 
                 const OrderDTO: IOrders = {
@@ -191,9 +189,9 @@ export class OrderController extends Controller {
                     createdAt: cartOfUser.createdAt,
                     approvedAt: null,
                     rejectedAt: null,
-                    deliveryCost: deliveryCost,
+                    deliveryCost: null,
                     orderStatus: OrderStatus.WaitingApproved,
-                    expectedDeliveryTime: expectedDeliveryTime,
+                    expectedDeliveryTime: null,
                     fromDetailAddress: null,
                     toDetailAddress: null
                 }

@@ -100,24 +100,6 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"ICreateOrder": {
-				"properties": {
-					"deliveryCost": {
-						"type": "number",
-						"format": "double"
-					},
-					"expectedDeliveryTime": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"deliveryCost",
-					"expectedDeliveryTime"
-				],
-				"type": "object",
-				"additionalProperties": true
-			},
 			"IApproveOrder": {
 				"properties": {
 					"orderId": {
@@ -359,6 +341,9 @@
 			},
 			"IAddComment": {
 				"properties": {
+					"orderId": {
+						"type": "string"
+					},
 					"foodId": {
 						"type": "string"
 					},
@@ -368,12 +353,17 @@
 					},
 					"description": {
 						"type": "string"
+					},
+					"orderDetailId": {
+						"type": "string"
 					}
 				},
 				"required": [
+					"orderId",
 					"foodId",
 					"rate",
-					"description"
+					"description",
+					"orderDetailId"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -611,17 +601,7 @@
 						"jwt": []
 					}
 				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/ICreateOrder"
-							}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/orders/approve-order": {
@@ -865,14 +845,6 @@
 						"in": "query",
 						"name": "foodId",
 						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "userId",
-						"required": false,
 						"schema": {
 							"type": "string"
 						}
