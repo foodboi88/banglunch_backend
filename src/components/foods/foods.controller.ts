@@ -5,7 +5,7 @@ import FoodCategory from "../food-categories/food-categories.model";
 import { deleteFolder } from "../gallery/gallery.controller";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
-import { getDetailFoodById, getFoodsByShop } from "./foods.queries";
+import { getAllFood, getDetailFoodById, getFoodsByShop } from "./foods.queries";
 import { IFood, IFoodEdit, IFoodInput } from "./foods.types";
 const crypto = require('crypto');
 
@@ -110,7 +110,7 @@ export class ProductController extends Controller {
             // if (data.length === 0 || data[0].items.length === 0) {
             //     return successResponse([]);
             // }
-            const result = await Foods.aggregate(getFoodsByShop('653157b47bd33206a8b429f8'))
+            const result = await Foods.aggregate(getAllFood())
             return successResponse(result);
         }
         catch (err) {

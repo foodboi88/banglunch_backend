@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
-import { ISeller, SellerType } from "./sellers.types";
+import { ISeller } from "./sellers.types";
 
 interface SellerDocument extends ISeller, Document { };
 interface SellerModel extends Model<SellerDocument> { };
@@ -10,65 +10,21 @@ const sellerSchema = new mongoose.Schema<SellerDocument, SellerModel>({
         ref: 'Users',
         require: true
     },
-    sellerType: {
-        type: String,
-        enum: [SellerType.ARCHITECT, SellerType.COMPANY],
-        require: true
-    },
-    identityCardNumber: {
+    identityId: {
         type: String,
         require: true
     },
-    identityCardDate: {
-        type: Date,
-        require: true
-    },
-    identityCardPlace: {
+    personalTaxCode: {
         type: String,
         require: true
-    },
-    taxCode: {
-        type: String,
-        require: true
-    },
-    bankAccountNumber: {
-        type: String,
-        require: true
-    },
-    bankName: {
-        type: String,
-        require: true
-    },
-    bankAccountName: {
-        type: String,
-    },
-    bankBranch: {
-        type: String,
-        require: true
-    },
-    currentBalance: {
-        type: Number,
-        default: 0
-    },
-    amountWithdrawn: {
-        type: Number,
-        default: 0
-    },
-    isApproved: {
-        type: Boolean,
-        default: false
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
     },
     shopStatus: {
         type: Boolean,
         default: false
+    },
+    fromDetailAddress: {
+        type: String,
+        require: true
     }
 })
 

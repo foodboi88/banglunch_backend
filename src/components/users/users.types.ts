@@ -1,21 +1,12 @@
 export interface IUser {
-    email : string,
-    password : string,
+    email: string,
+    password: string,
     name: string,
     phone: string,
     address: string,
     dob: Date,
     gender: boolean,
-    totalRating: number,
-    totalProduct: number,
-    createdAt: Date,
-    updatedAt: Date,
     role: string,
-    active: number,
-    activeCode: string,
-    status: string,
-    totalSales : number,
-    totalBuy : number,
 }
 
 export interface IUserRegister {
@@ -27,6 +18,12 @@ export interface IUserRegister {
     address: string,
     dob: Date,
     gender: boolean,
+}
+
+export interface ISellerRegister extends IUserRegister {
+    identityId: string,
+    personalTaxCode: string,
+    fromDetailAddress: string
 }
 
 export interface IUserProfile {
@@ -42,8 +39,8 @@ export interface IUserProfile {
 }
 
 export interface IUserLogin {
-    email : string,
-    password : string,
+    email: string,
+    password: string,
     remember: boolean
 }
 
@@ -54,8 +51,8 @@ export interface IUserResponse extends Omit<IUser, 'password'> {
 }
 
 export interface IUserRes {
-    email : string,
-    id : string
+    email: string,
+    id: string
 }
 
 export interface IRefreshTokenReq {
@@ -67,24 +64,24 @@ export interface IAccessTokenReq {
 }
 
 export interface IUserDB {
-    email : string,
-    password : string
-    
+    email: string,
+    password: string
+
 }
 
-export interface IUserUpdateProfile{
+export interface IUserUpdateProfile {
     name: string,
     phone: string,
     address: string,
 }
 
-export interface IUserUpdatePassword{
+export interface IUserUpdatePassword {
     oldPassword: string,
     newPassword: string,
     confirmPassword: string
 }
 
-export enum ActiveStatus{
+export enum ActiveStatus {
     InActive = 0,
     Active = 1,
     Banned = 2

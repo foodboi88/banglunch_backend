@@ -8,7 +8,7 @@ import Sellers from "../sellers/sellers.model";
 import { default as User, default as Users } from "../users/users.model";
 import { default as Orders } from "./orders.model";
 import { getCartByUserId, getOrdersBySeller, getOrdersByUser } from "./orders.queries";
-import { IApproveOrder, ICreateOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
+import { IApproveOrder, IOrders, IUpdateFoodInCartBodyrequest } from "./orders.types";
 
 
 @Route("orders")
@@ -226,7 +226,7 @@ export class OrderController extends Controller {
     }
 
     /**
-     * @summary for seller
+     * @summary for seller, buyer
      * status: 2 (Shipping), 3 (Rejected)
      * @returns {Promise<any>} 200 - Return message and status
      * @returns {Promise<any>} 400 - Return error message

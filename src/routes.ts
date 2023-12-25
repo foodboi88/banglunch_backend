@@ -46,6 +46,24 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISellerRegister": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+            "password": {"dataType":"string","required":true},
+            "confirmPassword": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "phone": {"dataType":"string","required":true},
+            "address": {"dataType":"string","required":true},
+            "dob": {"dataType":"datetime","required":true},
+            "gender": {"dataType":"boolean","required":true},
+            "identityId": {"dataType":"string","required":true},
+            "personalTaxCode": {"dataType":"string","required":true},
+            "fromDetailAddress": {"dataType":"string","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IUserLogin": {
         "dataType": "refObject",
         "properties": {
@@ -109,38 +127,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": true,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "SellerType": {
-        "dataType": "refEnum",
-        "enums": ["ARCHITECT","COMPANY"],
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ISellerRegister": {
-        "dataType": "refObject",
-        "properties": {
-            "sellerType": {"ref":"SellerType","required":true},
-            "identityCardNumber": {"dataType":"string","required":true},
-            "identityCardDate": {"dataType":"datetime","required":true},
-            "identityCardPlace": {"dataType":"string","required":true},
-            "taxCode": {"dataType":"string","required":true},
-            "bankAccountNumber": {"dataType":"string","required":true},
-            "bankAccountName": {"dataType":"string","required":true},
-            "bankName": {"dataType":"string","required":true},
-            "bankBranch": {"dataType":"string","required":true},
-        },
-        "additionalProperties": true,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ISellerUpdate": {
-        "dataType": "refObject",
-        "properties": {
-            "bankAccountNumber": {"dataType":"string"},
-            "bankAccountName": {"dataType":"string"},
-            "bankName": {"dataType":"string"},
-            "bankBranch": {"dataType":"string"},
-        },
-        "additionalProperties": true,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IShopStatusUpdate": {
         "dataType": "refObject",
         "properties": {
@@ -177,7 +163,6 @@ const models: TsoaRoute.Models = {
     "IAddComment": {
         "dataType": "refObject",
         "properties": {
-            "orderId": {"dataType":"string","required":true},
             "foodId": {"dataType":"string","required":true},
             "rate": {"dataType":"double","required":true},
             "description": {"dataType":"string","required":true},
@@ -224,6 +209,31 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.register.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/users/register-seller',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.registerSeller)),
+
+            function UserController_registerSeller(request: any, response: any, next: any) {
+            const args = {
+                    input: {"in":"body","name":"input","required":true,"ref":"ISellerRegister"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new UserController();
+
+
+              const promise = controller.registerSeller.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
@@ -648,140 +658,6 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.editProductById.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/sellers/register',
-            authenticateMiddleware([{"jwt":["user"]}]),
-            ...(fetchMiddlewares<RequestHandler>(SellerController)),
-            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.createSeller)),
-
-            function SellerController_createSeller(request: any, response: any, next: any) {
-            const args = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    body: {"in":"body","name":"body","required":true,"ref":"ISellerRegister"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new SellerController();
-
-
-              const promise = controller.createSeller.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/sellers/registration-form',
-            authenticateMiddleware([{"jwt":["admin"]}]),
-            ...(fetchMiddlewares<RequestHandler>(SellerController)),
-            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.getRegistrationForm)),
-
-            function SellerController_getRegistrationForm(request: any, response: any, next: any) {
-            const args = {
-                    size: {"in":"query","name":"size","dataType":"double"},
-                    offset: {"in":"query","name":"offset","dataType":"double"},
-                    isApproved: {"in":"query","name":"isApproved","dataType":"boolean"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new SellerController();
-
-
-              const promise = controller.getRegistrationForm.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/sellers/approve/:id',
-            authenticateMiddleware([{"jwt":["admin"]}]),
-            ...(fetchMiddlewares<RequestHandler>(SellerController)),
-            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.approveSeller)),
-
-            function SellerController_approveSeller(request: any, response: any, next: any) {
-            const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new SellerController();
-
-
-              const promise = controller.approveSeller.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/sellers/profile',
-            authenticateMiddleware([{"jwt":["seller"]}]),
-            ...(fetchMiddlewares<RequestHandler>(SellerController)),
-            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.getSellerProfile)),
-
-            function SellerController_getSellerProfile(request: any, response: any, next: any) {
-            const args = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new SellerController();
-
-
-              const promise = controller.getSellerProfile.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/sellers/profile',
-            authenticateMiddleware([{"jwt":["seller"]}]),
-            ...(fetchMiddlewares<RequestHandler>(SellerController)),
-            ...(fetchMiddlewares<RequestHandler>(SellerController.prototype.updateSellerProfile)),
-
-            function SellerController_updateSellerProfile(request: any, response: any, next: any) {
-            const args = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    body: {"in":"body","name":"body","required":true,"ref":"ISellerUpdate"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new SellerController();
-
-
-              const promise = controller.updateSellerProfile.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

@@ -753,3 +753,42 @@ export const getFoodsByShop = (shopId: string, size?: number, offset?: number): 
         },
     }
 ]
+
+//get food by shop (detail food + gallery) 
+export const getAllFood = (size?: number, offset?: number): Array<Record<string, any>> => [
+
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "galleries",
+            localField: "_id",
+            foreignField: "foodId",
+            as: "galleries",
+        },
+    },
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "food_categories",
+            localField: "_id",
+            foreignField: "foodId",
+            as: "food_categories",
+        },
+    }
+]

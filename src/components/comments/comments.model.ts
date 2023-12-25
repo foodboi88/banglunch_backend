@@ -15,7 +15,11 @@ const CommentsModelSchema = new mongoose.Schema<CommentsDocument, CommentsModel>
     },
     rate: Number,
     description: String,
-    createdAt: Date
+    createdAt: Date,
+    orderDetailId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'order_details'
+    },
 })
 
 CommentsModelSchema.set('toJSON', {

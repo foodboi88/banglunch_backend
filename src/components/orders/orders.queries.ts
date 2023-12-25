@@ -258,6 +258,14 @@ export const getOrdersByUser = (id: string) => {
                     {
                         $unwind: "$foods",
                     },
+                    {
+                        $lookup: {
+                            from: 'comments',
+                            localField: '_id',
+                            foreignField: 'orderDetailId',
+                            as: 'comments'
+                        },
+                    }
                 ],
                 as: "order_details",
             },
