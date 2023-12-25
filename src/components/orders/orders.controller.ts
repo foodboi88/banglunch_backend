@@ -84,24 +84,44 @@ export class OrderController extends Controller {
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
 
+
             // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
             if (cartOfUser?.sellerId && sellerId.toString() !== cartOfUser?.sellerId?.toString()) {
                 this.setStatus(400);
-                return failedResponse('DifferentShopError', 'Vui lòng chọn sản phẩm của cùng 1 shop');
+                return failedResponse('Vui lòng chọn sản phẩm của cùng 1 shop', 'DifferentShopError');
             }
 
+
+
             //Nếu chưa có thì thêm mới cart. Có rồi thì cập nhật
-            const newCart: IOrders = {
-                userId: userId,
-                sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
-                createdAt: new Date(),
-                approvedAt: null,
-                rejectedAt: null,
-                deliveryCost: 0,
-                orderStatus: OrderStatus.Cart,
-                expectedDeliveryTime: null,
-                fromDetailAddress: null,
-                toDetailAddress: null
+            let newCart: IOrders;
+            const orderDetailsByOrder = await OrderDetails.find({ orderId: cartOfUser.id });
+            if (orderDetailsByOrder.length === 1 && quantity === 0) { // Trong giỏ còn 1 món và quantity bằng 0 tức là sẽ xóa sạch món trong giỏ
+                newCart = {
+                    userId: userId,
+                    sellerId: null, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
+                    createdAt: new Date(),
+                    approvedAt: null,
+                    rejectedAt: null,
+                    deliveryCost: 0,
+                    orderStatus: OrderStatus.Cart,
+                    expectedDeliveryTime: null,
+                    fromDetailAddress: null,
+                    toDetailAddress: null
+                }
+            } else {
+                newCart = {
+                    userId: userId,
+                    sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
+                    createdAt: new Date(),
+                    approvedAt: null,
+                    rejectedAt: null,
+                    deliveryCost: 0,
+                    orderStatus: OrderStatus.Cart,
+                    expectedDeliveryTime: null,
+                    fromDetailAddress: null,
+                    toDetailAddress: null
+                }
             }
             if (!cartOfUser) {
                 cartOfUser = new Orders(newCart);
@@ -208,6 +228,16 @@ export class OrderController extends Controller {
                     }
                     await item.update(OrderDetailDTO);
                 })
+
+                const newCart = new Orders({
+                    userId: userId,
+                    sellerId: null,
+                    createdAt: new Date(),
+                    purchasedAt: null,
+                    deliveryCost: 0,
+                    orderStatus: OrderStatus.Cart
+                })
+                await newCart.save();
                 //Thông báo tới chủ shop là đang có 1 đơn hàng được order tới shop
 
             }
