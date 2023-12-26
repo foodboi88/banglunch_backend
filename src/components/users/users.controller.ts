@@ -11,6 +11,39 @@ import { ActiveStatus, IRefreshTokenReq, ISellerRegister, IUser, IUserDB, IUserL
 @Route('users')
 @Tags('Users')
 export class UserController extends Controller {
+    //get profile user by token in header
+    @Security('jwt', ['user'])
+    @Get('profile')
+    public async getProfile(@Request() request: any): Promise<any> {
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userInfo = await Users.getUserProfile(token);
+            if (instanceOfFailedResponseType<IUser>(userInfo)) {
+                this.setStatus(400);
+                return userInfo;
+            }
+            userInfo as IUserProfile;
+
+            const sellerInfo = await Sellers.findOne({ userId: userInfo._id })
+            const result = {
+                id: userInfo._id,
+                email: userInfo.email,
+                name: userInfo.name,
+                phone: userInfo.phone,
+                address: userInfo.address,
+                dob: userInfo.dob,
+                gender: userInfo.gender,
+                createdAt: userInfo.createdAt,
+                updatedAt: userInfo.updatedAt,
+                accessToken: token,
+                sellerInfo: sellerInfo
+            }
+            return successResponse(result);
+        } catch (error) {
+            this.setStatus(500);
+            return failedResponse(`Caught error ${error}`, 'ServiceException');
+        }
+    }
 
     @Post('register')
     public async register(@Body() input: IUserRegister): Promise<any> {
@@ -172,40 +205,6 @@ export class UserController extends Controller {
 
                 return successResponse({ accessToken, refreshToken });
             })
-        } catch (error) {
-            this.setStatus(500);
-            return failedResponse(`Caught error ${error}`, 'ServiceException');
-        }
-    }
-
-    //get profile user by token in header
-    @Security('jwt', ['user'])
-    @Get('profile')
-    public async getProfile(@Request() request: any): Promise<any> {
-        try {
-            const token = request.headers.authorization.split(' ')[1];
-            const userInfo = await Users.getUserProfile(token);
-            if (instanceOfFailedResponseType<IUser>(userInfo)) {
-                this.setStatus(400);
-                return userInfo;
-            }
-            userInfo as IUserProfile;
-
-            const sellerInfo = await Sellers.findOne({ userId: userInfo._id })
-            const result = {
-                id: userInfo._id,
-                email: userInfo.email,
-                name: userInfo.name,
-                phone: userInfo.phone,
-                address: userInfo.address,
-                dob: userInfo.dob,
-                gender: userInfo.gender,
-                createdAt: userInfo.createdAt,
-                updatedAt: userInfo.updatedAt,
-                accessToken: token,
-                sellerInfo: sellerInfo
-            }
-            return successResponse(result);
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');

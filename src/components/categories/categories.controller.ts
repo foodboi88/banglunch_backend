@@ -6,10 +6,11 @@ import { ICategory } from "./categories.types";
 @Route("categories")
 @Tags("Categories")
 export class CategoriesController extends Controller {
-    @Post('create')
-    public async createCategory(@Body() data: ICategory): Promise<any> {
+
+    @Get('get-all')
+    public async getCategories(): Promise<any> {
         try {
-            const result = await new Category(data).save();
+            const result = await Category.find();
             return successResponse(result);
         }
         catch (err) {
@@ -18,10 +19,10 @@ export class CategoriesController extends Controller {
         }
     }
 
-    @Get('get-all')
-    public async getCategories(): Promise<any> {
+    @Post('create')
+    public async createCategory(@Body() data: ICategory): Promise<any> {
         try {
-            const result = await Category.find();
+            const result = await new Category(data).save();
             return successResponse(result);
         }
         catch (err) {

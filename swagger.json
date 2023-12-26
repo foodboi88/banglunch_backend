@@ -382,6 +382,32 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/users/profile": {
+			"get": {
+				"operationId": "GetProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/users/register": {
 			"post": {
 				"operationId": "Register",
@@ -502,12 +528,12 @@
 				}
 			}
 		},
-		"/users/profile": {
+		"/orders/cart-by-user": {
 			"get": {
-				"operationId": "GetProfile",
+				"operationId": "GetCartByUser",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "200 - Return message and status",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -515,22 +541,46 @@
 						}
 					}
 				},
+				"summary": "for user",
 				"tags": [
-					"Users"
+					"Orders"
 				],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": []
 					}
 				],
 				"parameters": []
 			}
 		},
-		"/orders/cart-by-user": {
+		"/orders/orders-by-seller": {
 			"get": {
-				"operationId": "GetCartByUser",
+				"operationId": "GetOrdersBySeller",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "for seller",
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/orders/orders-by-user": {
+			"get": {
+				"operationId": "GetOrdersByUser",
 				"responses": {
 					"200": {
 						"description": "200 - Return message and status",
@@ -648,56 +698,6 @@
 				}
 			}
 		},
-		"/orders/orders-by-seller": {
-			"get": {
-				"operationId": "GetOrdersBySeller",
-				"responses": {
-					"200": {
-						"description": "200 - Return message and status",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"summary": "for seller",
-				"tags": [
-					"Orders"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/orders/orders-by-user": {
-			"get": {
-				"operationId": "GetOrdersByUser",
-				"responses": {
-					"200": {
-						"description": "200 - Return message and status",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"summary": "for user",
-				"tags": [
-					"Orders"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/gallery/create-food-image": {
 			"post": {
 				"operationId": "CreateImage",
@@ -748,42 +748,6 @@
 				}
 			}
 		},
-		"/foods/create-food": {
-			"post": {
-				"operationId": "CreateFood",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Foods"
-				],
-				"security": [
-					{
-						"jwt": [
-							"seller"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IFoodInput"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/foods/home": {
 			"get": {
 				"operationId": "GetHomeFoods",
@@ -824,6 +788,43 @@
 					{
 						"in": "query",
 						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/foods/advanced-filter": {
+			"get": {
+				"operationId": "AdvancedFilterFoods",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Foods"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "categoryId",
 						"required": false,
 						"schema": {
 							"type": "string"
@@ -890,9 +891,9 @@
 				]
 			}
 		},
-		"/foods/delete-by-id": {
-			"delete": {
-				"operationId": "DeleteProductById",
+		"/foods/create-food": {
+			"post": {
+				"operationId": "CreateFood",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -908,19 +909,22 @@
 				],
 				"security": [
 					{
-						"jwt": []
+						"jwt": [
+							"seller"
+						]
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "foodId",
-						"required": true,
-						"schema": {
-							"type": "string"
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IFoodInput"
+							}
 						}
 					}
-				]
+				}
 			}
 		},
 		"/foods/edit-food/{foodId}": {
@@ -968,7 +972,65 @@
 				}
 			}
 		},
+		"/foods/delete-by-id": {
+			"delete": {
+				"operationId": "DeleteProductById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Foods"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "foodId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/sellers/shop-status": {
+			"get": {
+				"operationId": "GetShopStatus",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "OPEN/CLOSE SHOP (Only seller can)",
+				"tags": [
+					"Sellers"
+				],
+				"security": [
+					{
+						"jwt": [
+							"seller"
+						]
+					}
+				],
+				"parameters": []
+			},
 			"put": {
 				"operationId": "UpdateShopStatus",
 				"responses": {
@@ -1005,31 +1067,6 @@
 						}
 					}
 				}
-			},
-			"get": {
-				"operationId": "GetShopStatus",
-				"responses": {
-					"200": {
-						"description": "200 - Return message and status",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"summary": "OPEN/CLOSE SHOP (Only seller can)",
-				"tags": [
-					"Sellers"
-				],
-				"security": [
-					{
-						"jwt": [
-							"seller"
-						]
-					}
-				],
-				"parameters": []
 			}
 		},
 		"/delivery/caculate-shipping-cost": {
@@ -1177,6 +1214,27 @@
 				"parameters": []
 			}
 		},
+		"/comments/summarize": {
+			"get": {
+				"operationId": "SummarizeComments",
+				"responses": {
+					"200": {
+						"description": "200 - Return message and status",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"summary": "For user Get summarize for all comments. Use ChatGPT API",
+				"tags": [
+					"Comments"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/comments/get-comments-by-food": {
 			"get": {
 				"operationId": "GetCommentsByFood",
@@ -1240,12 +1298,12 @@
 				}
 			}
 		},
-		"/comments/summarize": {
+		"/categories/get-all": {
 			"get": {
-				"operationId": "SummarizeComments",
+				"operationId": "GetCategories",
 				"responses": {
 					"200": {
-						"description": "200 - Return message and status",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -1253,9 +1311,8 @@
 						}
 					}
 				},
-				"summary": "For user Get summarize for all comments. Use ChatGPT API",
 				"tags": [
-					"Comments"
+					"Categories"
 				],
 				"security": [],
 				"parameters": []
@@ -1289,26 +1346,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/categories/get-all": {
-			"get": {
-				"operationId": "GetCategories",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Categories"
-				],
-				"security": [],
-				"parameters": []
 			}
 		}
 	},

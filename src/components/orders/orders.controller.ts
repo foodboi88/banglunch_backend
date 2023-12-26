@@ -63,6 +63,58 @@ export class OrderController extends Controller {
     }
 
     /**
+     * @summary for seller
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Security("jwt")
+    @Get('orders-by-seller')
+    public async getOrdersBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await Users.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            const res = await Orders.aggregate(getOrdersBySeller(userId));
+
+            return successResponse(res)
+
+        } catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
+
+    /**
+     * @summary for user
+     * @returns {Promise<any>} 200 - Return message and status
+     * @returns {Promise<any>} 400 - Return error message
+     */
+    @Security("jwt")
+    @Get('orders-by-user')
+    public async getOrdersByUser(@Request() request: any): Promise<any> { // Lấy danh sách các đơn mình đang đặt
+        try {
+            const token = request.headers.authorization.split(' ')[1];
+            const userId = await Users.getIdFromToken(token);
+            if (!userId) {
+                this.setStatus(401);
+                return failedResponse('Unauthorized', 'Unauthorized');
+            }
+
+            const res = await Orders.aggregate(getOrdersByUser(userId));
+
+            return successResponse(res)
+
+        } catch (err) {
+            this.setStatus(500);
+            return failedResponse('Execute service went wrong', 'ServiceException');
+        }
+    }
+
+    /**
      * @summary for user
      * @returns {Promise<any>} 200 - Return message and status
      * @returns {Promise<any>} 400 - Return error message
@@ -185,12 +237,14 @@ export class OrderController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Unauthorized', 'Unauthorized');
             }
+            const detailUser = await User.findById(userId)
 
             //Lấy cart của người dùng. Nếu chưa có thì thêm mới cart
             const cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
 
             const sellerId = cartOfUser.sellerId;
             const sellerInfo = await Sellers.findOne({ userId: sellerId });
+
             //Check xem shop đã mở cửa chưa
             if (!sellerInfo.shopStatus) {
                 this.setStatus(400);
@@ -199,7 +253,6 @@ export class OrderController extends Controller {
 
             //Check giỏ có hàng không
             const currentOrderDetails = await OrderDetails.find({ orderId: cartOfUser._id }) // Lấy ra danh sách orderdetails theo id của giỏ hàng hiện tại
-            console.log(currentOrderDetails);
             if (currentOrderDetails) { // Nếu như trong giỏ có hàng thì mới lưu thông tin cart thành order và lưu giá vào các orderDetail
                 //Nếu đã mở cửa thì chuyển giỏ hàng hiện tại sang trạng thái chờ duyệt
                 //Lưu giá vận chuyển 
@@ -212,8 +265,8 @@ export class OrderController extends Controller {
                     deliveryCost: null,
                     orderStatus: OrderStatus.WaitingApproved,
                     expectedDeliveryTime: null,
-                    fromDetailAddress: null,
-                    toDetailAddress: null
+                    fromDetailAddress: sellerInfo.fromDetailAddress,
+                    toDetailAddress: detailUser.address
                 }
                 await cartOfUser.update(OrderDTO)
 
@@ -295,58 +348,6 @@ export class OrderController extends Controller {
         } catch (error) {
             this.setStatus(500);
             return failedResponse(`Caught error ${error}`, 'ServiceException');
-        }
-    }
-
-    /**
-     * @summary for seller
-     * @returns {Promise<any>} 200 - Return message and status
-     * @returns {Promise<any>} 400 - Return error message
-     */
-    @Security("jwt")
-    @Get('orders-by-seller')
-    public async getOrdersBySeller(@Request() request: any): Promise<any> { // Lấy danh sách các đơn đang đặt ở shop của mình
-        try {
-            const token = request.headers.authorization.split(' ')[1];
-            const userId = await Users.getIdFromToken(token);
-            if (!userId) {
-                this.setStatus(401);
-                return failedResponse('Unauthorized', 'Unauthorized');
-            }
-
-            const res = await Orders.aggregate(getOrdersBySeller(userId));
-
-            return successResponse(res)
-
-        } catch (err) {
-            this.setStatus(500);
-            return failedResponse('Execute service went wrong', 'ServiceException');
-        }
-    }
-
-    /**
-     * @summary for user
-     * @returns {Promise<any>} 200 - Return message and status
-     * @returns {Promise<any>} 400 - Return error message
-     */
-    @Security("jwt")
-    @Get('orders-by-user')
-    public async getOrdersByUser(@Request() request: any): Promise<any> { // Lấy danh sách các đơn mình đang đặt
-        try {
-            const token = request.headers.authorization.split(' ')[1];
-            const userId = await Users.getIdFromToken(token);
-            if (!userId) {
-                this.setStatus(401);
-                return failedResponse('Unauthorized', 'Unauthorized');
-            }
-
-            const res = await Orders.aggregate(getOrdersByUser(userId));
-
-            return successResponse(res)
-
-        } catch (err) {
-            this.setStatus(500);
-            return failedResponse('Execute service went wrong', 'ServiceException');
         }
     }
 }
