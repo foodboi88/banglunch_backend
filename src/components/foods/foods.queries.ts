@@ -139,8 +139,33 @@ export const getDetailFoodById = (foodId: string, size?: number, offset?: number
         $lookup:
         {
             from: "users",
-            localField: "sellerId",
-            foreignField: "_id",
+            let: {
+                sellerId: "$sellerId",
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: ["$_id", "$$sellerId"],
+                                },
+                            ],
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "sellers",
+                        localField: "_id",
+                        foreignField: "userId",
+                        as: "info",
+                    },
+                },
+                {
+                    $unwind: "$info",
+                },
+            ],
             as: "seller",
         },
     },

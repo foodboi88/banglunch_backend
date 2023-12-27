@@ -136,6 +136,16 @@ export class OrderController extends Controller {
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
 
+            const initialCart = new Orders({
+                userId: userId,
+                sellerId: null,
+                createdAt: new Date(),
+                purchasedAt: null,
+                deliveryCost: 0,
+                orderStatus: OrderStatus.Cart
+            })
+            await initialCart.save();
+
 
             // Check xem đồ ăn được thêm vào có cùng shop với các sản phẩm khác trong giỏ hay không
             if (cartOfUser?.sellerId && sellerId.toString() !== cartOfUser?.sellerId?.toString()) {
@@ -151,7 +161,7 @@ export class OrderController extends Controller {
             if (orderDetailsByOrder.length === 1 && quantity === 0) { // Trong giỏ còn 1 món và quantity bằng 0 tức là sẽ xóa sạch món trong giỏ
                 newCart = {
                     userId: userId,
-                    sellerId: null, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
+                    sellerId: null, // Xóa luôn id của seller trong giỏ để lưu lại id seller mới cho lần thêm sản phẩm sau
                     createdAt: new Date(),
                     approvedAt: null,
                     rejectedAt: null,
@@ -164,7 +174,7 @@ export class OrderController extends Controller {
             } else {
                 newCart = {
                     userId: userId,
-                    sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // Nếu trong giỏ đang chưa có hàng thì set luôn idSeller bằng với id của shop của sản phẩm được thêm vào 
+                    sellerId: cartOfUser?.sellerId ? cartOfUser?.sellerId : sellerId, // nếu số lượng sản phẩm trong giỏ không bị trống sau khi sửa thì vẫn lấy sellerId hiện tại/truyền vào 
                     createdAt: new Date(),
                     approvedAt: null,
                     rejectedAt: null,

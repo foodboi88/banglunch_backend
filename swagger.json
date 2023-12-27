@@ -182,22 +182,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"weight": {
-						"type": "number",
-						"format": "double"
-					},
-					"length": {
-						"type": "number",
-						"format": "double"
-					},
-					"width": {
-						"type": "number",
-						"format": "double"
-					},
-					"height": {
-						"type": "number",
-						"format": "double"
-					},
 					"category": {
 						"items": {
 							"type": "string"
@@ -209,10 +193,6 @@
 					"title",
 					"content",
 					"price",
-					"weight",
-					"length",
-					"width",
-					"height",
 					"category"
 				],
 				"type": "object",

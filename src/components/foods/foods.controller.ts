@@ -3,7 +3,8 @@ import { failedResponse, successResponse } from "../../utils/http";
 import Category from "../categories/categories.model";
 import FoodCategory from "../food-categories/food-categories.model";
 import { deleteFolder } from "../gallery/gallery.controller";
-import { default as User, default as Users } from "../users/users.model";
+import Sellers from "../sellers/sellers.model";
+import Users, { default as User } from "../users/users.model";
 import { default as Food, default as Foods } from "./foods.model";
 import { getAllFood, getDetailFoodById, getFoodsByFilterWithCategoryId, getFoodsByFilterWithoutCategoryId, getFoodsByShop } from "./foods.queries";
 import { IFood, IFoodEdit, IFoodInput } from "./foods.types";
@@ -86,10 +87,11 @@ export class ProductController extends Controller {
     public async getFoodsByShop(@Request() request: any, @Query() shopId: string): Promise<any> {
         try {
             const foodsBySeller = await Foods.aggregate(getFoodsByShop(shopId))
-            const shopInfo = await Users.findById(shopId);
+            const shopInfo = await Sellers.findOne({ userId: shopId });
+            const sellerInfo = await Users.findById(shopId)
             return successResponse({
                 foods: foodsBySeller,
-                info: shopInfo
+                info: { address: shopInfo.fromDetailAddress, name: sellerInfo.name, phone: sellerInfo.phone }
             });
         }
         catch (err) {
@@ -117,10 +119,6 @@ export class ProductController extends Controller {
                 price: data.price,
                 views: 0,
                 sellerId: userId,
-                weight: data.weight,
-                length: data.length,
-                width: data.width,
-                height: data.height,
                 createdAt: new Date(),
                 updatedAt: null,
                 deletedAt: null,
