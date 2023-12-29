@@ -4,7 +4,16 @@ export interface IComment {
     rate: number,
     description: string,
     createdAt: Date,
-    orderDetailId: string
+    orderDetailId: string,
+    summarizedCommentOneStar: string,
+    summarizedCommentTwoStar: string,
+    summarizedCommentThreeStar: string,
+    summarizedCommentFourStar: string,
+    summarizedCommentFiveStar: string,
+    summarizedCommentSevenStar: string,
+    summarizedCommentEightStar: string,
+    summarizedCommentNineStar: string,
+    summarizedCommentTenStar: string,
 }
 
 export interface IAddComment {
