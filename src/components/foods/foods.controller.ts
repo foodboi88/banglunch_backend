@@ -122,7 +122,16 @@ export class ProductController extends Controller {
                 createdAt: new Date(),
                 updatedAt: null,
                 deletedAt: null,
-                summarizedComments: ''
+                summarizedCommentOneStar: null,
+                summarizedCommentTwoStar: null,
+                summarizedCommentThreeStar: null,
+                summarizedCommentFourStar: null,
+                summarizedCommentFiveStar: null,
+                summarizedCommentSixStar: null,
+                summarizedCommentSevenStar: null,
+                summarizedCommentEightStar: null,
+                summarizedCommentNineStar: null,
+                summarizedCommentTenStar: null,
             }
 
             //verify category

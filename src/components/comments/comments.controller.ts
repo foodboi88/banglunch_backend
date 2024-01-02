@@ -97,8 +97,8 @@ export class CommentsController extends Controller {
             }
             await new Comments(commentDTO).save();
 
-            //Get all comments of food
-            const commentsByFood = await Comments.find({ foodId: data.foodId });
+            //Get all comments with the same rate of food
+            const commentsByFood = await Comments.find({ foodId: data.foodId, rate: data.rate });
             let prompt = 'Tóm tắt list bình luận về món ăn sau: ['
             commentsByFood.forEach((item) => {
                 prompt = prompt + item.description + ",";
@@ -118,17 +118,26 @@ export class CommentsController extends Controller {
             //Save summarized comment to corresponding food
             const foodById = await Foods.findById(data.foodId);
             const foodDTO: IFood = {
-                constantId: foodById.constantId,
-                title: foodById.title,
-                content: foodById.content,
-                price: foodById.price,
-                views: foodById.views,
-                sellerId: foodById.sellerId,
-                createdAt: foodById.createdAt,
-                updatedAt: foodById.updatedAt,
-                deletedAt: foodById.deletedAt,
-                summarizedComments: summary
-            }
+                        constantId: foodById.constantId,
+                        title: foodById.title,
+                        content: foodById.content,
+                        price: foodById.price,
+                        views: foodById.views,
+                        sellerId: foodById.sellerId,
+                        createdAt: foodById.createdAt,
+                        updatedAt: foodById.updatedAt,
+                        deletedAt: foodById.deletedAt,
+                        summarizedCommentOneStar: data.rate === 1 ? summary : null,
+                        summarizedCommentTwoStar: data.rate === 2 ? summary : null,
+                        summarizedCommentThreeStar: data.rate === 3 ? summary : null,
+                        summarizedCommentFourStar: data.rate === 4 ? summary : null,
+                        summarizedCommentFiveStar: data.rate === 5 ? summary : null,
+                        summarizedCommentSixStar: data.rate === 6 ? summary : null,
+                        summarizedCommentSevenStar: data.rate === 7 ? summary : null,
+                        summarizedCommentEightStar: data.rate === 8 ? summary : null,
+                        summarizedCommentNineStar: data.rate === 9 ? summary : null,
+                        summarizedCommentTenStar: data.rate === 10 ? summary : null,
+              }
             const food = await foodById.update(foodDTO);
 
             return successResponse(food);

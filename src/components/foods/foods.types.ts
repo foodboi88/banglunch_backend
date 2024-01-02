@@ -8,7 +8,16 @@ export interface IFood {
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
-    summarizedComments: string;
+    summarizedCommentOneStar?: string,
+    summarizedCommentTwoStar?: string,
+    summarizedCommentThreeStar?: string,
+    summarizedCommentFourStar?: string,
+    summarizedCommentFiveStar?: string,
+    summarizedCommentSixStar?: string,
+    summarizedCommentSevenStar?: string,
+    summarizedCommentEightStar?: string,
+    summarizedCommentNineStar?: string,
+    summarizedCommentTenStar?: string,
 }
 
 export interface IFoodInput {
