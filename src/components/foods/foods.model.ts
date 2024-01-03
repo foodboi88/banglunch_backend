@@ -42,6 +42,16 @@ const FoodSchema = new mongoose.Schema<FoodDocument, FoodModel>({
         type: String,
         default: ''
     },
+    summarizedCommentOneStar: String,
+    summarizedCommentTwoStar: String,
+    summarizedCommentThreeStar: String,
+    summarizedCommentFourStar: String,
+    summarizedCommentFiveStar: String,
+    summarizedCommentSixStar: String,
+    summarizedCommentSevenStar: String,
+    summarizedCommentEightStar: String,
+    summarizedCommentNineStar: String,
+    summarizedCommentTenStar: String,
 })
 
 FoodSchema.set('toJSON', {
