@@ -77,13 +77,13 @@ export class CommentsController extends Controller {
 
             // Check xem món này ở đơn này đã được thêm bình luận chưa, nếu rồi thì không cho thêm nữa 
             const commentExist = await Comments.findOne({
-                userId: userId,
-                orderDetailId: data.orderDetailId,
-                foodId: data.foodId
+            userId: userId,
+            orderDetailId: data.orderDetailId,
+            foodId: data.foodId
             })
             if (commentExist) { // Đã bình luận rồi
-                this.setStatus(400);
-                return failedResponse('Bạn đã bình luận món ăn trong đơn này rồi', 'CommentRestricted');
+            this.setStatus(400);
+            return failedResponse('Bạn đã bình luận món ăn trong đơn này rồi', 'CommentRestricted');
             }
 
             //save comment 
@@ -110,7 +110,8 @@ export class CommentsController extends Controller {
             const response = await openaiInstance.completions.create({
                 model: 'gpt-3.5-turbo-instruct', // Chọn mô hình ChatGPT
                 prompt: prompt,
-                max_tokens: 300, // Số lượng từ tối đa trong kết quả
+                max_tokens: 500, // Số lượng từ tối đa trong kết quả
+                temperature: 0.2
             });
             const summary = response.choices[0].text.trim();
             console.log(summary)
@@ -127,16 +128,16 @@ export class CommentsController extends Controller {
                 createdAt: foodById.createdAt,
                 updatedAt: foodById.updatedAt,
                 deletedAt: foodById.deletedAt,
-                summarizedCommentOneStar: data.rate === 1 ? summary : null,
-                summarizedCommentTwoStar: data.rate === 2 ? summary : null,
-                summarizedCommentThreeStar: data.rate === 3 ? summary : null,
-                summarizedCommentFourStar: data.rate === 4 ? summary : null,
-                summarizedCommentFiveStar: data.rate === 5 ? summary : null,
-                summarizedCommentSixStar: data.rate === 6 ? summary : null,
-                summarizedCommentSevenStar: data.rate === 7 ? summary : null,
-                summarizedCommentEightStar: data.rate === 8 ? summary : null,
-                summarizedCommentNineStar: data.rate === 9 ? summary : null,
-                summarizedCommentTenStar: data.rate === 10 ? summary : null,
+                summarizedCommentOneStar: data.rate === 1 ? summary : foodById.summarizedCommentOneStar,
+                summarizedCommentTwoStar: data.rate === 2 ? summary : foodById.summarizedCommentTwoStar,
+                summarizedCommentThreeStar: data.rate === 3 ? summary : foodById.summarizedCommentThreeStar,
+                summarizedCommentFourStar: data.rate === 4 ? summary : foodById.summarizedCommentFourStar,
+                summarizedCommentFiveStar: data.rate === 5 ? summary : foodById.summarizedCommentFiveStar,
+                summarizedCommentSixStar: data.rate === 6 ? summary : foodById.summarizedCommentSixStar,
+                summarizedCommentSevenStar: data.rate === 7 ? summary : foodById.summarizedCommentSevenStar,
+                summarizedCommentEightStar: data.rate === 8 ? summary : foodById.summarizedCommentEightStar,
+                summarizedCommentNineStar: data.rate === 9 ? summary : foodById.summarizedCommentNineStar,
+                summarizedCommentTenStar: data.rate === 10 ? summary : foodById.summarizedCommentTenStar,
               }
             const food = await foodById.update(foodDTO);
 

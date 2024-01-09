@@ -111,7 +111,7 @@ export class ProductController extends Controller {
                 this.setStatus(401);
                 return failedResponse('Token is not valid', 'Unauthorized');
             }
-            //verify food
+            //new food
             const FoodDTO: IFood = {
                 constantId: crypto.randomUUID(),
                 title: data.title,

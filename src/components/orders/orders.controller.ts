@@ -136,6 +136,7 @@ export class OrderController extends Controller {
             let cartOfUser = await Orders.findOne({ userId: userId, orderStatus: OrderStatus.Cart });
             console.log('Thông tin cart của user hiện tại', cartOfUser);
 
+            
             const initialCart = new Orders({
                 userId: userId,
                 sellerId: null,
