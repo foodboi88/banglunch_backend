@@ -349,7 +349,8 @@ export class OrderController extends Controller {
                 orderStatus: status, // Chuyển sang status được truyền vào,
                 expectedDeliveryTime: orderOfUser.expectedDeliveryTime,
                 fromDetailAddress: orderOfUser.fromDetailAddress,
-                toDetailAddress: orderOfUser.toDetailAddress
+                toDetailAddress: orderOfUser.toDetailAddress,
+                purchasedAt: status === OrderStatus.Received ? new Date() : null
             }
 
             await orderOfUser.update(cloneOrderOfUser)

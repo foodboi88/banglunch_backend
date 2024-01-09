@@ -4,6 +4,7 @@ export interface IOrders {
     createdAt: Date,
     rejectedAt: Date,
     approvedAt?: Date,
+    purchasedAt?: Date,
     deliveryCost: number,
     orderStatus: number,
     expectedDeliveryTime?: Date,

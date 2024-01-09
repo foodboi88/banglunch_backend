@@ -307,3 +307,59 @@ export const getOrderByFoodAndUser = (foodId: string, userId: string, size?: num
     },
 ]
 
+export const getPurchaseHistoriesByDay = (startTime: Date, endTime: Date): Array<Record<string, any>> => [
+
+    {
+        $match: {
+            orderStatus: 4,
+            createdAt: {
+                $gte: new Date('2023-12-08T10:20:05.567+00:00'),
+                $lte: new Date('2024-01-03T16:23:23.964+00:00'),
+            }
+        }
+    },
+
+
+    {
+        $lookup:
+        /**
+         * from: The target collection.
+         * localField: The local join field.
+         * foreignField: The target join field.
+         * as: The name for the results.
+         * pipeline: Optional pipeline to run on the foreign collection.
+         * let: Optional variables to use in the pipeline field stages.
+         */
+        {
+            from: "order_details",
+            let: {
+                orderId: "$_id",
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                {
+                                    $eq: [
+                                        "$orderId", // SellerId bảng hiện tại
+                                        "$$orderId", // SellerId bảng quan hệ
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                },
+
+            ],
+            as: "order_details",
+        },
+    },
+    {
+        $addFields: {
+            totalPrice: {
+                $sum: "$order_details.price",
+            },
+        },
+    },
+]
