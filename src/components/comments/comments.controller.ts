@@ -76,15 +76,15 @@ export class CommentsController extends Controller {
             }
 
             // Check xem món này ở đơn này đã được thêm bình luận chưa, nếu rồi thì không cho thêm nữa 
-            // const commentExist = await Comments.findOne({
-            //     userId: userId,
-            //     orderDetailId: data.orderDetailId,
-            //     foodId: data.foodId
-            // })
-            // if (commentExist) { // Đã bình luận rồi
-            //     this.setStatus(400);
-            //     return failedResponse('Bạn đã bình luận món ăn trong đơn này rồi', 'CommentRestricted');
-            // }
+            const commentExist = await Comments.findOne({
+                userId: userId,
+                orderDetailId: data.orderDetailId,
+                foodId: data.foodId
+            })
+            if (commentExist) { // Đã bình luận rồi
+                this.setStatus(400);
+                return failedResponse('Bạn đã bình luận món ăn trong đơn này rồi', 'CommentRestricted');
+            }
 
             //save comment 
             const commentDTO: IComment = {
@@ -99,7 +99,7 @@ export class CommentsController extends Controller {
 
             //Get all comments with the same rate of food
             const commentsByFood = await Comments.find({ foodId: data.foodId, rate: data.rate });
-            let prompt = 'Sau đây là danh sách bình luận về 1 món ăn. Dựa trên danh sách bình luận này hãy đưa ra các đánh giá dựa trên các tiêu chí sau đây: hương vị thế nào, giá cả có xứng đáng không, thái độ phục vụ khách hàng thế nào, lượng đồ ăn có đầy đủ không, cảm quan về món ra sao. Người mua đồ ăn sẽ dựa vào các đánh giá này để mua món ăn. Tổng độ dài của một đánh giá chỉ trong 20 từ: ['
+            let prompt = 'Sau đây là danh sách bình luận về 1 món ăn. Dựa trên danh sách bình luận này hãy đưa ra các đánh giá dựa trên các tiêu chí sau đây: hương vị thế nào, giá cả có xứng đáng không, thái độ phục vụ khách hàng thế nào, lượng đồ ăn có đầy đủ không, cảm quan về món ra sao, đồ ăn có đảm bảo vệ sinh không. Người mua đồ ăn sẽ dựa vào các đánh giá này để mua món ăn. Tổng độ dài của một đánh giá chỉ trong 20 từ: ['
             commentsByFood.forEach((item) => {
                 prompt = prompt + item.description + ",";
             })
@@ -110,8 +110,8 @@ export class CommentsController extends Controller {
             const response = await openaiInstance.completions.create({
                 model: 'gpt-3.5-turbo-instruct', // Chọn mô hình ChatGPT
                 prompt: prompt,
-                max_tokens: 400, // Số lượng từ tối đa trong kết quả
-                temperature: 0.8,
+                max_tokens: 700, // Số lượng từ tối đa trong kết quả
+                temperature: 0.5,
             });
             const summary = response.choices[0].text.trim();
             console.log(summary)

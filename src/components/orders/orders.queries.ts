@@ -168,6 +168,13 @@ export const getOrdersBySeller = (id: string) => {
                 as: "order_details",
             },
         },
+        {
+            $sort: {
+                orderStatus: 1, // Sắp xếp theo trạng thái tăng dần
+                purchasedAt: 1,
+
+            }
+        }
     ]
 }
 
@@ -270,6 +277,13 @@ export const getOrdersByUser = (id: string) => {
                 as: "order_details",
             },
         },
+        {
+            $sort: {
+                orderStatus: 1, // Sắp xếp theo trạng thái tăng dần
+                purchasedAt: 1,
+
+            }
+        }
     ]
 }
 
